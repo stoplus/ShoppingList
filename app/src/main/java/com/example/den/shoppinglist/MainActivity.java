@@ -1,5 +1,6 @@
 package com.example.den.shoppinglist;
 
+import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.den.shoppinglist.entity.Lists;
+import com.example.den.shoppinglist.interfaces.DeleteListInterface;
 import com.example.den.shoppinglist.interfaces.ListProductDao;
 import com.example.den.shoppinglist.interfaces.ListsDao;
 
@@ -39,7 +41,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.DefaultSubscriber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DeleteListInterface {
     private List<Lists> list;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -97,19 +99,19 @@ public class MainActivity extends AppCompatActivity {
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-//                                int carId = list.get(position).getListId();//получаем id транспорта
+                                int listId = list.get(position).getListId();//получаем id транспорта
                                 switch (item.getItemId()) {
                                     case R.id.edit:
 //                                        if (Utils.isOnline(context)) // если есть подключение к интернету
 //                                            editDataCar(carId);//редактировании данных транспорта
                                         return true;
                                     case R.id.delete:
-//                                        DeleteCarDialog deleteDialog = new DeleteCarDialog();
-//                                        Bundle args = new Bundle();
-//                                        args.putString("carId", carId);
-//                                        deleteDialog.setArguments(args);
-//                                        deleteDialog.show(getSupportFragmentManager(), "deleteCar");
-//                                        //deleteCar(carId);//удаление транспорта
+                                        DeleteListDialog deleteDialog = new DeleteListDialog();
+                                        Bundle args = new Bundle();
+                                        args.putInt("listId", listId);
+                                        deleteDialog.setArguments(args);
+                                        deleteDialog.show(getSupportFragmentManager(), "deleteList");
+                                        //deleteCar(carId);//удаление транспорта
                                         return true;
                                     default:
                                         break;
@@ -160,22 +162,90 @@ public class MainActivity extends AppCompatActivity {
                 Lists lists = new Lists(name);
                 listsDao.insert(lists);
             }
-        }).observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io()).subscribe(new CompletableObserver() {
-            @Override
-            public void onSubscribe(Disposable d) {
-            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
 
-            @Override
-            public void onComplete() {
-            }
+                    @Override
+                    public void onComplete() {
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+                });
+    }
+
+    public void deleteList(final Lists lists) {
+        Completable.fromAction(new Action() {
             @Override
-            public void onError(Throwable e) {
+            public void run() throws Exception {
+                listsDao.delete(lists);
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+                });
+    }
+
+    @Override
+    public void deleteList(int id) {
+        getUser(id, true);
+        //по листу
+
+    }
+
+    public void update(View view) {
+        getUser(1, false);
+    }
+
+    private void getUser(int id, final boolean delete) {
+        listsDao.getById(id).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Lists>() {
+            @Override
+            public void accept(@io.reactivex.annotations.NonNull final Lists lists) throws Exception {
+                if (lists != null)
+                    if (delete) {
+                        Completable.fromAction(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                listsDao.delete(lists); }})
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new CompletableObserver() {
+                                    @Override
+                                    public void onSubscribe(Disposable d) {
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                    }
+                                });
+                    }
+//                    else
+//                        LocalCacheManager.getInstance(MainActivity.this).deleteUser(MainActivity.this, lists);
             }
         });
     }
-
 
 
 }

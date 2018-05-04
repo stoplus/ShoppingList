@@ -22,7 +22,7 @@ public interface ListsDao {
     int count();
 
     @Query("SELECT * FROM lists WHERE id = :id")
-    Lists getById(int id);
+    Flowable<Lists> getById(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Lists lists);
@@ -31,5 +31,5 @@ public interface ListsDao {
     void update(Lists lists);
 
     @Delete
-    void delete(Lists lists);
+    void delete(Lists... lists);
 }
