@@ -1,21 +1,5 @@
 package com.example.den.shoppinglist;
 
-//public class App extends AppCompatActivity {
-//
-//    private static AppComponent component;
-//
-//    @Override
-//    protected void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        component = DaggerAppComponent.create();
-//    }
-//
-//    public static AppComponent getComponent() {
-//        return component;
-//    }
-//
-//}
-
 import android.app.Application;
 
 import com.example.den.shoppinglist.interfaces.AppComponent;

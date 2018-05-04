@@ -11,10 +11,15 @@ import com.example.den.shoppinglist.entity.Lists;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface ListsDao {
     @Query("SELECT * FROM lists")
-    List<Lists> getAll();
+    Flowable<List<Lists>> getAll();
+
+    @Query("SELECT COUNT(*) from lists")
+    int count();
 
     @Query("SELECT * FROM lists WHERE id = :id")
     Lists getById(int id);
