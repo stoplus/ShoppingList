@@ -27,18 +27,31 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class MainActivity extends AppCompatActivity {
     private List<Lists> list;
-    @BindView(R.id.toolbar_title) TextView toolbarTitle;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.idRecycler) RecyclerView recyclerView;
-    @BindView(R.id.fabBtn) FloatingActionButton fabBtn;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.idRecycler)
+    RecyclerView recyclerView;
+    @BindView(R.id.fabBtn)
+    FloatingActionButton fabBtn;
 
-    @Inject ListsDao listsDao;
-    @Inject ListProductDao listProductDao;
+    @Inject
+    ListsDao listsDao;
+    @Inject
+    ListProductDao listProductDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         App.app().getComponent().inject(this);
         setSupportActionBar(toolbar);
-        toolbarTitle.setText(getResources().getString(R.string.lists));
 
         fabBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                recyclerView.addOnItemTouchListener(
+        recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     // код для клика по элементу
                     @Override
@@ -127,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String name = input.getText().toString();
                         if (!name.isEmpty()) {
+                            addList(name);
                             Toast.makeText(MainActivity.this, "Добавили", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -139,4 +152,30 @@ public class MainActivity extends AppCompatActivity {
                 });
         alertDialog.show();
     }
+
+    public void addList(final String name) {
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                Lists lists = new Lists(name);
+                listsDao.insert(lists);
+            }
+        }).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io()).subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+        });
+    }
+
+
+
 }
