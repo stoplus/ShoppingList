@@ -20,7 +20,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProductsList"></activity>
+        <activity android:name=".ProductsList"
+            android:label="@string/listsProducts"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
     </application>
 
 </manifest>
