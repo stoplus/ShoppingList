@@ -63,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         fabBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddEditListDialog(null);
+                AddEditListDialog addEditListDialog = new AddEditListDialog();
+                addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
             }
         });
 
@@ -100,15 +101,17 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 Lists lists = list.get(position);
+                                Bundle args = new Bundle();
+                                args.putParcelable("lists", lists);
                                 switch (item.getItemId()) {
                                     case R.id.edit:
-                                        AddEditListDialog(lists);
+                                        AddEditListDialog addEditListDialog = new AddEditListDialog();
+                                        addEditListDialog.setArguments(args);
+                                        addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
                                         return true;
                                     case R.id.delete:
                                         positionDelete = position;
                                         DeleteListDialog deleteDialog = new DeleteListDialog();
-                                        Bundle args = new Bundle();
-                                        args.putParcelable("lists", lists);
                                         deleteDialog.setArguments(args);
                                         deleteDialog.show(getSupportFragmentManager(), "deleteList");
                                         return true;
@@ -122,50 +125,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                     }//onLongItemClick
                 })//RecyclerItemClickListener
         );
-    }
-
-    public void AddEditListDialog(final Lists lists) {
-        String title;
-        String positiveButton;
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-
-        final EditText input = new EditText(MainActivity.this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        input.setLayoutParams(lp);
-        if (lists == null) {
-            input.setHint("Название");
-            title = "Создание нового списка";
-            positiveButton = "Добавить";
-        } else {
-            input.setText(lists.getListName());
-            title = "Изменение названия списка";
-            positiveButton = "Изменить";
-        }
-        alertDialog.setTitle(title)
-                .setView(input)
-                .setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String name = input.getText().toString();
-                        if (!name.isEmpty()) {
-                            if (lists == null) {
-                                addList(new Lists(name));
-                            } else {
-                                lists.setListName(name);
-                                update(lists);
-                            }
-                        }
-                    }
-                })
-                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        alertDialog.show();
     }
 
     @Override

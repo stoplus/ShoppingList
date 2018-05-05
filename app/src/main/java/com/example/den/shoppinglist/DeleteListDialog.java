@@ -28,7 +28,7 @@ public class DeleteListDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
                 .setTitle("Подтверждение")
-                .setIcon(R.drawable.warning)
+                .setIcon(R.mipmap.warning)
                 .setMessage("Удалить выбранный список?")
                 .setNegativeButton("Нет", null)
                 .setPositiveButton("Да", new DialogInterface.OnClickListener() {
