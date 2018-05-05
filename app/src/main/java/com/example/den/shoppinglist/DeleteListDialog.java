@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.interfaces.DeleteListInterface;
 
 public class DeleteListDialog extends DialogFragment {
@@ -22,7 +23,7 @@ public class DeleteListDialog extends DialogFragment {
     @NonNull // построить диалог с получением данных из активности и обработчиком кнопки
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final int id = getArguments().getInt("listId");
+        final Lists lists = getArguments().getParcelable("lists");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
@@ -34,7 +35,7 @@ public class DeleteListDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // удалить выбранный элемент списка при помощи метода интерфейса
-                        datable.deleteList(id);
+                        datable.deleteList(lists);
                     }
                 });
         return builder.create();
