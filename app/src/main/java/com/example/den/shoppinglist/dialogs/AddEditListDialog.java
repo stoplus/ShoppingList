@@ -1,4 +1,4 @@
-package com.example.den.shoppinglist;
+package com.example.den.shoppinglist.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.interfaces.AddEditListInterface;
 import com.example.den.shoppinglist.interfaces.DeleteListInterface;

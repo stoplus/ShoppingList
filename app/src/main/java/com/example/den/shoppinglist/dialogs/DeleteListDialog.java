@@ -1,4 +1,4 @@
-package com.example.den.shoppinglist;
+package com.example.den.shoppinglist.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.interfaces.DeleteListInterface;
 

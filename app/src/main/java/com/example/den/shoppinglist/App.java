@@ -5,6 +5,7 @@ import android.app.Application;
 import com.example.den.shoppinglist.interfaces.AppComponent;
 import com.example.den.shoppinglist.interfaces.DaggerAppComponent;
 import com.example.den.shoppinglist.module.DatabaseModule;
+import com.example.den.shoppinglist.module.RequestsListsModule;
 
 public class App extends Application {
     private static App app;
@@ -15,7 +16,9 @@ public class App extends Application {
         super.onCreate();
         app = this;
         appComponent = DaggerAppComponent.builder()
-                .databaseModule(new DatabaseModule(getApplicationContext())).build();
+                .databaseModule(new DatabaseModule(getApplicationContext()))
+                .requestsListsModule(new RequestsListsModule())
+                .build();
     }
 
     public static App app(){
