@@ -8,9 +8,9 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 
-
 @Singleton
-@Component(modules = {DatabaseModule.class, RequestsListsModule.class})
+@Component(modules = {RequestsListsModule.class})
+//@Component(modules = {DatabaseModule.class, RequestsListsModule.class})
 public interface AppComponent {
     void inject(MainActivity mainActivity);
 }

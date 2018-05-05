@@ -37,10 +37,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private AdapterList adapter;
     private int positionDelete = -1;
 
-    @Inject
-    ListsDao listsDao;
-    @Inject
-    ListProductDao listProductDao;
+//    @Inject
+//    ListProductDao listProductDao;
     @Inject
     RequestsLists requestsLists;
 
@@ -51,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
         ButterKnife.bind(this);
         App.app().getComponent().inject(this);
+        App.app().getListComponent().inject(requestsLists);
         setSupportActionBar(toolbar);
 
         fabBtn.setOnClickListener(new View.OnClickListener() {
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
             }
         });
 
-        requestsLists.getUsers(this, listsDao);
+        requestsLists.getUsers(this);
 
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
@@ -107,17 +106,17 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void addList(final Lists lists) {
-        requestsLists.addUser(this, lists, listsDao);
+        requestsLists.addUser(this, lists);
     }
 
     @Override
     public void update(Lists lists) {
-        requestsLists.updateLists(this, lists, listsDao);
+        requestsLists.updateLists(this, lists);
     }
 
     @Override
     public void deleteList(Lists lists) {
-        requestsLists.deleteLists(this, lists, listsDao);
+        requestsLists.deleteLists(this, lists);
     }
 
     //==============================================================================================

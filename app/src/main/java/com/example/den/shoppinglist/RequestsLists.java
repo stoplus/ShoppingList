@@ -6,6 +6,8 @@ import com.example.den.shoppinglist.interfaces.ListsDao;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -14,9 +16,11 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class RequestsLists {
+public class RequestsLists  {
+    @Inject
+    ListsDao listsDao;
 
-    public void getUsers(final DatabaseCallback databaseCallback, final ListsDao listsDao) {
+    public void getUsers(final DatabaseCallback databaseCallback) {
         listsDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -28,7 +32,7 @@ public class RequestsLists {
         });
     }
 
-    public void addUser(final DatabaseCallback databaseCallback, final Lists lists, final ListsDao listsDao) {
+    public void addUser(final DatabaseCallback databaseCallback, final Lists lists) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -53,7 +57,7 @@ public class RequestsLists {
         });
     }
 
-    public void deleteLists(final DatabaseCallback databaseCallback, final Lists lists, final ListsDao listsDao) {
+    public void deleteLists(final DatabaseCallback databaseCallback, final Lists lists) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -78,7 +82,7 @@ public class RequestsLists {
         });
     }
 
-    public void updateLists(final DatabaseCallback databaseCallback, final Lists lists, final ListsDao listsDao) {
+    public void updateLists(final DatabaseCallback databaseCallback, final Lists lists) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
