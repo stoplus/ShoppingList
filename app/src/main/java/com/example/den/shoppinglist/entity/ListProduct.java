@@ -12,10 +12,21 @@ public class ListProduct {
     public String nameProduct;
     @ColumnInfo(name = "picture_link")
     public String pictureLink;
+    @ColumnInfo(name = "check_box")
+    public boolean check_box;
 
     public ListProduct(String nameProduct, String pictureLink) {
         this.nameProduct = nameProduct;
         this.pictureLink = pictureLink;
+        this.pictureLink = pictureLink;
+    }
+
+    public boolean isCheck_box() {
+        return check_box;
+    }
+
+    public void setCheck_box(boolean check_box) {
+        this.check_box = check_box;
     }
 
     public int getLPId() {

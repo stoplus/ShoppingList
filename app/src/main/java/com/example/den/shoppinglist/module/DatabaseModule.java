@@ -37,8 +37,8 @@ public class DatabaseModule {
         return appDatabase.listsDao();
     }
 
-//    @Singleton @Provides
-//    public ListProductDao provideListProductDao(AppDatabase appDatabase){
-//        return appDatabase.listProductDao();
-//    }
+    @Singleton @Provides
+    public ListProductDao provideListProductDao(AppDatabase appDatabase){
+        return appDatabase.listProductDao();
+    }
 }

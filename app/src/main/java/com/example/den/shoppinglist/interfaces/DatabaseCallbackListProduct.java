@@ -1,13 +1,11 @@
 package com.example.den.shoppinglist.interfaces;
 
-
-import com.example.den.shoppinglist.entity.Lists;
+import com.example.den.shoppinglist.entity.ListProduct;
 
 import java.util.List;
 
-public interface DatabaseCallback {
-
-    void onListsLoaded(List<Lists> lists);
+public interface DatabaseCallbackListProduct {
+    void onListsLoaded(List<ListProduct> lists);
 
     void onListsDeleted();
 

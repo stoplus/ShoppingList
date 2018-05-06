@@ -43,4 +43,6 @@ dependencies {
 //permissions
     implementation 'com.github.hotchemi:permissionsdispatcher:3.1.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.0.1'
+    // Load Images
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 }

@@ -6,6 +6,7 @@ import com.example.den.shoppinglist.interfaces.AppComponent;
 import com.example.den.shoppinglist.interfaces.DaggerAppComponent;
 import com.example.den.shoppinglist.interfaces.DaggerListsComponent;
 import com.example.den.shoppinglist.interfaces.ListsComponent;
+import com.example.den.shoppinglist.module.DatabaseModule;
 import com.example.den.shoppinglist.module.ListsModule;
 import com.example.den.shoppinglist.module.RequestsListsModule;
 

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "dda966cf82a994e66586ca3564516c28",
+    "identityHash": "3558242c259fb9a0f8fe52dac35c1190",
     "entities": [
       {
         "tableName": "Lists",
@@ -32,7 +32,7 @@
       },
       {
         "tableName": "ListProduct",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name_product` TEXT, `picture_link` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name_product` TEXT, `picture_link` TEXT, `check_box` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -51,6 +51,12 @@
             "columnName": "picture_link",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "check_box",
+            "columnName": "check_box",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -65,7 +71,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"dda966cf82a994e66586ca3564516c28\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"3558242c259fb9a0f8fe52dac35c1190\")"
     ]
   }
 }

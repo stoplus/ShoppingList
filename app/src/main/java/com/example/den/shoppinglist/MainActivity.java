@@ -10,14 +10,13 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.den.shoppinglist.adapters.AdapterList;
 import com.example.den.shoppinglist.dialogs.AddEditListDialog;
 import com.example.den.shoppinglist.dialogs.DeleteListDialog;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.interfaces.AddEditListInterface;
-import com.example.den.shoppinglist.interfaces.DatabaseCallback;
+import com.example.den.shoppinglist.interfaces.DatabaseCallbackLists;
 import com.example.den.shoppinglist.interfaces.DeleteListInterface;
-import com.example.den.shoppinglist.interfaces.ListProductDao;
-import com.example.den.shoppinglist.interfaces.ListsDao;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallback {
+public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallbackLists {
     private List<Lists> list;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -37,8 +36,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private AdapterList adapter;
     private int positionDelete = -1;
 
-//    @Inject
-//    ListProductDao listProductDao;
     @Inject
     RequestsLists requestsLists;
 
@@ -60,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
             }
         });
 
-        requestsLists.getUsers(this);
+        requestsLists.getLists(this);
 
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void addList(final Lists lists) {
-        requestsLists.addUser(this, lists);
+        requestsLists.addLists(this, lists);
     }
 
     @Override

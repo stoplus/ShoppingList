@@ -1,4 +1,4 @@
-package com.example.den.shoppinglist;
+package com.example.den.shoppinglist.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Lists;
 
 import java.util.ArrayList;
@@ -122,4 +123,4 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> {
         list.add(toPosition, model);
         notifyItemMoved(fromPosition, toPosition);//обновляем ресайклер при перемещении Items
     }//moveItem
-}//class AdapterForAdmin
+}//class Adapter

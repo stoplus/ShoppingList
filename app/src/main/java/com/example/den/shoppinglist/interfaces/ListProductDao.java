@@ -11,14 +11,16 @@ import com.example.den.shoppinglist.entity.ListProduct;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface ListProductDao {
 
     @Query("SELECT * FROM listproduct")
-    List<ListProduct> getAll();
+    Flowable<List<ListProduct>> getAll();
 
     @Query("SELECT * FROM listproduct WHERE id = :id")
-    ListProduct getById(int id);
+    Flowable<ListProduct> getById(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(ListProduct... listProduct);
