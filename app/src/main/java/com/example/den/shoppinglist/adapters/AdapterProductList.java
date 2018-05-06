@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.den.shoppinglist.R;
-import com.example.den.shoppinglist.entity.ListProduct;
+import com.example.den.shoppinglist.entity.Product;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -24,11 +24,11 @@ import butterknife.ButterKnife;
 
 public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.ViewHolder> {
     private LayoutInflater inflater;    // для загрузки разметки элемента
-    private List<ListProduct> list;    // коллекция выводимых данных
+    private List<Product> list;    // коллекция выводимых данных
     private String resourceType;//данные тега из файлаов XML (для разных экранов разные адаптеры)
     private Context context;
 
-    public AdapterProductList(Context context, List<ListProduct> list) {
+    public AdapterProductList(Context context, List<Product> list) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.context = context;
@@ -68,8 +68,8 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         // связать отображаемые элементы и значения полей
         holder.textView.setText(list.get(position).nameProduct);
-        holder.checkBox.setVisibility(View.GONE);
-        if (!list.get(position).getPictureLink().isEmpty()){
+        holder.checkBox.setVisibility(View.VISIBLE);
+        if (list.get(position).getPictureLink()!= null){
             Picasso.with(context)
                     .load(new File(list.get(position).getPictureLink()))
                     .resize(50, 50)
@@ -95,16 +95,16 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
 
     //=================================================================================================
     // Filter Class
-    public void animateTo(List<ListProduct> models) {
+    public void animateTo(List<Product> models) {
         applyAndAnimateRemovals(models);
         applyAndAnimateAdditions(models);
         applyAndAnimateMovedItems(models);
     }//animateTo
 
     //удаляем лишние Items
-    private void applyAndAnimateRemovals(List<ListProduct> newModels) {
+    private void applyAndAnimateRemovals(List<Product> newModels) {
         for (int i = list.size() - 1; i >= 0; i--) {
-            final ListProduct model = list.get(i);
+            final Product model = list.get(i);
             if (!newModels.contains(model)) {
                 removeItem(i);
             }//if
@@ -112,9 +112,9 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     }//applyAndAnimateRemovals
 
     // добавляем Items
-    private void applyAndAnimateAdditions(List<ListProduct> newModels) {
+    private void applyAndAnimateAdditions(List<Product> newModels) {
         for (int i = 0, count = newModels.size(); i < count; i++) {
-            final ListProduct model = newModels.get(i);
+            final Product model = newModels.get(i);
             if (!list.contains(model)) {
                 addItem(i, model);
             }//if
@@ -122,9 +122,9 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     }//applyAndAnimateAdditions
 
     //присваиваем новые позиции
-    private void applyAndAnimateMovedItems(List<ListProduct> newModels) {
+    private void applyAndAnimateMovedItems(List<Product> newModels) {
         for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
-            final ListProduct model = newModels.get(toPosition);
+            final Product model = newModels.get(toPosition);
             final int fromPosition = list.indexOf(model);
             if (fromPosition >= 0 && fromPosition != toPosition) {
                 moveItem(fromPosition, toPosition);
@@ -137,13 +137,13 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         notifyItemRemoved(position);//обновляем ресайклер при удалении Item
     }//removeItem
 
-    private void addItem(int position, ListProduct model) {
+    private void addItem(int position, Product model) {
         list.add(position, model);
         notifyItemInserted(position);//обновляем ресайклер при вставке Item
     }//addItem
 
     private void moveItem(int fromPosition, int toPosition) {
-        final ListProduct model = list.remove(fromPosition);
+        final Product model = list.remove(fromPosition);
         list.add(toPosition, model);
         notifyItemMoved(fromPosition, toPosition);//обновляем ресайклер при перемещении Items
     }//moveItem

@@ -6,6 +6,7 @@ import android.content.Context;
 import com.example.den.shoppinglist.AppDatabase;
 import com.example.den.shoppinglist.interfaces.ListProductDao;
 import com.example.den.shoppinglist.interfaces.ListsDao;
+import com.example.den.shoppinglist.interfaces.ProductForListDao;
 
 import javax.inject.Singleton;
 
@@ -39,5 +40,10 @@ public class ListsModule {
     @Singleton @Provides
     public ListProductDao provideListProductDao(AppDatabase appDatabase){
         return appDatabase.listProductDao();
+    }
+
+    @Singleton @Provides
+    public ProductForListDao provideProductForListDao(AppDatabase appDatabase){
+        return appDatabase.productForListDao();
     }
 }

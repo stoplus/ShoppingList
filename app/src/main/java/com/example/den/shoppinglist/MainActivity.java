@@ -1,5 +1,6 @@
 package com.example.den.shoppinglist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -28,16 +29,14 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallbackLists {
     private List<Lists> list;
     @BindView(R.id.toolbar)
-    Toolbar toolbar;
+     Toolbar toolbar;
     @BindView(R.id.idRecycler)
-    RecyclerView recyclerView;
+     RecyclerView recyclerView;
     @BindView(R.id.fabBtn)
     FloatingActionButton fabBtn;
     private AdapterList adapter;
     private int positionDelete = -1;
-
-    @Inject
-    RequestsLists requestsLists;
+    private RequestsLists requestsLists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        App.app().getComponent().inject(this);
+        requestsLists = App.app().getComponent().getRequestsLists();
         App.app().getListComponent().inject(requestsLists);
         setSupportActionBar(toolbar);
 
@@ -64,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                     // код для клика по элементу
                     @Override
                     public void onItemClick(View view, int position) {
+                        Intent intent = new Intent(MainActivity.this, ProductsList.class);
+                        intent.putExtra("idList", list.get(position).getListId());
+                        startActivity(intent);
                     }//onItemClick
 
                     //длинное нажатие по элементу

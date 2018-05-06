@@ -7,7 +7,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.example.den.shoppinglist.entity.ListProduct;
+import com.example.den.shoppinglist.entity.Product;
 
 import java.util.List;
 
@@ -16,18 +16,26 @@ import io.reactivex.Flowable;
 @Dao
 public interface ListProductDao {
 
-    @Query("SELECT * FROM listproduct")
-    Flowable<List<ListProduct>> getAll();
+    @Query("SELECT * FROM Product")
+    Flowable<List<Product>> getAll();
 
-    @Query("SELECT * FROM listproduct WHERE id = :id")
-    Flowable<ListProduct> getById(int id);
+    @Query("SELECT * FROM Product WHERE id = :id")
+    Flowable<Product> getById(int... id);
+
+
+    @Query("SELECT * FROM Product WHERE id IN (SELECT id_product FROM ProductForList WHERE id_list = :id)")
+    Flowable<List<Product>> getAllFromList(int id);
+
+    @Query("SELECT MAX(id) FROM Product")
+    Flowable<Integer> getlastProduct();
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(ListProduct... listProduct);
+    void insert(Product... product);
 
     @Update
-    void update(ListProduct listProduct);
+    void update(Product product);
 
     @Delete
-    void delete(ListProduct... listProduct);
+    void delete(Product... product);
 }
