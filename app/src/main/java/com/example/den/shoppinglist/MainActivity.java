@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallbackLists {
     private List<Lists> list;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private AdapterList adapter;
     private int positionDelete = -1;
     private RequestsLists requestsLists;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,5 +147,11 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void onListsUpdated() {
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        requestsLists.dispos.dispose();//отписываем наблюдателя
     }
 }

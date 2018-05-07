@@ -64,11 +64,11 @@ public class Product implements Parcelable {
         this.check_box = check_box;
     }
 
-    public int getLPId() {
+    public int getProductId() {
         return id;
     }
 
-    public void setLPId(int id) {
+    public void setProductId(int id) {
         this.id = id;
     }
 

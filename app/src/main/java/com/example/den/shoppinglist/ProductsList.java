@@ -36,10 +36,12 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
     FloatingActionButton fabBtn;
     private RequestsLists requestsLists;
     private int positionDelete = -1;
-    private List<Product> product;
+    private List<Product> productList;
     private List<Product> listPurchased;
     private AdapterProductList adapterProductList;
     private int idList;
+    private int idProduct;
+    private Product product;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,9 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                Product product = ProductsList.this.product.get(position);
+                                product = productList.get(position);
+                                idProduct = product.getProductId();
+                                ProductForList productForList = new ProductForList(idList, idProduct);
                                 Bundle args = new Bundle();
                                 args.putParcelable("product", product);
                                 switch (item.getItemId()) {
@@ -88,7 +92,7 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
                                         return true;
                                     case R.id.delete:
                                         positionDelete = position;
-                                        requestsLists.deleteListProduct(ProductsList.this, product);
+                                        requestsLists.deleteProductForList(ProductsList.this, idProduct, idList);
                                         return true;
                                     default:
                                         break;
@@ -114,21 +118,17 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
     }
 
     //==============================================================================================
-    //смотрим измене
+    //смотрим изменение в таблице "продукты"
     @Override
     public void onListProductsLoaded(List<Product> lists) {
-        product = lists;
+        productList = lists;
         if (adapterProductList == null || positionDelete == -1) {
-            adapterProductList = new AdapterProductList(ProductsList.this, product);//адаптер для ресайклера
+            adapterProductList = new AdapterProductList(ProductsList.this, productList);//адаптер для ресайклера
             recyclerProd.setAdapter(adapterProductList);//подсоединяем адаптер к ресайклеру
         } else {
             adapterProductList.deleteFromListAdapter(positionDelete);
             positionDelete = -1;
         }
-    }
-
-    @Override
-    public void onProductDeleted() {
     }
 
     //добавили продукт в таблицу товаров
@@ -141,8 +141,9 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
     //получаем последнюю запись из таблици продуктов
     @Override
     public void onLastProduct(int idProduct) {
+        requestsLists.dispListId.dispose();
         //добавляем в таблицу "товары в списке"
-        ProductForList productForList= new ProductForList(idList, idProduct);
+        ProductForList productForList = new ProductForList(idList, idProduct);
         requestsLists.addProductForList(ProductsList.this, productForList);
     }
 
@@ -150,6 +151,28 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
     @Override
     public void onProductForListAdded() {
         Log.d("lll", "добавили запись в таблицу \"товары в списке\"");
+    }
+
+    //удалили запись с таблици "товары в списке"
+    @Override
+    public void onProductForListDeleted() {
+        //ищем запись с таким же id товара
+        requestsLists.getSameIdProductForList(ProductsList.this, idProduct);
+    }
+
+    //получаем список записей из таблици "товары в списке" с таким же id
+    @Override
+    public void onSameIdProductForList(List<ProductForList> list) {
+        requestsLists.dispSameId.dispose();
+        if (list.size() == 0){
+            requestsLists.deleteProduct(ProductsList.this, product);
+        }
+    }
+
+    //удалили запись в таблице "товары"
+    @Override
+    public void onProductDeleted() {
+        Log.d("lll", "удалили запись в таблице \"товары\"");
     }
 
     @Override
@@ -160,4 +183,9 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
     public void onProductUpdated() {
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        requestsLists.disposable.dispose();//отписываем наблюдателя
+    }
 }
