@@ -113,8 +113,8 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
     }
 
     @Override
-    public void updateProduct(Product lists) {
-        requestsLists.updateListProduct(this, lists);
+    public void updateProduct(Product product) {
+        requestsLists.updateProduct(this, product);
     }
 
     //==============================================================================================
@@ -163,6 +163,7 @@ public class ProductsList extends AppCompatActivity implements AddEditListProduc
     //получаем список записей из таблици "товары в списке" с таким же id
     @Override
     public void onSameIdProductForList(List<ProductForList> list) {
+        //удаляем товар, если нет записей с таким же id товара
         requestsLists.dispSameId.dispose();
         if (list.size() == 0){
             requestsLists.deleteProduct(ProductsList.this, product);

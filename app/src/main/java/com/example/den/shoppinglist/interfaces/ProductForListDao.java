@@ -25,6 +25,14 @@ public interface ProductForListDao {
     @Query("SELECT * FROM ProductForList WHERE id_product = :idProduct")
     Flowable<List<ProductForList>> getSameIdProductForList(int idProduct);
 
+    //ищем запись(и) с таким же id списка
+    @Query("SELECT * FROM ProductForList WHERE id_list = :idList")
+    Flowable<List<ProductForList>> getSameIdListForList(int idList);
+
+    //ищем запись(и) с таким же id списка
+    @Query("SELECT * FROM ProductForList WHERE id_product IN (:list)")
+    Flowable<List<ProductForList>> getInOtherLists(List<Integer> list);
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(ProductForList productForLists);
@@ -36,9 +44,13 @@ public interface ProductForListDao {
     @Delete
     void delete(ProductForList... productForLists);
 
+    @Delete
+    void deleteList(List<ProductForList> list);
+
     @Query("DELETE from ProductForList WHERE id_product =:idProduct AND id_list =:idList")
     int deleteByIdListAndIdProduct(int idProduct, int idList);
 
+    //удаление по списку id
     @Query("DELETE from ProductForList WHERE id IN (:idList)")
     int deleteByIdList(List<Integer> idList);
 }

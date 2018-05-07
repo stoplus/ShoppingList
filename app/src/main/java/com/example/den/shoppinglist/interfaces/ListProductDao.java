@@ -8,6 +8,7 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.example.den.shoppinglist.entity.Product;
+import com.example.den.shoppinglist.entity.ProductForList;
 
 import java.util.List;
 
@@ -38,4 +39,11 @@ public interface ListProductDao {
 
     @Delete
     void delete(Product... product);
+
+    @Delete
+    void deleteListProduct(List<Product> list);
+
+    //удаление по списку id
+    @Query("DELETE from Product WHERE id IN (:idList)")
+    int deleteByIdList(List<Integer> idList);
 }

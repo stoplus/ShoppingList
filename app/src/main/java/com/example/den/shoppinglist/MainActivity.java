@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,10 +16,13 @@ import com.example.den.shoppinglist.adapters.AdapterList;
 import com.example.den.shoppinglist.dialogs.AddEditListDialog;
 import com.example.den.shoppinglist.dialogs.DeleteListDialog;
 import com.example.den.shoppinglist.entity.Lists;
+import com.example.den.shoppinglist.entity.Product;
+import com.example.den.shoppinglist.entity.ProductForList;
 import com.example.den.shoppinglist.interfaces.AddEditListInterface;
 import com.example.den.shoppinglist.interfaces.DatabaseCallbackLists;
 import com.example.den.shoppinglist.interfaces.DeleteListInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,14 +34,17 @@ import io.reactivex.disposables.Disposable;
 public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallbackLists {
     private List<Lists> list;
     @BindView(R.id.toolbar)
-     Toolbar toolbar;
+    Toolbar toolbar;
     @BindView(R.id.idRecycler)
-     RecyclerView recyclerView;
+    RecyclerView recyclerView;
     @BindView(R.id.fabBtn)
     FloatingActionButton fabBtn;
     private AdapterList adapter;
     private int positionDelete = -1;
     private RequestsLists requestsLists;
+    private int idList;
+    private List<ProductForList> sameIdList;
+    private List<ProductForList> inOtherLists;
 
 
     @Override
@@ -66,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                     @Override
                     public void onItemClick(View view, int position) {
                         Intent intent = new Intent(MainActivity.this, ProductsList.class);
-                        intent.putExtra("idList", list.get(position).getListId());
+                        idList = list.get(position).getListId();
+                        intent.putExtra("idList", idList);
                         startActivity(intent);
                     }//onItemClick
 
@@ -117,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void deleteList(Lists lists) {
-        requestsLists.deleteLists(this, lists);
+        requestsLists.deleteList(this, lists);
     }
 
     //==============================================================================================
@@ -134,8 +142,54 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     }
 
     @Override
-    public void onListsDeleted() {
+    public void onListDeleted() {
+        //ищем в таблице "товары в списке" записи с таким же id СПИСКА
+        requestsLists.getSameIdListForList(MainActivity.this, idList);
     }
+
+    //нашли в таблице "товары в списке" все записи с таким же id СПИСКА
+    @Override
+    public void onSameIdList(List<ProductForList> list) {
+        requestsLists.dispSameId.dispose();
+        sameIdList = list;//все записи с таким же id СПИСКА
+        //удаляем из таблици "товары в списке" записи с таким же id СПИСКА
+        if (list.size() > 0) {
+            requestsLists.deleteListProductForList(MainActivity.this, list);
+        }
+    }
+
+    //удалили из таблици "товары в списке" все записи с таким же id СПИСКА
+    @Override
+    public void onDeletedListProductForList() {
+        //получаем Список с повторяющимися в других стисках
+        List<Integer> listIdProduct = new ArrayList<>();
+        for (int i = 0; i < sameIdList.size(); i++) {
+            listIdProduct.add(sameIdList.get(i).getIdProduct());
+        }
+        requestsLists.getInOtherLists(MainActivity.this, listIdProduct);
+    }
+
+    //получили Список с повторяющимися в других стисках
+    @Override
+    public void onInOtherLists(List<ProductForList> list) {
+        requestsLists.dispInOtherLists.dispose();
+        inOtherLists = list;//повторяющиеся в других стисках
+        // создаем список c id товаров, которые надо удалить и удаляем
+        List<Integer> listForDeleting = new ArrayList<>();//конечный список для удаления
+        for (int i = 0; i < sameIdList.size(); i++) {
+            if (!inOtherLists.contains(sameIdList.get(i)))
+                listForDeleting.add(sameIdList.get(i).getIdProduct());
+        }
+        if (listForDeleting.size() > 0)
+            requestsLists.deleteProductList(MainActivity.this, listForDeleting);
+
+    }
+
+    @Override
+    public void onDeletedProductList() {
+        Log.d("lll", "jjj");
+    }
+
 
     @Override
     public void onListsAdded() {
@@ -148,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void onListsUpdated() {
     }
+
 
     @Override
     protected void onDestroy() {
