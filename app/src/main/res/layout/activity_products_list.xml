@@ -42,13 +42,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+                </android.support.v7.widget.RecyclerView>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:text="Куплено" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/idRecyclerProdPurchased"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/list_row_horizontal_margin"
                     app:layoutManager="android.support.v7.widget.GridLayoutManager"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior" />
             </LinearLayout>

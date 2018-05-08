@@ -32,7 +32,7 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.context = context;
-    }//AdapterForAdmin
+    }//AdapterProductList
 
     @Override
     public int getItemCount() {
@@ -66,24 +66,27 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        // связать отображаемые элементы и значения полей
-        holder.textView.setText(list.get(position).nameProduct);
-        holder.checkBox.setVisibility(View.VISIBLE);
-        if (list.get(position).getPictureLink()!= null){
-            Picasso.with(context)
-                    .load(new File(list.get(position).getPictureLink()))
-                    .resize(50, 50)
-                    .error(R.mipmap.ic_launcher_round)
-                    .into(holder.imageView, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                        }//onSuccess
+        if (!list.get(position).isBought()){//если не куплен
+            // связать отображаемые элементы и значения полей
+            holder.textView.setText(list.get(position).nameProduct);
+            holder.checkBox.setVisibility(View.VISIBLE);
+            if (list.get(position).getPictureLink()!= null){
+                Picasso.with(context)
+                        .load(new File(list.get(position).getPictureLink()))
+                        .resize(50, 50)
+                        .error(R.mipmap.ic_launcher_round)
+                        .into(holder.imageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                            }//onSuccess
 
-                        @Override
-                        public void onError() {
-                        }//onError
-                    });
+                            @Override
+                            public void onError() {
+                            }//onError
+                        });
+            }
         }
+
     }//onBindViewHolder
     //=================================================================================================
 
@@ -94,57 +97,4 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     }//deleteFromListAdapter
 
     //=================================================================================================
-    // Filter Class
-    public void animateTo(List<Product> models) {
-        applyAndAnimateRemovals(models);
-        applyAndAnimateAdditions(models);
-        applyAndAnimateMovedItems(models);
-    }//animateTo
-
-    //удаляем лишние Items
-    private void applyAndAnimateRemovals(List<Product> newModels) {
-        for (int i = list.size() - 1; i >= 0; i--) {
-            final Product model = list.get(i);
-            if (!newModels.contains(model)) {
-                removeItem(i);
-            }//if
-        }//for
-    }//applyAndAnimateRemovals
-
-    // добавляем Items
-    private void applyAndAnimateAdditions(List<Product> newModels) {
-        for (int i = 0, count = newModels.size(); i < count; i++) {
-            final Product model = newModels.get(i);
-            if (!list.contains(model)) {
-                addItem(i, model);
-            }//if
-        }//for
-    }//applyAndAnimateAdditions
-
-    //присваиваем новые позиции
-    private void applyAndAnimateMovedItems(List<Product> newModels) {
-        for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
-            final Product model = newModels.get(toPosition);
-            final int fromPosition = list.indexOf(model);
-            if (fromPosition >= 0 && fromPosition != toPosition) {
-                moveItem(fromPosition, toPosition);
-            }//if
-        }//for
-    }//applyAndAnimateMovedItems
-
-    private void removeItem(int position) {
-        list.remove(position);
-        notifyItemRemoved(position);//обновляем ресайклер при удалении Item
-    }//removeItem
-
-    private void addItem(int position, Product model) {
-        list.add(position, model);
-        notifyItemInserted(position);//обновляем ресайклер при вставке Item
-    }//addItem
-
-    private void moveItem(int fromPosition, int toPosition) {
-        final Product model = list.remove(fromPosition);
-        list.add(toPosition, model);
-        notifyItemMoved(fromPosition, toPosition);//обновляем ресайклер при перемещении Items
-    }//moveItem
-}//class AdapterForAdmin
+}//class AdapterProductList
