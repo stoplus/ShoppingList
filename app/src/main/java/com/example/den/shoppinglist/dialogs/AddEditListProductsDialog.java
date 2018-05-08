@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -46,6 +47,7 @@ public class AddEditListProductsDialog extends DialogFragment {
         surfaceView = view.findViewById(R.id.surfaceView);
         editText = view.findViewById(R.id.editText);
         imageView = view.findViewById(R.id.imageView);
+        editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (lists == null) {
             editText.setHint("Название");

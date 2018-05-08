@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "970906f1507bf0bdf0dfdd93a59040e2",
+    "identityHash": "7ddb601f403c1241e857c45602917ae0",
     "entities": [
       {
         "tableName": "Lists",
@@ -32,7 +32,7 @@
       },
       {
         "tableName": "Product",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name_product` TEXT, `picture_link` TEXT, `check_box` INTEGER NOT NULL, `bought` INTEGER NOT NULL, `id_paren_list` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name_product` TEXT, `picture_link` TEXT, `bought` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -53,20 +53,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "check_box",
-            "columnName": "check_box",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "bought",
             "columnName": "bought",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "idParenList",
-            "columnName": "id_paren_list",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -115,7 +103,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"970906f1507bf0bdf0dfdd93a59040e2\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"7ddb601f403c1241e857c45602917ae0\")"
     ]
   }
 }

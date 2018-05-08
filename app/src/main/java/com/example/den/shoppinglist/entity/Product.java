@@ -14,12 +14,8 @@ public class Product implements Parcelable {
     public String nameProduct;
     @ColumnInfo(name = "picture_link")
     public String pictureLink;
-    @ColumnInfo(name = "check_box")
-    public boolean check_box;
     @ColumnInfo(name = "bought")
     public boolean bought;
-    @ColumnInfo(name = "id_paren_list")
-    public int idParenList;
 
 
     public Product(String nameProduct, String pictureLink, boolean bought) {
@@ -32,7 +28,6 @@ public class Product implements Parcelable {
         id = in.readInt();
         nameProduct = in.readString();
         pictureLink = in.readString();
-        check_box = in.readByte() != 0;
         bought = in.readByte() != 0;
     }
 
@@ -48,20 +43,13 @@ public class Product implements Parcelable {
         }
     };
 
+
     public boolean isBought() {
         return bought;
     }
 
     public void setBought(boolean bought) {
         this.bought = bought;
-    }
-
-    public boolean isCheck_box() {
-        return check_box;
-    }
-
-    public void setCheck_box(boolean check_box) {
-        this.check_box = check_box;
     }
 
     public int getProductId() {
@@ -98,7 +86,6 @@ public class Product implements Parcelable {
         dest.writeInt(id);
         dest.writeString(nameProduct);
         dest.writeString(pictureLink);
-        dest.writeByte((byte) (check_box ? 1 : 0));
         dest.writeByte((byte) (bought ? 1 : 0));
     }
 }

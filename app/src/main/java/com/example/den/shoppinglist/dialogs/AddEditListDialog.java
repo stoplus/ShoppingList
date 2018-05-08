@@ -8,6 +8,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -38,6 +39,7 @@ public class AddEditListDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final EditText input = new EditText(getContext());
+        input.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (lists == null) {
             input.setHint("Название");

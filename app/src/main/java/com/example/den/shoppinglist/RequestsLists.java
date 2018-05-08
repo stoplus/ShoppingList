@@ -242,6 +242,29 @@ public class RequestsLists {
         });
     }
 
+    public void updateListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final List<Product> productList) {
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                productDao.updateList(productList);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onComplete() {
+                databaseCallbackProduct.onUpdateList();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                databaseCallbackProduct.onDataNotAvailable();
+            }
+        });
+    }
+
     //===============================================================================================================
     public void addProductForList(final DatabaseCallbackProduct databaseCallbackProduct, final ProductForList productForList) {
         Completable.fromAction(new Action() {

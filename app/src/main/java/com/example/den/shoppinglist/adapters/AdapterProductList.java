@@ -53,9 +53,10 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
 
     //внутрений класс ViewHolder для хранения элементов разметки
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.textView) TextView textView;
-        @BindView(R.id.imageView) ImageView imageView;
-        @BindView(R.id.checkBox) CheckBox checkBox;
+        @BindView(R.id.textView)
+        TextView textView;
+        @BindView(R.id.imageView)
+        ImageView imageView;
 
         // в конструкторе получаем ссылки на элементы по id
         private ViewHolder(View view) {
@@ -66,27 +67,24 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        if (!list.get(position).isBought()){//если не куплен
-            // связать отображаемые элементы и значения полей
-            holder.textView.setText(list.get(position).nameProduct);
-            holder.checkBox.setVisibility(View.VISIBLE);
-            if (list.get(position).getPictureLink()!= null){
-                Picasso.with(context)
-                        .load(new File(list.get(position).getPictureLink()))
-                        .resize(50, 50)
-                        .error(R.mipmap.ic_launcher_round)
-                        .into(holder.imageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                            }//onSuccess
+        // связать отображаемые элементы и значения полей
+        holder.textView.setText(list.get(position).nameProduct);
 
-                            @Override
-                            public void onError() {
-                            }//onError
-                        });
-            }
+        if (list.get(position).getPictureLink() != null) {
+            Picasso.with(context)
+                    .load(new File(list.get(position).getPictureLink()))
+                    .resize(50, 50)
+                    .error(R.mipmap.ic_launcher_round)
+                    .into(holder.imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                        }//onSuccess
+
+                        @Override
+                        public void onError() {
+                        }//onError
+                    });
         }
-
     }//onBindViewHolder
     //=================================================================================================
 

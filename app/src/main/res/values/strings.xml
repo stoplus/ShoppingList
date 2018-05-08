@@ -4,4 +4,7 @@
     <string name="listsProducts">Списк покупок</string>
     <string name="edit">Изменить</string>
     <string name="delete">Удалить</string>
+    <string name="allItemsPurchased">Отметить все как купленные</string>
+    <string name="back">Назад</string>
+    <string name="exit">Выход</string>
 </resources>
