@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProductsList"
+        <activity android:name=".Products"
             android:label="@string/listsProducts"
             android:theme="@style/AppTheme.NoActionBar"/>
 

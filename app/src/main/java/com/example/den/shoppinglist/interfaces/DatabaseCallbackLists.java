@@ -1,6 +1,5 @@
 package com.example.den.shoppinglist.interfaces;
 
-
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.entity.ProductForList;
 

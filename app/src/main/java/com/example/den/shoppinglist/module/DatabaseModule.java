@@ -1,11 +1,6 @@
 package com.example.den.shoppinglist.module;
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
-
-import com.example.den.shoppinglist.AppDatabase;
-import com.example.den.shoppinglist.interfaces.ListProductDao;
-import com.example.den.shoppinglist.interfaces.ListsDao;
 
 import javax.inject.Singleton;
 
@@ -38,7 +33,7 @@ public class DatabaseModule {
 //    }
 //
 //    @Singleton @Provides
-//    public ListProductDao provideListProductDao(AppDatabase appDatabase){
+//    public ProductDao provideListProductDao(AppDatabase appDatabase){
 //        return appDatabase.listProductDao();
 //    }
 }

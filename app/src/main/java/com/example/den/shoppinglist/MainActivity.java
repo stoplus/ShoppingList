@@ -16,7 +16,6 @@ import com.example.den.shoppinglist.adapters.AdapterList;
 import com.example.den.shoppinglist.dialogs.AddEditListDialog;
 import com.example.den.shoppinglist.dialogs.DeleteListDialog;
 import com.example.den.shoppinglist.entity.Lists;
-import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.entity.ProductForList;
 import com.example.den.shoppinglist.interfaces.AddEditListInterface;
 import com.example.den.shoppinglist.interfaces.DatabaseCallbackLists;
@@ -25,11 +24,8 @@ import com.example.den.shoppinglist.interfaces.DeleteListInterface;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallbackLists {
     private List<Lists> list;
@@ -72,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                     // код для клика по элементу
                     @Override
                     public void onItemClick(View view, int position) {
-                        Intent intent = new Intent(MainActivity.this, ProductsList.class);
+                        Intent intent = new Intent(MainActivity.this, Products.class);
                         idList = list.get(position).getListId();
                         intent.putExtra("idList", idList);
                         startActivity(intent);
@@ -190,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         Log.d("lll", "jjj");
     }
 
-
     @Override
     public void onListsAdded() {
     }
@@ -202,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void onListsUpdated() {
     }
-
 
     @Override
     protected void onDestroy() {

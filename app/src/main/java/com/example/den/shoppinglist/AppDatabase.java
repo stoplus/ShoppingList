@@ -9,7 +9,7 @@ import android.arch.persistence.room.RoomDatabase;
 import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.entity.ProductForList;
-import com.example.den.shoppinglist.interfaces.ListProductDao;
+import com.example.den.shoppinglist.interfaces.ProductDao;
 import com.example.den.shoppinglist.interfaces.ListsDao;
 import com.example.den.shoppinglist.interfaces.ProductForListDao;
 
@@ -17,7 +17,7 @@ import com.example.den.shoppinglist.interfaces.ProductForListDao;
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ListsDao listsDao();
-    public abstract ListProductDao listProductDao();
+    public abstract ProductDao listProductDao();
     public abstract ProductForListDao productForListDao();
 
     @Override

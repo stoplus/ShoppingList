@@ -14,10 +14,10 @@ import android.widget.ImageView;
 
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Product;
-import com.example.den.shoppinglist.interfaces.AddEditListProductInterface;
+import com.example.den.shoppinglist.interfaces.AddEditProductInterface;
 
 public class AddEditListProductsDialog extends DialogFragment {
-    private AddEditListProductInterface datable;
+    private AddEditProductInterface datable;
     private String title;
     private String positiveButton;
     private int imageIcon;
@@ -28,7 +28,7 @@ public class AddEditListProductsDialog extends DialogFragment {
     @Override // Метод onAttach() вызывается в начале жизненного цикла фрагмента
     public void onAttach(Context context) {
         super.onAttach(context);
-        datable = (AddEditListProductInterface) context;
+        datable = (AddEditProductInterface) context;
     } // onAttach
 
 

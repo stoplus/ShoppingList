@@ -3,9 +3,9 @@ package com.example.den.shoppinglist;
 import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.entity.ProductForList;
-import com.example.den.shoppinglist.interfaces.DatabaseCallbackListProduct;
+import com.example.den.shoppinglist.interfaces.DatabaseCallbackProduct;
 import com.example.den.shoppinglist.interfaces.DatabaseCallbackLists;
-import com.example.den.shoppinglist.interfaces.ListProductDao;
+import com.example.den.shoppinglist.interfaces.ProductDao;
 import com.example.den.shoppinglist.interfaces.ListsDao;
 import com.example.den.shoppinglist.interfaces.ProductForListDao;
 
@@ -25,7 +25,7 @@ public class RequestsLists {
     @Inject
     ListsDao listsDao;
     @Inject
-    ListProductDao listProductDao;
+    ProductDao productDao;
     @Inject
     ProductForListDao productForListDao;
     public Disposable dispos; //переменная для отписывания наблюдателя
@@ -120,36 +120,35 @@ public class RequestsLists {
     }
 
     //===============================================================================================================
-
-    public void getAllForList(final DatabaseCallbackListProduct databaseCallbackListProduct, int id) {
-        disposable = listProductDao.getAllFromList(id)
+    public void getAllForList(final DatabaseCallbackProduct databaseCallbackProduct, int id) {
+        disposable = productDao.getAllFromList(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Product>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<Product> product) throws Exception {
-                        databaseCallbackListProduct.onListProductsLoaded(product);
+                        databaseCallbackProduct.onListProductsLoaded(product);
                     }
                 });
     }
 
-    public void getlastProduct(final DatabaseCallbackListProduct databaseCallbackListProduct) {
-        dispListId = listProductDao.getlastProduct()
+    public void getlastProduct(final DatabaseCallbackProduct databaseCallbackProduct) {
+        dispListId = productDao.getlastProduct()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Integer id) throws Exception {
-                        databaseCallbackListProduct.onLastProduct(id);
+                        databaseCallbackProduct.onLastProduct(id);
                     }
                 });
     }
 
-    public void addListProduct(final DatabaseCallbackListProduct databaseCallbackListProduct, final Product product) {
+    public void addListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                listProductDao.insert(product);
+                productDao.insert(product);
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -160,21 +159,21 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackListProduct.onProductAdded();
+                        databaseCallbackProduct.onProductAdded();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackListProduct.onDataNotAvailable();
+                        databaseCallbackProduct.onDataNotAvailable();
                     }
                 });
     }
 
-    public void deleteProduct(final DatabaseCallbackListProduct databaseCallbackListProduct, final Product product) {
+    public void deleteProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                listProductDao.delete(product);
+                productDao.delete(product);
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -185,12 +184,12 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackListProduct.onProductDeleted();
+                        databaseCallbackProduct.onProductDeleted();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackListProduct.onDataNotAvailable();
+                        databaseCallbackProduct.onDataNotAvailable();
                     }
                 });
     }
@@ -199,7 +198,7 @@ public class RequestsLists {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                listProductDao.deleteByIdList(list);
+                productDao.deleteByIdList(list);
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -220,13 +219,11 @@ public class RequestsLists {
                 });
     }
 
-
-
-    public void updateProduct(final DatabaseCallbackListProduct databaseCallbackListProduct, final Product product) {
+    public void updateProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                listProductDao.update(product);
+                productDao.update(product);
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
             @Override
@@ -235,18 +232,18 @@ public class RequestsLists {
 
             @Override
             public void onComplete() {
-                databaseCallbackListProduct.onProductUpdated();
+                databaseCallbackProduct.onProductUpdated();
             }
 
             @Override
             public void onError(Throwable e) {
-                databaseCallbackListProduct.onDataNotAvailable();
+                databaseCallbackProduct.onDataNotAvailable();
             }
         });
     }
 
     //===============================================================================================================
-    public void addProductForList(final DatabaseCallbackListProduct databaseCallbackListProduct, final ProductForList productForList) {
+    public void addProductForList(final DatabaseCallbackProduct databaseCallbackProduct, final ProductForList productForList) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -261,17 +258,17 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackListProduct.onProductForListAdded();
+                        databaseCallbackProduct.onProductForListAdded();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackListProduct.onDataNotAvailable();
+                        databaseCallbackProduct.onDataNotAvailable();
                     }
                 });
     }
 
-    public void deleteProductForList(final DatabaseCallbackListProduct databaseCallbackListProduct, final int idProduct, final int idList) {
+    public void deleteProductForList(final DatabaseCallbackProduct databaseCallbackProduct, final int idProduct, final int idList) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -286,12 +283,12 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackListProduct.onProductForListDeleted();
+                        databaseCallbackProduct.onProductForListDeleted();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackListProduct.onDataNotAvailable();
+                        databaseCallbackProduct.onDataNotAvailable();
                     }
                 });
     }
@@ -322,14 +319,14 @@ public class RequestsLists {
                 });
     }
 
-    public void getSameIdProductForList(final DatabaseCallbackListProduct databaseCallbackListProduct, int idProduct) {
+    public void getSameIdProductForList(final DatabaseCallbackProduct databaseCallbackProduct, int idProduct) {
         dispSameId = productForListDao.getSameIdProductForList(idProduct)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) throws Exception {
-                        databaseCallbackListProduct.onSameIdProductForList(list);
+                        databaseCallbackProduct.onSameIdProductForList(list);
                     }
                 });
     }
@@ -357,6 +354,4 @@ public class RequestsLists {
                     }
                 });
     }
-
-
 }

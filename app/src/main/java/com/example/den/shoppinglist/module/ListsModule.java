@@ -4,7 +4,7 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 
 import com.example.den.shoppinglist.AppDatabase;
-import com.example.den.shoppinglist.interfaces.ListProductDao;
+import com.example.den.shoppinglist.interfaces.ProductDao;
 import com.example.den.shoppinglist.interfaces.ListsDao;
 import com.example.den.shoppinglist.interfaces.ProductForListDao;
 
@@ -38,7 +38,7 @@ public class ListsModule {
     }
 
     @Singleton @Provides
-    public ListProductDao provideListProductDao(AppDatabase appDatabase){
+    public ProductDao provideListProductDao(AppDatabase appDatabase){
         return appDatabase.listProductDao();
     }
 
