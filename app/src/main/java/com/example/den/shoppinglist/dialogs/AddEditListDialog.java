@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -74,8 +75,10 @@ public class AddEditListDialog extends DialogFragment {
                                 datable.update(finalLists);
                             }
                         }
+//                        Snackbar.make(view, "Введите название списка", Snackbar.LENGTH_SHORT).show();
                     }
                 });
         return builder.create();
     } // onCreateDialog
+
 }
