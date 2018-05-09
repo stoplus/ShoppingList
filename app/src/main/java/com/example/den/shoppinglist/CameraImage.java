@@ -80,7 +80,7 @@ public class CameraImage extends AppCompatActivity implements CameraOrGaleryInte
             btnAdd.setText(getResources().getString(R.string.edit));
         }
 
-        final Product finalLists = lists;
+        final Product finalProduct = lists;
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,27 +88,37 @@ public class CameraImage extends AppCompatActivity implements CameraOrGaleryInte
                 String name = editText.getText().toString();
                 String link = null;
                 if (!name.isEmpty()) {
-                    if (finalLists == null) {
+                    if (finalProduct == null) {
                         //создаем новый
+                        Intent intent = new Intent();
+                        Product product = new Product(name, link, false);
+                        intent.putExtra("product", product);
+                        setResult(RESULT_OK, intent);//возращаем результат
+                        finish();
 //                        datable.addProduct(new Product(name, link, false));
                     } else {
                         //обновляем
-                        finalLists.setNameProduct(name);
+                        finalProduct.setNameProduct(name);
+                        Intent intent = new Intent();
+                        intent.putExtra("productUpdate", finalProduct);
+                        setResult(RESULT_OK, intent);//возращаем результат
+                        finish();
 //                        datable.updateProduct(finalLists);
                     }
-                    finish();
+                }else {
+                    //Snackbar.make(view, "Введите название покупки", Snackbar.LENGTH_SHORT).show();
+                    Toast.makeText(CameraImage.this, "Введите название покупки", Toast.LENGTH_SHORT).show();
                 }
-                Snackbar.make(view, "Введите название покупки", Snackbar.LENGTH_SHORT).show();
             }
         });
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
                 Intent intent = new Intent(CameraImage.this, Products.class);
                 intent.putExtra("idList", idList);
-                startActivity(intent);
+                setResult(RESULT_CANCELED, intent);//возращаем результат
+                finish();
             }
         });
 
