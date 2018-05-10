@@ -8,6 +8,7 @@
     <string name="back">Назад</string>
     <string name="exit">Выход</string>
     <string name="addPhoto">Добавить фото</string>
+    <string name="editPhoto">Изменить фото</string>
     <string name="createPhoto">Сделать фото</string>
     <string name="cancel">Отмена</string>
     <string name="add">Добавить</string>

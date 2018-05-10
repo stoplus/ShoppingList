@@ -1,5 +1,7 @@
 package com.example.den.shoppinglist;
 
+import android.util.Log;
+
 import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.entity.ProductForList;
@@ -33,6 +35,7 @@ public class RequestsLists {
     public Disposable dispListId;
     public Disposable dispSameId;
     public Disposable dispInOtherLists;
+    private  boolean flag = false;
 
     public void getLists(final DatabaseCallbackLists databaseCallbackLists) {
         dispos = listsDao.getAll()
@@ -121,12 +124,23 @@ public class RequestsLists {
 
     //===============================================================================================================
     public void getAllForList(final DatabaseCallbackProduct databaseCallbackProduct, int id) {
+        //на моем телефоне здесь было падение из-за очистки ресурсов
+        if (productDao == null) {
+            flag = true;
+            RequestsLists requestsLists = App.app().getComponent().getRequestsLists();
+            App.app().getListComponent().inject(requestsLists);
+        }
         disposable = productDao.getAllFromList(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Product>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<Product> product) throws Exception {
+                        if (flag){
+                            Products products = new Products();
+                            products.updateTwoLists(product);
+                            flag = false;
+                        }
                         databaseCallbackProduct.onListProductsLoaded(product);
                     }
                 });

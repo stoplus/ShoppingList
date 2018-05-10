@@ -16,12 +16,22 @@ public class Product implements Parcelable {
     public String pictureLink;
     @ColumnInfo(name = "bought")
     public boolean bought;
+    @ColumnInfo(name = "camera")
+    public int camera;
 
-
-    public Product(String nameProduct, String pictureLink, boolean bought) {
+    public Product(String nameProduct, String pictureLink, boolean bought, int camera) {
         this.nameProduct = nameProduct;
         this.pictureLink = pictureLink;
         this.bought = bought;
+        this.camera = camera;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     protected Product(Parcel in) {
@@ -29,6 +39,8 @@ public class Product implements Parcelable {
         nameProduct = in.readString();
         pictureLink = in.readString();
         bought = in.readByte() != 0;
+        camera = in.readInt();
+
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
@@ -42,23 +54,6 @@ public class Product implements Parcelable {
             return new Product[size];
         }
     };
-
-
-    public boolean isBought() {
-        return bought;
-    }
-
-    public void setBought(boolean bought) {
-        this.bought = bought;
-    }
-
-    public int getProductId() {
-        return id;
-    }
-
-    public void setProductId(int id) {
-        this.id = id;
-    }
 
     public String getNameProduct() {
         return nameProduct;
@@ -76,6 +71,22 @@ public class Product implements Parcelable {
         this.pictureLink = pictureLink;
     }
 
+    public boolean isBought() {
+        return bought;
+    }
+
+    public void setBought(boolean bought) {
+        this.bought = bought;
+    }
+
+    public int getCamera() {
+        return camera;
+    }
+
+    public void setCamera(int camera) {
+        this.camera = camera;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -87,5 +98,6 @@ public class Product implements Parcelable {
         dest.writeString(nameProduct);
         dest.writeString(pictureLink);
         dest.writeByte((byte) (bought ? 1 : 0));
+        dest.writeInt(camera);
     }
 }

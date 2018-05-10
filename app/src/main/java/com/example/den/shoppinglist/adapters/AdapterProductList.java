@@ -1,21 +1,32 @@
 package com.example.den.shoppinglist.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Product;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +38,13 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     private List<Product> list;    // коллекция выводимых данных
     private String resourceType;//данные тега из файлаов XML (для разных экранов разные адаптеры)
     private Context context;
+    private Picasso mPicasso;
 
     public AdapterProductList(Context context, List<Product> list) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.context = context;
+        mPicasso = Picasso.with(context);
     }//AdapterProductList
 
     @Override
@@ -70,20 +83,37 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         // связать отображаемые элементы и значения полей
         holder.textView.setText(list.get(position).nameProduct);
 
-        if (list.get(position).getPictureLink() != null) {
-            Picasso.with(context)
-                    .load(new File(list.get(position).getPictureLink()))
-                    .resize(50, 50)
-                    .error(R.mipmap.ic_launcher_round)
-                    .into(holder.imageView, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                        }//onSuccess
+        if (!list.get(position).getPictureLink().equals("")) {
+            // связать отображаемые элементы и значения полей
+            holder.textView.setText(list.get(position).nameProduct);
 
-                        @Override
-                        public void onError() {
-                        }//onError
-                    });
+            if (!list.get(position).getPictureLink().equals("")) {
+                String finalPath = list.get(position).getPictureLink();
+                if (list.get(position).getCamera() == 2) {
+                    Uri uri = Uri.fromFile(new File(finalPath));
+
+                    Glide.with(context)
+                            .load(uri)
+                            .override(80, 80)
+                            .centerCrop()
+                            .error(R.mipmap.ic_launcher_round)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(holder.imageView);
+
+                }
+                if (list.get(position).getCamera() == 1) {
+                    Uri uri = Uri.parse(finalPath);
+
+                    Glide.with(context)
+                            .load(uri)
+                            .override(80, 80)
+                            .centerCrop()
+                            .error(R.mipmap.ic_launcher_round)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(holder.imageView);
+
+                }
+            }
         }
     }//onBindViewHolder
     //=================================================================================================
