@@ -73,7 +73,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_image);
         ButterKnife.bind(this);
-        
+
         AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
     }//onCreate
 
