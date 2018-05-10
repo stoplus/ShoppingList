@@ -9,12 +9,13 @@
         android:id="@+id/idTextViewLists"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="TextView"
+        android:text="ewwwwwwww"
         android:gravity="center_vertical"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        android:background="@color/colorAccent"
+        android:textColor="@color/colorBlack"
+        android:background="@color/colorList"
         android:textSize="20sp"/>
 </android.support.constraint.ConstraintLayout>

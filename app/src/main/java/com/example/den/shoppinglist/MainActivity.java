@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                     public void onItemClick(View view, int position) {
                         Intent intent = new Intent(MainActivity.this, Products.class);
                         idList = list.get(position).getListId();
+                        String nameList = list.get(position).getListName();
+                        intent.putExtra("nameList", nameList);
                         intent.putExtra("idList", idList);
                         startActivity(intent);
                     }//onItemClick

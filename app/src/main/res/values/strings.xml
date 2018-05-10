@@ -12,4 +12,5 @@
     <string name="createPhoto">Сделать фото</string>
     <string name="cancel">Отмена</string>
     <string name="add">Добавить</string>
+    <string name="list">Список</string>
 </resources>

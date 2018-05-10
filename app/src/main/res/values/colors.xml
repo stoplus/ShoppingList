@@ -5,11 +5,15 @@
     <color name="colorPrimaryDark">#689F38</color>
     <color name="colorToolbar">#8BC34A</color>
 
+
+    <color name="colorBlack">#000000</color>
+
     <color name="colorAccent">#FF4081</color>
     <color name="colorTextDef">#616162</color>
-    <color name="colorTextShadowed">#bdbdba</color>
+    <color name="colorTextShadowed">#70706f</color>
     <color name="colorAlert">#f44337</color>
     <color name="colorTitleText">#33691E</color>
     <color name="colorBotom">#a9b5d6</color>
     <color name="colorTop">#87a4f2</color>
+    <color name="colorList">#a9ed84</color>
 </resources>

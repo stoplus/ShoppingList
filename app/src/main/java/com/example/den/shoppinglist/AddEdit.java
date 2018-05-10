@@ -2,6 +2,7 @@ package com.example.den.shoppinglist;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.UiAutomation;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -67,12 +68,42 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private String linkNewPicture = "";
     private boolean bought = false;
     private String name;
+    private boolean flagInstanceState = false;
+    private boolean newImageFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_image);
         ButterKnife.bind(this);
+
+        if (savedInstanceState != null) {
+            flagInstanceState = true;
+            newImageFlag = savedInstanceState.getBoolean("newImageFlag");
+            finalPath = savedInstanceState.getString("finalPath");
+            idList = savedInstanceState.getInt("idList");
+            camera = savedInstanceState.getInt("camera");
+            productReceived = savedInstanceState.getParcelable("productReceived");
+            if (!finalPath.isEmpty()) {
+                if (finalPath.contains("content://")) {
+                    Glide.with(AddEdit.this)
+                            .load(Uri.parse(finalPath))
+                            .override(300, 300)
+                            .fitCenter()
+                            .error(R.mipmap.ic_launcher_round)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(imageView);
+                } else {
+                    Glide.with(AddEdit.this)
+                            .load(Uri.fromFile(new File(finalPath)))
+                            .override(300, 300)
+                            .fitCenter()
+                            .error(R.mipmap.ic_launcher_round)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(imageView);
+                }
+            }
+        }//if savedInstanceState
 
         AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
     }//onCreate
@@ -82,8 +113,11 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     void chekPerm() {
         productReceived = getIntent().getParcelableExtra("product");//для обновления
         idList = getIntent().getIntExtra("idList", -1);
+        newImageFlag = getIntent().getBooleanExtra("newImageFlag", false);
 
         if (productReceived == null) {
+
+
             //новый продукт
             editText.setHint("Название");
 //            title = "Создание нового товара";
@@ -96,12 +130,16 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 //            title = "Изменение названия товара";
             btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
             btnAdd.setText(getResources().getString(R.string.edit));
-//если фото с гплереи
+// TODO: 10.05.2018
+            Uri instance = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
+            if (newImageFlag)
+                instance = Uri.parse(finalPath);//только при повороте с новой картинкой
+            //если фото с гплереи
             if (productReceived.getCamera() == 1) {
 
                 Glide.with(AddEdit.this)
 //                        .load(Uri.fromFile(new File(linkNewPicture)))
-                        .load(Uri.parse(productReceived.getPictureLink()))
+                        .load(instance)
                         .override(300, 300)
                         .fitCenter()
                         .error(R.mipmap.ic_launcher_round)
@@ -111,7 +149,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             //если фото с камеры
             if (productReceived.getCamera() == 2) {
                 Glide.with(AddEdit.this)
-                        .load(Uri.parse(productReceived.getPictureLink()))
+                        .load(instance)
                         .override(300, 300)
                         .fitCenter()
                         .error(R.mipmap.ic_launcher_round)
@@ -148,21 +186,25 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         Intent intent = new Intent();
         name = editText.getText().toString();
         if (!name.isEmpty()) {
+//            String path = (flagInstanceState) ? finalPath : linkNewPicture;
+
+            String path = linkNewPicture;//без поворота и при обычном повороте
+            if (newImageFlag)
+                path = finalPath;//только при повороте с новой картинкой
+
+
             if (productReceived == null) {
                 //создаем новый
                 Product product = new Product();
                 product.setNameProduct(name);
                 product.setBought(false);
                 product.setCamera(camera);
-                if (productReceived == null) {
-                    product.setPictureLink(linkNewPicture);
-                } else
-                    product.setPictureLink(productReceived.getPictureLink());
+                product.setPictureLink(path);
                 intent.putExtra("product", product);
             } else {
                 //обновляем
                 productReceived.setNameProduct(name);
-                productReceived.setPictureLink(linkNewPicture);
+                productReceived.setPictureLink(path);
                 productReceived.setCamera(camera);
                 productReceived.setBought(bought);
                 intent.putExtra("productUpdate", productReceived);
@@ -197,8 +239,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                             .error(R.mipmap.ic_launcher_round)
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(imageView);
-
-//                    Picasso.with(this).load(fff).resize(250, 250).into(imageView);
                     camera = 1;
                 } else Toast.makeText(this, "Вы не выбрали фото", Toast.LENGTH_LONG).show();
                 break;
@@ -293,6 +333,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         outState.putString("finalPath", finalPath);
         outState.putInt("idList", idList);
         outState.putInt("camera", camera);
+        outState.putBoolean("newImageFlag", newImageFlag);
         outState.putParcelable("productReceived", productReceived);
     }
 
@@ -303,6 +344,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         idList = savedInstanceState.getInt("idList");
         camera = savedInstanceState.getInt("camera");
         productReceived = savedInstanceState.getParcelable("productReceived");
+        newImageFlag = savedInstanceState.getBoolean("newImageFlag");
     }
 
     //=========================================================================================================

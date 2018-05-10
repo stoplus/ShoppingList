@@ -93,7 +93,7 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
             if (!list.get(position).getPictureLink().isEmpty()) {
                 String finalPath = list.get(position).getPictureLink();
                 if (list.get(position).getCamera() == 2) {
-                    Uri fff = Uri.parse(finalPath);
+                    Uri fff = Uri.fromFile(new File(finalPath));
                     Glide.with(context)
                             .load(fff)
                             .override(80, 80)
