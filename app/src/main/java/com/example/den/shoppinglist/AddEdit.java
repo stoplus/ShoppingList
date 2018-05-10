@@ -64,6 +64,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private int idList;
     private final int REQUEST_PERMITIONS = 1100;
     private Product productReceived;
+    private String linkNewPicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +92,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(imageView);
 //                    imageView.setImageURI(fff);
-                }else {
+                } else {
                     Uri fff = Uri.fromFile(new File(finalPath));
                     Glide.with(AddEdit.this)
                             .load(fff)
@@ -103,7 +104,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 //                    Picasso.with(this).load(uri).into(imageView);
                 }
             }
-        }
+        }//if savedInstanceState
+
 
         if (productReceived == null) {
             editText.setHint("Название");
@@ -112,12 +114,10 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             btnAddPhoto.setText(getResources().getString(R.string.addPhoto));
         } else {
             editText.setText(productReceived.getNameProduct());
+
 //            title = "Изменение названия товара";
             btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
             btnAdd.setText(getResources().getString(R.string.edit));
-
-            // TODO: 10.05.2018 ставим ури из productReceived для изменения/добавления
-//            Uri fff = Uri.parse(finalPath);
 
             if (productReceived.getCamera() == 1) {
                 Uri fff = Uri.parse(productReceived.getPictureLink());
@@ -147,20 +147,26 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             @Override
             public void onClick(View v) {
                 String name = editText.getText().toString();
-                String link = finalPath;
+                boolean bought = false;
+                if (productReceived != null && !productReceived.getPictureLink().isEmpty()) {
+                    camera = productReceived.getCamera();
+                    bought = productReceived.isBought();
+                }
+
                 if (!name.isEmpty()) {
                     if (finalProduct == null) {
                         //создаем новый
                         Intent intent = new Intent();
-                        Product product = new Product(name, link, false, camera);
+                        Product product = new Product(name, productReceived.getPictureLink(), false, camera);
                         intent.putExtra("product", product);
                         setResult(RESULT_OK, intent);//возращаем результат
                         finish();
                     } else {
                         //обновляем
                         finalProduct.setNameProduct(name);
-                        finalProduct.setPictureLink(link);
+                        finalProduct.setPictureLink(finalPath);
                         finalProduct.setCamera(camera);
+                        finalProduct.setBought(bought);
                         Intent intent = new Intent();
                         intent.putExtra("productUpdate", finalProduct);
                         setResult(RESULT_OK, intent);//возращаем результат
@@ -291,8 +297,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         }
         uri = Uri.fromFile(new File(finalPath));
 
-        String dd = String.valueOf(uri);
-        Uri fff = Uri.parse(dd);
+        linkNewPicture = String.valueOf(uri);
+        Uri fff = Uri.parse(linkNewPicture);
         Glide.with(AddEdit.this)
                 .load(fff)
                 .override(300, 300)
@@ -300,9 +306,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 .error(R.mipmap.ic_launcher_round)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imageView);
-//        imageView.setImageURI(fff);
-//        imageView.setRotation(90);
-//        Picasso.with(this).load(fff).resize(250,250).into(imageView);
         camera = 2;
     }
 

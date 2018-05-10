@@ -87,7 +87,7 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
             // связать отображаемые элементы и значения полей
             holder.textView.setText(list.get(position).nameProduct);
 
-            if (!list.get(position).getPictureLink().equals("")) {
+            if (!list.get(position).getPictureLink().isEmpty()) {
                 String finalPath = list.get(position).getPictureLink();
                 if (list.get(position).getCamera() == 2) {
                     Uri uri = Uri.fromFile(new File(finalPath));
