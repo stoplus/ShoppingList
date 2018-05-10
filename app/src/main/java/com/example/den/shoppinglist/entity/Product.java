@@ -26,6 +26,9 @@ public class Product implements Parcelable {
         this.camera = camera;
     }
 
+    public Product() {
+    }
+
     public int getId() {
         return id;
     }

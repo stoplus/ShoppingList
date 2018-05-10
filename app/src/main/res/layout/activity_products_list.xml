@@ -54,6 +54,7 @@
                     android:textColor="@color/colorPrimaryDark"
                     android:text="Куплено" />
 
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/idRecyclerProdPurchased"
                     android:layout_width="match_parent"

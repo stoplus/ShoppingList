@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,13 +39,13 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     private List<Product> list;    // коллекция выводимых данных
     private String resourceType;//данные тега из файлаов XML (для разных экранов разные адаптеры)
     private Context context;
-    private Picasso mPicasso;
+
 
     public AdapterProductList(Context context, List<Product> list) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.context = context;
-        mPicasso = Picasso.with(context);
+
     }//AdapterProductList
 
     @Override
@@ -70,6 +71,8 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         TextView textView;
         @BindView(R.id.imageView)
         ImageView imageView;
+        @BindView(R.id.container)
+        ConstraintLayout constraintLayout;
 
         // в конструкторе получаем ссылки на элементы по id
         private ViewHolder(View view) {
@@ -90,10 +93,9 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
             if (!list.get(position).getPictureLink().isEmpty()) {
                 String finalPath = list.get(position).getPictureLink();
                 if (list.get(position).getCamera() == 2) {
-                    Uri uri = Uri.fromFile(new File(finalPath));
-
+                    Uri fff = Uri.parse(finalPath);
                     Glide.with(context)
-                            .load(uri)
+                            .load(fff)
                             .override(80, 80)
                             .centerCrop()
                             .error(R.mipmap.ic_launcher_round)
@@ -103,7 +105,6 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
                 }
                 if (list.get(position).getCamera() == 1) {
                     Uri uri = Uri.parse(finalPath);
-
                     Glide.with(context)
                             .load(uri)
                             .override(80, 80)

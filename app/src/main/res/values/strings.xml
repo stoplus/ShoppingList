@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Shopping list</string>
     <string name="lists">Списки</string>
-    <string name="listsProducts">Списк покупок</string>
+    <string name="listsProducts">Список покупок</string>
     <string name="edit">Изменить</string>
     <string name="delete">Удалить</string>
     <string name="allItemsPurchased">Отметить все как купленные</string>

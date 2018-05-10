@@ -64,141 +64,77 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private int idList;
     private final int REQUEST_PERMITIONS = 1100;
     private Product productReceived;
-    private String linkNewPicture;
+    private String linkNewPicture = "";
+    private boolean bought = false;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_image);
         ButterKnife.bind(this);
+        
+        AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
+    }//onCreate
 
-        productReceived = null;
-        productReceived = getIntent().getParcelableExtra("product");
+
+    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE})
+    void chekPerm() {
+        productReceived = getIntent().getParcelableExtra("product");//для обновления
         idList = getIntent().getIntExtra("idList", -1);
 
-        if (savedInstanceState != null) {
-            finalPath = savedInstanceState.getString("finalPath");
-            idList = savedInstanceState.getInt("idList");
-            camera = savedInstanceState.getInt("camera");
-            productReceived = savedInstanceState.getParcelable("productReceived");
-            if (!finalPath.isEmpty()) {
-                if (finalPath.contains("content://")) {
-                    Uri fff = Uri.parse(finalPath);
-                    Glide.with(AddEdit.this)
-                            .load(fff)
-                            .override(300, 300)
-                            .fitCenter()
-                            .error(R.mipmap.ic_launcher_round)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(imageView);
-//                    imageView.setImageURI(fff);
-                } else {
-                    Uri fff = Uri.fromFile(new File(finalPath));
-                    Glide.with(AddEdit.this)
-                            .load(fff)
-                            .override(300, 300)
-                            .fitCenter()
-                            .error(R.mipmap.ic_launcher_round)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(imageView);
-//                    Picasso.with(this).load(uri).into(imageView);
-                }
-            }
-        }//if savedInstanceState
-
-
         if (productReceived == null) {
+            //новый продукт
             editText.setHint("Название");
 //            title = "Создание нового товара";
             btnAdd.setText(getResources().getString(R.string.add));
             btnAddPhoto.setText(getResources().getString(R.string.addPhoto));
         } else {
-            editText.setText(productReceived.getNameProduct());
 
+            //обновляем
+            editText.setText(productReceived.getNameProduct());
 //            title = "Изменение названия товара";
             btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
             btnAdd.setText(getResources().getString(R.string.edit));
-
+//если фото с гплереи
             if (productReceived.getCamera() == 1) {
-                Uri fff = Uri.parse(productReceived.getPictureLink());
+
                 Glide.with(AddEdit.this)
-                        .load(fff)
+//                        .load(Uri.fromFile(new File(linkNewPicture)))
+                        .load(Uri.parse(productReceived.getPictureLink()))
                         .override(300, 300)
                         .fitCenter()
                         .error(R.mipmap.ic_launcher_round)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(imageView);
-            }
+            }//if
+            //если фото с камеры
             if (productReceived.getCamera() == 2) {
-                Uri fff1 = Uri.fromFile(new File(productReceived.getPictureLink()));
                 Glide.with(AddEdit.this)
-                        .load(fff1)
+                        .load(Uri.parse(productReceived.getPictureLink()))
                         .override(300, 300)
                         .fitCenter()
                         .error(R.mipmap.ic_launcher_round)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(imageView);
+            }//if
+
+            if (productReceived != null && !productReceived.getPictureLink().isEmpty()) {
+                camera = productReceived.getCamera();
+                bought = productReceived.isBought();
             }
-        }
+        }//if
+    }
 
-        final Product finalProduct = productReceived;
+    public void cancel(View view) {
+        Intent intent = new Intent(AddEdit.this, Products.class);
+        intent.putExtra("idList", idList);
+        setResult(RESULT_CANCELED, intent);//возращаем результат
+        finish();
+    }
 
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String name = editText.getText().toString();
-                boolean bought = false;
-                if (productReceived != null && !productReceived.getPictureLink().isEmpty()) {
-                    camera = productReceived.getCamera();
-                    bought = productReceived.isBought();
-                }
 
-                if (!name.isEmpty()) {
-                    if (finalProduct == null) {
-                        //создаем новый
-                        Intent intent = new Intent();
-                        Product product = new Product(name, productReceived.getPictureLink(), false, camera);
-                        intent.putExtra("product", product);
-                        setResult(RESULT_OK, intent);//возращаем результат
-                        finish();
-                    } else {
-                        //обновляем
-                        finalProduct.setNameProduct(name);
-                        finalProduct.setPictureLink(finalPath);
-                        finalProduct.setCamera(camera);
-                        finalProduct.setBought(bought);
-                        Intent intent = new Intent();
-                        intent.putExtra("productUpdate", finalProduct);
-                        setResult(RESULT_OK, intent);//возращаем результат
-                        finish();
-                    }
-                } else {
-                    //Snackbar.make(view, "Введите название покупки", Snackbar.LENGTH_SHORT).show();
-                    Toast.makeText(AddEdit.this, "Введите название покупки", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AddEdit.this, Products.class);
-                intent.putExtra("idList", idList);
-                setResult(RESULT_CANCELED, intent);//возращаем результат
-                finish();
-            }
-        });
-
-        btnAddPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
-            }
-        });
-    }//onCreate
-
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE})
-    void chekPerm() {
+    public void addPhoto(View view) {
         try {// Намерение для запуска камеры
             CameraOrGalery cameraOrGalery = new CameraOrGalery();
             cameraOrGalery.show(getSupportFragmentManager(), "cameraOrGalery");
@@ -207,6 +143,38 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             Snackbar.make(view, "Ваше устройство не поддерживает съемку", Snackbar.LENGTH_SHORT).show();
         }
     }
+
+    public void add(View view) {
+        Intent intent = new Intent();
+        name = editText.getText().toString();
+        if (!name.isEmpty()) {
+            if (productReceived == null) {
+                //создаем новый
+                Product product = new Product();
+                product.setNameProduct(name);
+                product.setBought(false);
+                product.setCamera(camera);
+                if (productReceived == null) {
+                    product.setPictureLink(linkNewPicture);
+                } else
+                    product.setPictureLink(productReceived.getPictureLink());
+                intent.putExtra("product", product);
+            } else {
+                //обновляем
+                productReceived.setNameProduct(name);
+                productReceived.setPictureLink(linkNewPicture);
+                productReceived.setCamera(camera);
+                productReceived.setBought(bought);
+                intent.putExtra("productUpdate", productReceived);
+            }
+        } else {
+            //Snackbar.make(view, "Введите название покупки", Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(AddEdit.this, "Введите название покупки", Toast.LENGTH_SHORT).show();
+        }
+        setResult(RESULT_OK, intent);//возращаем результат
+        finish();
+    }//add
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -220,7 +188,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             case 111://reqCode системы при выборе картинок
                 if (resultCode == Activity.RESULT_OK) {
                     uri = data.getData();
-                    finalPath = String.valueOf(uri);
+                    linkNewPicture = finalPath = String.valueOf(uri);
                     Uri fff = Uri.parse(finalPath);
                     Glide.with(AddEdit.this)
                             .load(fff)
@@ -290,10 +258,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         }
         if (dateEXTERNAL > dateINTERNAL) {
             finalPath = largeImagePathE;
-            Log.d("ggg", " dateEXTERNAL = " + dateEXTERNAL);
         } else {
             finalPath = largeImagePathI;
-            Log.d("ggg", "dateINTERNAL = " + dateINTERNAL);
         }
         uri = Uri.fromFile(new File(finalPath));
 
@@ -328,6 +294,15 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         outState.putInt("idList", idList);
         outState.putInt("camera", camera);
         outState.putParcelable("productReceived", productReceived);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        finalPath = savedInstanceState.getString("finalPath");
+        idList = savedInstanceState.getInt("idList");
+        camera = savedInstanceState.getInt("camera");
+        productReceived = savedInstanceState.getParcelable("productReceived");
     }
 
     //=========================================================================================================
