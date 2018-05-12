@@ -131,12 +131,11 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
             btnAdd.setText(getResources().getString(R.string.edit));
 // TODO: 10.05.2018
-            Uri instance = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
-            if (newImageFlag)
-                instance = Uri.parse(finalPath);//только при повороте с новой картинкой
             //если фото с гплереи
             if (productReceived.getCamera() == 1) {
-
+                Uri instance = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
+                if (newImageFlag)
+                    instance = Uri.parse(finalPath);//только при повороте с новой картинкой
                 Glide.with(AddEdit.this)
 //                        .load(Uri.fromFile(new File(linkNewPicture)))
                         .load(instance)
@@ -148,6 +147,11 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             }//if
             //если фото с камеры
             if (productReceived.getCamera() == 2) {
+                Uri instance = Uri.fromFile(new File(productReceived.getPictureLink()));//без поворота и при обычном повороте
+                if (newImageFlag)
+                    // TODO: 10.05.2018 возможно на до будет поменять на закоментированное
+//                    instance = Uri.fromFile(new File(finalPath));
+                    instance = Uri.parse(finalPath);//только при повороте с новой картинкой
                 Glide.with(AddEdit.this)
                         .load(instance)
                         .override(300, 300)
@@ -192,6 +196,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             if (newImageFlag)
                 path = finalPath;//только при повороте с новой картинкой
 
+            if (path.isEmpty())
+                path = productReceived.pictureLink;//если картинка остается прежней
 
             if (productReceived == null) {
                 //создаем новый
