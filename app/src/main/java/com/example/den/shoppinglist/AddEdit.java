@@ -85,31 +85,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             idList = savedInstanceState.getInt("idList");
             camera = savedInstanceState.getInt("camera");
             productReceived = savedInstanceState.getParcelable("productReceived");
-
-//            String path = linkNewPicture;//без поворота и при обычном повороте
-//            if (newImageFlag)
-//                path = finalPath;//только при повороте с новой картинкой
-
-            if (!finalPath.isEmpty()) {
-                if (camera == 1) {
-                    Glide.with(AddEdit.this)
-                            .load(Uri.parse(finalPath))
-                            .override(300, 300)
-                            .fitCenter()
-                            .error(R.mipmap.ic_launcher_round)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(imageView);
-                }
-                if (camera == 2)  {
-                    Glide.with(AddEdit.this)
-                            .load(Uri.fromFile(new File(finalPath)))
-                            .override(300, 300)
-                            .fitCenter()
-                            .error(R.mipmap.ic_launcher_round)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(imageView);
-                }
-            }
         }//if savedInstanceState
 
         AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
@@ -125,10 +100,9 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
         if (productReceived == null) {
 
-
             //новый продукт
             editText.setHint("Название");
-//            title = "Создание нового товара";
+           // setTitle(getResources().getString(R.string.createNewProduct));
             btnAdd.setText(getResources().getString(R.string.add));
             btnAddPhoto.setText(getResources().getString(R.string.addPhoto));
         } else {
@@ -138,14 +112,13 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 //            title = "Изменение названия товара";
             btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
             btnAdd.setText(getResources().getString(R.string.edit));
-// TODO: 10.05.2018
+
             //если фото с гплереи
             if (productReceived.getCamera() == 1) {
                 Uri instance = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
                 if (newImageFlag)
                     instance = Uri.parse(finalPath);//только при повороте с новой картинкой
                 Glide.with(AddEdit.this)
-//                        .load(Uri.fromFile(new File(linkNewPicture)))
                         .load(instance)
                         .override(300, 300)
                         .fitCenter()
@@ -157,8 +130,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             if (productReceived.getCamera() == 2) {
                 Uri instance = Uri.fromFile(new File(productReceived.getPictureLink()));//без поворота и при обычном повороте
                 if (newImageFlag)
-                    // TODO: 10.05.2018 возможно на до будет поменять на закоментированное
-//                    instance = Uri.fromFile(new File(finalPath));
                     instance = Uri.parse(finalPath);//только при повороте с новой картинкой
                 Glide.with(AddEdit.this)
                         .load(instance)
@@ -174,14 +145,14 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 bought = productReceived.isBought();
             }
         }//if
-    }
+    }//chekPerm
 
     public void cancel(View view) {
         Intent intent = new Intent(AddEdit.this, Products.class);
         intent.putExtra("idList", idList);
         setResult(RESULT_CANCELED, intent);//возращаем результат
         finish();
-    }
+    }//cancel
 
 
     public void addPhoto(View view) {
@@ -192,7 +163,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             // Выводим сообщение об ошибке
             Snackbar.make(view, "Ваше устройство не поддерживает съемку", Snackbar.LENGTH_SHORT).show();
         }
-    }
+    }//addPhoto
 
     public void add(View view) {
         Intent intent = new Intent();
@@ -263,7 +234,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
+    }//onActivityResult
 
     private void createPathPhoto() {
         //Создать новый курсор для получения файла Путь для большого изображения
@@ -330,7 +301,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 .into(imageView);
         camera = 2;
         newImageFlag = true;
-    }
+    }//createPathPhoto
 
     @Override
     public void choiceForPhoto(boolean bool) {
@@ -342,7 +313,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, CAMERA_CAPTURE);
         }
-    }
+    }//choiceForPhoto
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -353,7 +324,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         outState.putBoolean("newImageFlag", newImageFlag);
         outState.putParcelable("productReceived", productReceived);
         outState.putString("linkNewPicture", linkNewPicture);
-    }
+    }//onSaveInstanceState
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -364,7 +335,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         camera = savedInstanceState.getInt("camera");
         productReceived = savedInstanceState.getParcelable("productReceived");
         newImageFlag = savedInstanceState.getBoolean("newImageFlag");
-    }
+    }//onRestoreInstanceState
 
     //=========================================================================================================
     //возврат после соглашения/отказа пользователя

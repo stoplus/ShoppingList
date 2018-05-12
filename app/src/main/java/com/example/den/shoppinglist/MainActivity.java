@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private RequestsLists requestsLists;
     private int idList;
     private List<ProductForList> sameIdList;
-    private List<ProductForList> inOtherLists;
 
 
     @Override
@@ -171,11 +170,10 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void onInOtherLists(List<ProductForList> list) {
         requestsLists.dispInOtherLists.dispose();
-        inOtherLists = list;//повторяющиеся в других стисках
         // создаем список c id товаров, которые надо удалить и удаляем
         List<Integer> listForDeleting = new ArrayList<>();//конечный список для удаления
         for (int i = 0; i < sameIdList.size(); i++) {
-            if (!inOtherLists.contains(sameIdList.get(i)))
+            if (!list.contains(sameIdList.get(i)))
                 listForDeleting.add(sameIdList.get(i).getIdProduct());
         }
         if (listForDeleting.size() > 0)
