@@ -81,11 +81,17 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             flagInstanceState = true;
             newImageFlag = savedInstanceState.getBoolean("newImageFlag");
             finalPath = savedInstanceState.getString("finalPath");
+            linkNewPicture = savedInstanceState.getString("linkNewPicture");
             idList = savedInstanceState.getInt("idList");
             camera = savedInstanceState.getInt("camera");
             productReceived = savedInstanceState.getParcelable("productReceived");
+
+//            String path = linkNewPicture;//без поворота и при обычном повороте
+//            if (newImageFlag)
+//                path = finalPath;//только при повороте с новой картинкой
+
             if (!finalPath.isEmpty()) {
-                if (finalPath.contains("content://")) {
+                if (camera == 1) {
                     Glide.with(AddEdit.this)
                             .load(Uri.parse(finalPath))
                             .override(300, 300)
@@ -93,7 +99,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                             .error(R.mipmap.ic_launcher_round)
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(imageView);
-                } else {
+                }
+                if (camera == 2)  {
                     Glide.with(AddEdit.this)
                             .load(Uri.fromFile(new File(finalPath)))
                             .override(300, 300)
@@ -113,6 +120,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     void chekPerm() {
         productReceived = getIntent().getParcelableExtra("product");//для обновления
         idList = getIntent().getIntExtra("idList", -1);
+        if (!newImageFlag)
         newImageFlag = getIntent().getBooleanExtra("newImageFlag", false);
 
         if (productReceived == null) {
@@ -205,6 +213,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 product.setNameProduct(name);
                 product.setBought(false);
                 product.setCamera(camera);
+
                 product.setPictureLink(path);
                 intent.putExtra("product", product);
             } else {
@@ -246,6 +255,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(imageView);
                     camera = 1;
+                    newImageFlag = true;
                 } else Toast.makeText(this, "Вы не выбрали фото", Toast.LENGTH_LONG).show();
                 break;
             case REQUEST_PERMITIONS:
@@ -319,6 +329,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imageView);
         camera = 2;
+        newImageFlag = true;
     }
 
     @Override
@@ -341,12 +352,14 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         outState.putInt("camera", camera);
         outState.putBoolean("newImageFlag", newImageFlag);
         outState.putParcelable("productReceived", productReceived);
+        outState.putString("linkNewPicture", linkNewPicture);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         finalPath = savedInstanceState.getString("finalPath");
+        linkNewPicture = savedInstanceState.getString("linkNewPicture");
         idList = savedInstanceState.getInt("idList");
         camera = savedInstanceState.getInt("camera");
         productReceived = savedInstanceState.getParcelable("productReceived");
