@@ -85,7 +85,6 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         // связать отображаемые элементы и значения полей
         holder.textView.setText(list.get(position).nameProduct);
-
         if (!list.get(position).getPictureLink().equals("")) {
             // связать отображаемые элементы и значения полей
             holder.textView.setText(list.get(position).nameProduct);

@@ -38,12 +38,14 @@ public class RequestsLists {
     private  boolean flag = false;
 
     public void getLists(final DatabaseCallbackLists databaseCallbackLists) {
+        Log.d("ddd1", "getLists ");
         dispos = listsDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Lists>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<Lists> lists) throws Exception {
+                        Log.d("ddd1", "getLists1");
                         databaseCallbackLists.onListsLoaded(lists);
                     }
                 });
@@ -138,7 +140,7 @@ public class RequestsLists {
                     public void accept(@io.reactivex.annotations.NonNull List<Product> product) throws Exception {
                         if (flag){
                             Products products = new Products();
-                            products.updateTwoLists(product);
+                            products.onRestart();
                             flag = false;
                         }
                         databaseCallbackProduct.onListProductsLoaded(product);
@@ -173,6 +175,7 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
+                        Log.d("ddd1", "addListProduct1");
                         databaseCallbackProduct.onProductAdded();
                     }
 
@@ -234,23 +237,32 @@ public class RequestsLists {
     }
 
     public void updateProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
+        Log.d("ddd1", "product = " + product);
+        Log.d("ddd1", "productDao = " + productDao);
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
+                Log.d("ddd1", "Completable.fromAction");
                 productDao.update(product);
+                Log.d("ddd1", "productDao.update(product)");
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
+                Log.d("ddd1", "onSubscribe");
             }
 
             @Override
             public void onComplete() {
+                Log.d("ddd1", "onComplete");
                 databaseCallbackProduct.onProductUpdated();
             }
 
             @Override
             public void onError(Throwable e) {
+                Log.d("ddd1", "onError");
                 databaseCallbackProduct.onDataNotAvailable();
             }
         });
@@ -357,36 +369,42 @@ public class RequestsLists {
     }
 
     public void getSameIdProductForList(final DatabaseCallbackProduct databaseCallbackProduct, int idProduct) {
+        Log.d("ddd1", "getSameIdProductForList ");
         dispSameId = productForListDao.getSameIdProductForList(idProduct)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) throws Exception {
+                        Log.d("ddd1", "getSameIdProductForList1 ");
                         databaseCallbackProduct.onSameIdProductForList(list);
                     }
                 });
     }
 
     public void getSameIdListForList(final DatabaseCallbackLists databaseCallbackLists, int idList) {
+        Log.d("ddd1", "getSameIdListForList ");
         dispSameId = productForListDao.getSameIdListForList(idList)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) throws Exception {
+                        Log.d("ddd1", "getSameIdListForList ");
                         databaseCallbackLists.onSameIdList(list);
                     }
                 });
     }
 
     public void getInOtherLists(final DatabaseCallbackLists databaseCallbackLists, List<Integer> list) {
+        Log.d("ddd1", "getInOtherLists ");
         dispInOtherLists = productForListDao.getInOtherLists(list)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) throws Exception {
+                        Log.d("ddd1", "getInOtherLists ");
                         databaseCallbackLists.onInOtherLists(list);
                     }
                 });

@@ -61,7 +61,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private final int CAMERA_CAPTURE = 1;
     private View view;
     private String finalPath = "";  //путь к файлу
-    private Uri uri;
     private int idList;
     private final int REQUEST_PERMITIONS = 1100;
     private Product productReceived;
@@ -95,26 +94,25 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     void chekPerm() {
         productReceived = getIntent().getParcelableExtra("product");//для обновления
         idList = getIntent().getIntExtra("idList", -1);
-        if (!newImageFlag)
-        newImageFlag = getIntent().getBooleanExtra("newImageFlag", false);
-
+        if (!newImageFlag) {
+            newImageFlag = getIntent().getBooleanExtra("newImageFlag", false);
+        }
         if (productReceived == null) {
-
             //новый продукт
             editText.setHint("Название");
-           // setTitle(getResources().getString(R.string.createNewProduct));
+            // setTitle(getResources().getString(R.string.createNewProduct));
             btnAdd.setText(getResources().getString(R.string.add));
             btnAddPhoto.setText(getResources().getString(R.string.addPhoto));
         } else {
-
             //обновляем
             editText.setText(productReceived.getNameProduct());
 //            title = "Изменение названия товара";
             btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
             btnAdd.setText(getResources().getString(R.string.edit));
 
-            //если фото с гплереи
+            //если фото с галереи
             if (productReceived.getCamera() == 1) {
+                Log.d("ddd", "122");
                 Uri instance = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
                 if (newImageFlag)
                     instance = Uri.parse(finalPath);//только при повороте с новой картинкой
@@ -129,8 +127,13 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             //если фото с камеры
             if (productReceived.getCamera() == 2) {
                 Uri instance = Uri.fromFile(new File(productReceived.getPictureLink()));//без поворота и при обычном повороте
-                if (newImageFlag)
-                    instance = Uri.parse(finalPath);//только при повороте с новой картинкой
+
+                if (newImageFlag) {
+                    instance = Uri.fromFile(new File(finalPath));
+                    //только при повороте с новой картинкой
+                    Log.d("ddd", "instance2= " + instance);
+                }
+
                 Glide.with(AddEdit.this)
                         .load(instance)
                         .override(300, 300)
@@ -169,14 +172,15 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         Intent intent = new Intent();
         name = editText.getText().toString();
         if (!name.isEmpty()) {
-//            String path = (flagInstanceState) ? finalPath : linkNewPicture;
-
             String path = linkNewPicture;//без поворота и при обычном повороте
             if (newImageFlag)
                 path = finalPath;//только при повороте с новой картинкой
 
-            if (path.isEmpty())
-                path = productReceived.pictureLink;//если картинка остается прежней
+            if (path.isEmpty()) {
+                if (productReceived != null) {
+                    path = productReceived.pictureLink;//если картинка остается прежней
+                } else path = "";
+            }
 
             if (productReceived == null) {
                 //создаем новый
@@ -215,7 +219,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 break;
             case 111://reqCode системы при выборе картинок
                 if (resultCode == Activity.RESULT_OK) {
-                    uri = data.getData();
+                    Uri uri = data.getData();
                     linkNewPicture = finalPath = String.valueOf(uri);
                     Uri fff = Uri.parse(finalPath);
                     Glide.with(AddEdit.this)
@@ -288,10 +292,12 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         } else {
             finalPath = largeImagePathI;
         }
-        uri = Uri.fromFile(new File(finalPath));
-
+        Uri uri = Uri.fromFile(new File(finalPath));
+        Log.d("ddd", "uri= " + uri);
         linkNewPicture = String.valueOf(uri);
+        Log.d("ddd", "linkNewPicture= " + linkNewPicture);
         Uri fff = Uri.parse(linkNewPicture);
+        Log.d("ddd", "fff= " + fff);
         Glide.with(AddEdit.this)
                 .load(fff)
                 .override(300, 300)
