@@ -217,7 +217,6 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     @Override
     protected void onRestart() {
         super.onRestart();
-
     }
 
     //смотрим изменение в таблице "продукты"

@@ -18,9 +18,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> {
+
     private LayoutInflater inflater;    // для загрузки разметки элемента
     private List<Lists> list;    // коллекция выводимых данных
-    private String resourceType;//данные тега из файлаов XML (для разных экранов разные адаптеры)
 
     public AdapterList(Context context, List<Lists> list) {
         this.inflater = LayoutInflater.from(context);

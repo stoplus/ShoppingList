@@ -2,7 +2,6 @@ package com.example.den.shoppinglist;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.UiAutomation;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,7 +26,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.den.shoppinglist.dialogs.CameraOrGalery;
 import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.interfaces.CameraOrGaleryInterface;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -188,7 +186,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 product.setNameProduct(name);
                 product.setBought(false);
                 product.setCamera(camera);
-
                 product.setPictureLink(path);
                 intent.putExtra("product", product);
             } else {

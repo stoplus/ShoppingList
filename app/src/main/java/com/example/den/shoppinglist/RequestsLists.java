@@ -35,7 +35,7 @@ public class RequestsLists {
     public Disposable dispListId;
     public Disposable dispSameId;
     public Disposable dispInOtherLists;
-    private  boolean flag = false;
+    private boolean flag = false;
 
     public void getLists(final DatabaseCallbackLists databaseCallbackLists) {
         Log.d("ddd1", "getLists ");
@@ -138,7 +138,7 @@ public class RequestsLists {
                 .subscribe(new Consumer<List<Product>>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull List<Product> product) throws Exception {
-                        if (flag){
+                        if (flag) {
                             Products products = new Products();
                             products.onRestart();
                             flag = false;
@@ -249,23 +249,23 @@ public class RequestsLists {
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.d("ddd1", "onSubscribe");
-            }
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d("ddd1", "onSubscribe");
+                    }
 
-            @Override
-            public void onComplete() {
-                Log.d("ddd1", "onComplete");
-                databaseCallbackProduct.onProductUpdated();
-            }
+                    @Override
+                    public void onComplete() {
+                        Log.d("ddd1", "onComplete");
+                        databaseCallbackProduct.onProductUpdated();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.d("ddd1", "onError");
-                databaseCallbackProduct.onDataNotAvailable();
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("ddd1", "onError");
+                        databaseCallbackProduct.onDataNotAvailable();
+                    }
+                });
     }
 
     public void updateListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final List<Product> productList) {

@@ -1,33 +1,22 @@
 package com.example.den.shoppinglist.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Product;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,15 +26,12 @@ import butterknife.ButterKnife;
 public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.ViewHolder> {
     private LayoutInflater inflater;    // для загрузки разметки элемента
     private List<Product> list;    // коллекция выводимых данных
-    private String resourceType;//данные тега из файлаов XML (для разных экранов разные адаптеры)
     private Context context;
-
 
     public AdapterProductList(Context context, List<Product> list) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.context = context;
-
     }//AdapterProductList
 
     @Override
@@ -100,7 +86,6 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
                             .error(R.mipmap.ic_launcher_round)
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(holder.imageView);
-
                 }
                 if (list.get(position).getCamera() == 1) {
                     Uri uri = Uri.parse(finalPath);
@@ -111,18 +96,14 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
                             .error(R.mipmap.ic_launcher_round)
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(holder.imageView);
-
                 }
             }
         }
     }//onBindViewHolder
-    //=================================================================================================
 
     public void deleteFromListAdapter(int pos) {
         list.remove(pos);
         notifyItemRemoved(pos);//обновляет после удаления Item на позиции position
         notifyItemRangeChanged(pos, list.size());//обновляет позиции последующих элементов
     }//deleteFromListAdapter
-
-    //=================================================================================================
 }//class AdapterProductList

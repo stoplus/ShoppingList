@@ -4,19 +4,16 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.interfaces.AddEditListInterface;
-import com.example.den.shoppinglist.interfaces.DeleteListInterface;
 
 public class AddEditListDialog extends DialogFragment {
     private AddEditListInterface datable;
