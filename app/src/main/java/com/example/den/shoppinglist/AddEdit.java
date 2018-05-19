@@ -64,9 +64,9 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private Product productReceived;
     private String linkNewPicture = "";
     private boolean bought = false;
-    private String name;
-    private boolean flagInstanceState = false;
     private boolean newImageFlag;
+    private boolean flagBtnAddPhoto = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         ButterKnife.bind(this);
 
         if (savedInstanceState != null) {
-            flagInstanceState = true;
+            flagBtnAddPhoto = savedInstanceState.getBoolean("flagBtnAddPhoto");
             newImageFlag = savedInstanceState.getBoolean("newImageFlag");
             finalPath = savedInstanceState.getString("finalPath");
             linkNewPicture = savedInstanceState.getString("linkNewPicture");
@@ -92,53 +92,38 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     void chekPerm() {
         productReceived = getIntent().getParcelableExtra("product");//для обновления
         idList = getIntent().getIntExtra("idList", -1);
+        Uri pathForGlide = null;
+
         if (!newImageFlag) {
             newImageFlag = getIntent().getBooleanExtra("newImageFlag", false);
         }
+
         if (productReceived == null) {
             //новый продукт
-            editText.setHint("Название");
-            // setTitle(getResources().getString(R.string.createNewProduct));
+            if (flagBtnAddPhoto) btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
+            else btnAddPhoto.setText(getResources().getString(R.string.addPhoto));
+
             btnAdd.setText(getResources().getString(R.string.add));
-            btnAddPhoto.setText(getResources().getString(R.string.addPhoto));
+            pathForGlide = createPathForGlide();
         } else {
             //обновляем
             editText.setText(productReceived.getNameProduct());
-//            title = "Изменение названия товара";
             btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
             btnAdd.setText(getResources().getString(R.string.edit));
 
             //если фото с галереи
             if (productReceived.getCamera() == 1) {
-                Log.d("ddd", "122");
-                Uri instance = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
-                if (newImageFlag)
-                    instance = Uri.parse(finalPath);//только при повороте с новой картинкой
-                Glide.with(AddEdit.this)
-                        .load(instance)
-                        .override(300, 300)
-                        .fitCenter()
-                        .error(R.mipmap.ic_launcher_round)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(imageView);
+                pathForGlide = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
+                if (newImageFlag) {
+                    pathForGlide = createPathForGlide();
+                }
             }//if
             //если фото с камеры
             if (productReceived.getCamera() == 2) {
-                Uri instance = Uri.fromFile(new File(productReceived.getPictureLink()));//без поворота и при обычном повороте
-
+                pathForGlide = Uri.fromFile(new File(productReceived.getPictureLink()));//без поворота и при обычном повороте
                 if (newImageFlag) {
-                    instance = Uri.fromFile(new File(finalPath));
-                    //только при повороте с новой картинкой
-                    Log.d("ddd", "instance2= " + instance);
+                    pathForGlide = createPathForGlide();
                 }
-
-                Glide.with(AddEdit.this)
-                        .load(instance)
-                        .override(300, 300)
-                        .fitCenter()
-                        .error(R.mipmap.ic_launcher_round)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(imageView);
             }//if
 
             if (productReceived != null && !productReceived.getPictureLink().isEmpty()) {
@@ -146,7 +131,26 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 bought = productReceived.isBought();
             }
         }//if
+
+        Glide.with(AddEdit.this)
+                .load(pathForGlide)
+                .override(600, 600)
+                .fitCenter()
+                .error(R.mipmap.ic_launcher_round)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imageView);
     }//chekPerm
+
+    private Uri createPathForGlide() {
+        Uri pathForGlide = null;
+        if (camera == 1) {
+            pathForGlide = Uri.parse(finalPath);//только при повороте с новой картинкой
+        }
+        if (camera == 2) {
+            pathForGlide = Uri.fromFile(new File(finalPath));
+        }
+        return pathForGlide;
+    }
 
     public void cancel(View view) {
         Intent intent = new Intent(AddEdit.this, Products.class);
@@ -161,14 +165,13 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             CameraOrGalery cameraOrGalery = new CameraOrGalery();
             cameraOrGalery.show(getSupportFragmentManager(), "cameraOrGalery");
         } catch (ActivityNotFoundException e) {
-            // Выводим сообщение об ошибке
             Snackbar.make(view, "Ваше устройство не поддерживает съемку", Snackbar.LENGTH_SHORT).show();
         }
     }//addPhoto
 
     public void add(View view) {
         Intent intent = new Intent();
-        name = editText.getText().toString();
+        String name = editText.getText().toString();
         if (!name.isEmpty()) {
             String path = linkNewPicture;//без поворота и при обычном повороте
             if (newImageFlag)
@@ -196,12 +199,11 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 productReceived.setBought(bought);
                 intent.putExtra("productUpdate", productReceived);
             }
+            setResult(RESULT_OK, intent);//возращаем результат
+            finish();
         } else {
-            //Snackbar.make(view, "Введите название покупки", Snackbar.LENGTH_SHORT).show();
-            Toast.makeText(AddEdit.this, "Введите название покупки", Toast.LENGTH_SHORT).show();
+            Snackbar.make(view, "Введите название покупки", Snackbar.LENGTH_LONG).show();
         }
-        setResult(RESULT_OK, intent);//возращаем результат
-        finish();
     }//add
 
 
@@ -221,7 +223,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     Uri fff = Uri.parse(finalPath);
                     Glide.with(AddEdit.this)
                             .load(fff)
-                            .override(300, 300)
+                            .override(600, 600)
                             .fitCenter()
                             .error(R.mipmap.ic_launcher_round)
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -234,11 +236,12 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
                 break;
         }
+        flagBtnAddPhoto = true;
+        btnAddPhoto.setText(getResources().getString(R.string.editPhoto));
         super.onActivityResult(requestCode, resultCode, data);
     }//onActivityResult
 
     private void createPathPhoto() {
-        //Создать новый курсор для получения файла Путь для большого изображения
         String[] largeFileProjection = {
                 MediaStore.Images.ImageColumns._ID,
                 MediaStore.Images.ImageColumns.DATA,
@@ -247,42 +250,34 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
         int dateEXTERNAL = 0;
 
-        Cursor myCursorLargeE = getContentResolver().query(
+        String largeImagePathE = "";
+
+        try (Cursor myCursorLargeE = getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 largeFileProjection,
                 null,
                 null,
-                largeFileSort);
-        String largeImagePathE = "";
-
-        try {
+                largeFileSort)) {
             if (myCursorLargeE != null && myCursorLargeE.getCount() > 0) {
                 myCursorLargeE.moveToFirst();
                 dateEXTERNAL = Integer.parseInt(myCursorLargeE.getString(myCursorLargeE.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)));
-                // путь к файлу.
                 largeImagePathE = myCursorLargeE.getString(myCursorLargeE.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
             }
-        } finally {
-            myCursorLargeE.close();
         }
         //--------------------------
-        Cursor myCursorLargeI = getContentResolver().query(
+        int dateINTERNAL = 0;
+        String largeImagePathI = "";
+        try (Cursor myCursorLargeI = getContentResolver().query(
                 MediaStore.Images.Media.INTERNAL_CONTENT_URI,
                 largeFileProjection,
                 null,
                 null,
-                largeFileSort);
-        int dateINTERNAL = 0;
-        String largeImagePathI = "";
-        try {
+                largeFileSort)) {
             if (myCursorLargeI != null && myCursorLargeI.getCount() > 0) {
                 myCursorLargeI.moveToFirst();
                 dateINTERNAL = Integer.parseInt(myCursorLargeI.getString(myCursorLargeI.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)));
-                // путь к файлу
                 largeImagePathI = myCursorLargeI.getString(myCursorLargeI.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
             }
-        } finally {
-            myCursorLargeI.close();
         }
         if (dateEXTERNAL > dateINTERNAL) {
             finalPath = largeImagePathE;
@@ -290,14 +285,10 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             finalPath = largeImagePathI;
         }
         Uri uri = Uri.fromFile(new File(finalPath));
-        Log.d("ddd", "uri= " + uri);
         linkNewPicture = String.valueOf(uri);
-        Log.d("ddd", "linkNewPicture= " + linkNewPicture);
-        Uri fff = Uri.parse(linkNewPicture);
-        Log.d("ddd", "fff= " + fff);
         Glide.with(AddEdit.this)
-                .load(fff)
-                .override(300, 300)
+                .load(uri)
+                .override(600, 600)
                 .fitCenter()
                 .error(R.mipmap.ic_launcher_round)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -321,6 +312,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putBoolean("flagBtnAddPhoto", flagBtnAddPhoto);
         outState.putString("finalPath", finalPath);
         outState.putInt("idList", idList);
         outState.putInt("camera", camera);
@@ -332,6 +324,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        flagBtnAddPhoto = savedInstanceState.getBoolean("flagBtnAddPhoto");
         finalPath = savedInstanceState.getString("finalPath");
         linkNewPicture = savedInstanceState.getString("linkNewPicture");
         idList = savedInstanceState.getInt("idList");

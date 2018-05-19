@@ -5,7 +5,9 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.den.shoppinglist.BigPhotoFragment;
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Product;
 
@@ -28,11 +31,14 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
     private LayoutInflater inflater;    // для загрузки разметки элемента
     private List<Product> list;    // коллекция выводимых данных
     private Context context;
+    private FragmentManager fm;
+    private static ClickListener clickListener;
 
-    public AdapterProductListPurchased(Context context, List<Product> list) {
+    public AdapterProductListPurchased(Context context, List<Product> list, FragmentManager fm) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.context = context;
+        this.fm = fm;
     }//AdapterProductListPurchased
 
     @Override
@@ -53,7 +59,7 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
     } // onCreateViewHolder
 
     //внутрений класс ViewHolder для хранения элементов разметки
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         @BindView(R.id.textView)
         TextView textView;
         @BindView(R.id.imageView)
@@ -65,8 +71,31 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
         private ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }//ViewHolder
+
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(getAdapterPosition(), v);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            clickListener.onItemLongClick(getAdapterPosition(), v);
+            return false;
+        }
     }//class ViewHolder
+
+    public void setOnItemClickListener(ClickListener clickListener) {
+        AdapterProductListPurchased.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+        void onItemLongClick(int position, View v);
+    }
+
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
@@ -97,6 +126,17 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.imageView);
             }
+
+
+            View.OnClickListener listner = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("ddd", "ddd");
+                    BigPhotoFragment bigPhotoFragment = new BigPhotoFragment();
+                    bigPhotoFragment.show(fm, "bigPhotoFragment");
+                }
+            };
+            holder.imageView.setOnClickListener(listner);
         }
     }//onBindViewHolder
 

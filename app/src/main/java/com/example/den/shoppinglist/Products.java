@@ -76,98 +76,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         });
         requestsLists.getAllForList(Products.this, idList);
 
-        recyclerProd.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, recyclerProd, new RecyclerItemClickListener.OnItemClickListener() {
-                    // код для клика по элементу
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Product productPurchased = productList.get(position);
-                        productPurchased.setBought(true);//устанавливаем, что куплен
-                        requestsLists.updateProduct(Products.this, productPurchased);
-                    }//onItemClick
-
-                    //длинное нажатие по элементу
-                    @Override
-                    public void onLongItemClick(View view, final int position) {
-                        try {
-                            PopupMenu popup = new PopupMenu(view.getContext(), view, Gravity.CENTER);//создаем объект окна меню
-                            popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
-                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    product = productList.get(position);
-                                    idProduct = product.getId();
-                                    Bundle args = new Bundle();
-                                    args.putParcelable("product", product);
-                                    switch (item.getItemId()) {
-                                        case R.id.edit:
-                                            Intent intent = new Intent(Products.this, AddEdit.class);
-                                            intent.putExtra("idList", idList);
-                                            intent.putExtra("product", product);
-                                            intent.putExtra("newImageFlag", false);
-                                            startActivityForResult(intent, REQEST_EDIT);
-                                            return true;
-                                        case R.id.delete:
-                                            positionDelete = position;
-                                            requestsLists.deleteProductForList(Products.this, idProduct, idList);
-                                            return true;
-                                        default:
-                                            break;
-                                    }//switch
-                                    return false;
-                                }//onMenuItemClick
-                            });
-                            popup.show();//показываем окно меню
-                        } catch (IndexOutOfBoundsException e) {
-                            Log.d("ddd", e.getMessage());
-                        }
-                    }//onLongItemClick
-                })//RecyclerItemClickListener
-        );
         recyclerProdPurchased.setNestedScrollingEnabled(false);
-        recyclerProdPurchased.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, recyclerProdPurchased, new RecyclerItemClickListener.OnItemClickListener() {
-                    // код для клика по элементу
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Product product = listPurchased.get(position);
-                        product.setBought(false);//устанавливаем, что куплен
-                        requestsLists.updateProduct(Products.this, product);
-                    }//onItemClick
-
-                    //длинное нажатие по элементу
-                    @Override
-                    public void onLongItemClick(View view, final int position) {
-                        PopupMenu popup = new PopupMenu(view.getContext(), view, Gravity.CENTER);//создаем объект окна меню
-                        popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                product = listPurchased.get(position);
-                                idProduct = product.getId();
-                                Bundle args = new Bundle();
-                                args.putParcelable("product", product);
-                                switch (item.getItemId()) {
-                                    case R.id.edit:
-                                        Intent intent = new Intent(Products.this, AddEdit.class);
-                                        intent.putExtra("idList", idList);
-                                        intent.putExtra("product", product);
-                                        startActivityForResult(intent, REQEST_EDIT);
-                                        return true;
-                                    case R.id.delete:
-                                        positionDeletePurchased = position;
-                                        requestsLists.deleteProductForList(Products.this, idProduct, idList);
-                                        return true;
-                                    default:
-                                        break;
-                                }//switch
-                                return false;
-                            }//onMenuItemClick
-                        });
-                        popup.show();//показываем окно меню
-                    }//onLongItemClick
-                })//RecyclerItemClickListener
-        );
     }//onCreate
 
     //возврат из добавления / редактирования
@@ -198,10 +107,39 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             } else productList.add(lists.get(i));
         }
         if (adapterProductList == null || (positionDelete == -1 && positionDeletePurchased == -1)) {
-            adapterProductList = new AdapterProductList(this, productList);//адаптер для не купленных
-            adapterProductListPurchased = new AdapterProductListPurchased(this, listPurchased);//для купленных
+            adapterProductList = new AdapterProductList(this, productList, getSupportFragmentManager());//адаптер для не купленных
+            adapterProductListPurchased = new AdapterProductListPurchased(this, listPurchased, getSupportFragmentManager());//для купленных
             recyclerProd.setAdapter(adapterProductList);//подсоединяем адаптер к ресайклеру
             recyclerProdPurchased.setAdapter(adapterProductListPurchased);
+
+            adapterProductList.setOnItemClickListener(new AdapterProductList.ClickListener() {
+                @Override
+                public void onItemClick(int position, View v) {
+                    itemClick(position, productList);
+                }
+                @Override
+                public void onItemLongClick(final int position, View v) {
+                    itemLongClick(position, v, productList);
+                }
+            });
+            adapterProductListPurchased.setOnItemClickListener(new AdapterProductListPurchased.ClickListener() {
+                @Override
+                public void onItemClick(int position, View v) {
+                    itemClick(position, listPurchased);
+                }
+
+                @Override
+                public void onItemLongClick(int position, View v) {
+                    itemLongClick(position, v, listPurchased);
+                }
+            });
+
+
+
+
+
+
+
         } else {
             if (positionDelete > -1) {
                 adapterProductList.deleteFromListAdapter(positionDelete);
@@ -211,6 +149,50 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 adapterProductListPurchased.deleteFromListAdapter(positionDeletePurchased);
                 positionDeletePurchased = -1;
             }
+        }
+    }
+    private void itemClick(int position, List<Product> list){
+        Product productPurchased = list.get(position);
+        if (productPurchased.isBought()){
+            productPurchased.setBought(false);//устанавливаем, что не куплен
+        }else {
+            productPurchased.setBought(true);//устанавливаем, что куплен
+        }
+        requestsLists.updateProduct(Products.this, productPurchased);
+    }
+
+    private void itemLongClick(final int position, View v, final List<Product> list){
+        try {
+            PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
+            popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    product = list.get(position);
+                    idProduct = product.getId();
+                    Bundle args = new Bundle();
+                    args.putParcelable("product", product);
+                    switch (item.getItemId()) {
+                        case R.id.edit:
+                            Intent intent = new Intent(Products.this, AddEdit.class);
+                            intent.putExtra("idList", idList);
+                            intent.putExtra("product", product);
+                            intent.putExtra("newImageFlag", false);
+                            startActivityForResult(intent, REQEST_EDIT);
+                            return true;
+                        case R.id.delete:
+                            positionDelete = position;
+                            requestsLists.deleteProductForList(Products.this, idProduct, idList);
+                            return true;
+                        default:
+                            break;
+                    }//switch
+                    return false;
+                }//onMenuItemClick
+            });
+            popup.show();//показываем окно меню
+        } catch (IndexOutOfBoundsException e) {
+            Log.d("ddd", e.getMessage());
         }
     }
 
