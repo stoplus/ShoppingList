@@ -3,6 +3,7 @@ package com.example.den.shoppinglist.adapters;
 import android.content.Context;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
@@ -104,12 +105,14 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
         holder.textView.setText(list.get(position).nameProduct);
         holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         holder.textView.setTextColor(context.getResources().getColor(R.color.colorTextShadowed));
+
+        Uri uri = null;
         if (!list.get(position).getPictureLink().isEmpty()) {
             String finalPath = list.get(position).getPictureLink();
             if (list.get(position).getCamera() == 2) {
-                Uri fff = Uri.fromFile(new File(finalPath));
+                uri = Uri.fromFile(new File(finalPath));
                 Glide.with(context)
-                        .load(fff)
+                        .load(uri)
                         .override(80, 80)
                         .centerCrop()
                         .error(R.mipmap.ic_launcher_round)
@@ -117,7 +120,7 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
                         .into(holder.imageView);
             }
             if (list.get(position).getCamera() == 1) {
-                Uri uri = Uri.parse(finalPath);
+                uri = Uri.parse(finalPath);
                 Glide.with(context)
                         .load(uri)
                         .override(80, 80)
@@ -128,15 +131,18 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
             }
 
 
-            View.OnClickListener listner = new View.OnClickListener() {
+            final String url = String.valueOf(uri);
+            View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("ddd", "ddd");
                     BigPhotoFragment bigPhotoFragment = new BigPhotoFragment();
+                    Bundle args = new Bundle();
+                    args.putString("url", url);
+                    bigPhotoFragment.setArguments(args);
                     bigPhotoFragment.show(fm, "bigPhotoFragment");
                 }
             };
-            holder.imageView.setOnClickListener(listner);
+            holder.imageView.setOnClickListener(listener);
         }
     }//onBindViewHolder
 

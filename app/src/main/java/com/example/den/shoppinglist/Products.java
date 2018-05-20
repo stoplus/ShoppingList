@@ -117,6 +117,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 public void onItemClick(int position, View v) {
                     itemClick(position, productList);
                 }
+
                 @Override
                 public void onItemLongClick(final int position, View v) {
                     itemLongClick(position, v, productList);
@@ -135,11 +136,6 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             });
 
 
-
-
-
-
-
         } else {
             if (positionDelete > -1) {
                 adapterProductList.deleteFromListAdapter(positionDelete);
@@ -151,17 +147,17 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             }
         }
     }
-    private void itemClick(int position, List<Product> list){
-        Product productPurchased = list.get(position);
-        if (productPurchased.isBought()){
-            productPurchased.setBought(false);//устанавливаем, что не куплен
-        }else {
-            productPurchased.setBought(true);//устанавливаем, что куплен
-        }
-        requestsLists.updateProduct(Products.this, productPurchased);
-    }
 
-    private void itemLongClick(final int position, View v, final List<Product> list){
+    private void itemClick(int position, List<Product> list) {
+        Product productPurchased = list.get(position);
+        if (productPurchased.isBought())
+            productPurchased.setBought(false);//устанавливаем, что не куплен
+        else productPurchased.setBought(true);//устанавливаем, что куплен
+
+        requestsLists.updateProduct(Products.this, productPurchased);
+    }//itemClick
+
+    private void itemLongClick(final int position, View v, final List<Product> list) {
         try {
             PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
             popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
@@ -194,7 +190,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         } catch (IndexOutOfBoundsException e) {
             Log.d("ddd", e.getMessage());
         }
-    }
+    }//itemLongClick
 
     @Override
     protected void onRestart() {
