@@ -16,10 +16,12 @@ import com.example.den.shoppinglist.adapters.AdapterList;
 import com.example.den.shoppinglist.dialogs.AddEditListDialog;
 import com.example.den.shoppinglist.dialogs.DeleteListDialog;
 import com.example.den.shoppinglist.entity.Lists;
+import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.entity.ProductForList;
 import com.example.den.shoppinglist.interfaces.AddEditListInterface;
 import com.example.den.shoppinglist.interfaces.DatabaseCallbackLists;
 import com.example.den.shoppinglist.interfaces.DeleteListInterface;
+import com.example.den.shoppinglist.interfaces.OnItemListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallbackLists {
-    private List<Lists> list;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.idRecycler)
@@ -61,53 +62,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         });
 
         requestsLists.getLists(this);
-
-        recyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
-                    // код для клика по элементу
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Intent intent = new Intent(MainActivity.this, Products.class);
-                        idList = list.get(position).getListId();
-                        String nameList = list.get(position).getListName();
-                        intent.putExtra("nameList", nameList);
-                        intent.putExtra("idList", idList);
-                        startActivity(intent);
-                    }//onItemClick
-
-                    //длинное нажатие по элементу
-                    @Override
-                    public void onLongItemClick(View view, final int position) {
-                        PopupMenu popup = new PopupMenu(view.getContext(), view, Gravity.CENTER);//создаем объект окна меню
-                        popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                Lists lists = list.get(position);
-                                Bundle args = new Bundle();
-                                args.putParcelable("lists", lists);
-                                switch (item.getItemId()) {
-                                    case R.id.edit:
-                                        AddEditListDialog addEditListDialog = new AddEditListDialog();
-                                        addEditListDialog.setArguments(args);
-                                        addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
-                                        return true;
-                                    case R.id.delete:
-                                        positionDelete = position;
-                                        DeleteListDialog deleteDialog = new DeleteListDialog();
-                                        deleteDialog.setArguments(args);
-                                        deleteDialog.show(getSupportFragmentManager(), "deleteList");
-                                        return true;
-                                    default:
-                                        break;
-                                }//switch
-                                return false;
-                            }//onMenuItemClick
-                        });
-                        popup.show();//показываем окно меню
-                    }//onLongItemClick
-                })//RecyclerItemClickListener
-        );
     }
 
     @Override
@@ -127,16 +81,66 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     //==============================================================================================
     @Override
-    public void onListsLoaded(List<Lists> lists) {
-        list = lists;
+    public void onListsLoaded(final List<Lists> lists) {
         if (adapter == null || positionDelete == -1) {
-            adapter = new AdapterList(MainActivity.this, list);//адаптер для ресайклера
+            OnItemListener onItemListener = new OnItemListener() {
+                @Override
+                public void onItemClick(int position, View v) {
+                    itemClick(position, lists);
+                }
+
+                @Override
+                public void onItemLongClick(int position, View v) {
+                    itemLongClick(position, v, lists);
+                }
+            };
+            adapter = new AdapterList(MainActivity.this, lists, onItemListener);//адаптер для ресайклера
             recyclerView.setAdapter(adapter);//подсоединяем адаптер к ресайклеру
         } else {
             adapter.deleteFromListAdapter(positionDelete);
             positionDelete = -1;
         }
     }
+
+    private void itemClick(int position,  List<Lists> list){
+        Intent intent = new Intent(MainActivity.this, Products.class);
+        idList = list.get(position).getListId();
+        String nameList = list.get(position).getListName();
+        intent.putExtra("nameList", nameList);
+        intent.putExtra("idList", idList);
+        startActivity(intent);
+    }//itemClick
+
+    private void itemLongClick(final int position, View v, final  List<Lists> list){
+        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
+        popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Lists lists = list.get(position);
+                Bundle args = new Bundle();
+                args.putParcelable("lists", lists);
+                switch (item.getItemId()) {
+                    case R.id.edit:
+                        AddEditListDialog addEditListDialog = new AddEditListDialog();
+                        addEditListDialog.setArguments(args);
+                        addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
+                        return true;
+                    case R.id.delete:
+                        positionDelete = position;
+                        DeleteListDialog deleteDialog = new DeleteListDialog();
+                        deleteDialog.setArguments(args);
+                        deleteDialog.show(getSupportFragmentManager(), "deleteList");
+                        return true;
+                    default:
+                        break;
+                }//switch
+                return false;
+            }//onMenuItemClick
+        });
+        popup.show();//показываем окно меню
+    }//itemLongClick
+
 
     @Override
     public void onListDeleted() {
@@ -147,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     //нашли в таблице "товары в списке" все записи с таким же id СПИСКА
     @Override
     public void onSameIdList(List<ProductForList> list) {
-        requestsLists.dispSameId.dispose();
+        requestsLists.dispSameIdList.dispose();
         sameIdList = list;//все записи с таким же id СПИСКА
         //удаляем из таблици "товары в списке" записи с таким же id СПИСКА
         if (list.size() > 0) {

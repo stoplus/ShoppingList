@@ -63,7 +63,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private final int REQUEST_PERMITIONS = 1100;
     private Product productReceived;
     private String linkNewPicture = "";
-    private boolean bought = false;
     private boolean newImageFlag;
     private boolean flagBtnAddPhoto = false;
 
@@ -125,10 +124,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     pathForGlide = createPathForGlide();
                 }
             }//if
-
-            if (productReceived != null && !productReceived.getPictureLink().isEmpty()) {
+            if (productReceived != null ) {
                 camera = productReceived.getCamera();
-                bought = productReceived.isBought();
             }
         }//if
 
@@ -196,7 +193,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 productReceived.setNameProduct(name);
                 productReceived.setPictureLink(path);
                 productReceived.setCamera(camera);
-                productReceived.setBought(bought);
                 intent.putExtra("productUpdate", productReceived);
             }
             setResult(RESULT_OK, intent);//возращаем результат

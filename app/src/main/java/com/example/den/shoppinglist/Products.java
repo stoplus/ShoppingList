@@ -20,6 +20,7 @@ import com.example.den.shoppinglist.entity.Product;
 
 import com.example.den.shoppinglist.entity.ProductForList;
 import com.example.den.shoppinglist.interfaces.DatabaseCallbackProduct;
+import com.example.den.shoppinglist.interfaces.OnItemListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     private int idList;
     private int idProduct;
     private Product product;
-    private boolean flagAdd = true;
+    private boolean flagDel = true;
     public final int REQEST_EDIT = 101;                //ответ при изменении данных
     private final int REQEST_ADD = 102;             //константа для добавления
 
@@ -99,56 +100,64 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
     //==============================================================================================
     public void updateTwoLists(List<Product> lists) {
-        productList = new ArrayList<>();
-        listPurchased = new ArrayList<>();
-        for (int i = 0; i < lists.size(); i++) {
+        productList = new ArrayList<>();//список не купленных
+        listPurchased = new ArrayList<>();//список купленых
+        for (int i = 0; i < lists.size(); i++) {//фильтруем общий список на купленный и не купленный
             if (lists.get(i).isBought()) {
                 listPurchased.add(lists.get(i));
             } else productList.add(lists.get(i));
         }
-        if (adapterProductList == null || (positionDelete == -1 && positionDeletePurchased == -1)) {
-            adapterProductList = new AdapterProductList(this, productList, getSupportFragmentManager());//адаптер для не купленных
-            adapterProductListPurchased = new AdapterProductListPurchased(this, listPurchased, getSupportFragmentManager());//для купленных
-            recyclerProd.setAdapter(adapterProductList);//подсоединяем адаптер к ресайклеру
-            recyclerProdPurchased.setAdapter(adapterProductListPurchased);
-
-            adapterProductList.setOnItemClickListener(new AdapterProductList.ClickListener() {
-                @Override
-                public void onItemClick(int position, View v) {
-                    itemClick(position, productList);
-                }
-
-                @Override
-                public void onItemLongClick(final int position, View v) {
-                    itemLongClick(position, v, productList);
-                }
-            });
-            adapterProductListPurchased.setOnItemClickListener(new AdapterProductListPurchased.ClickListener() {
-                @Override
-                public void onItemClick(int position, View v) {
-                    itemClick(position, listPurchased);
-                }
-
-                @Override
-                public void onItemLongClick(int position, View v) {
-                    itemLongClick(position, v, listPurchased);
-                }
-            });
-
-
+//            if (adapterProductList == null || (positionDelete == -1 && positionDeletePurchased == -1)) {
+        if (adapterProductList == null) {
+            createAndInstallAdapter();
         } else {
             if (positionDelete > -1) {
                 adapterProductList.deleteFromListAdapter(positionDelete);
                 positionDelete = -1;
-            }
-            if (positionDeletePurchased > -1) {
+            } else if (positionDeletePurchased > -1) {
                 adapterProductListPurchased.deleteFromListAdapter(positionDeletePurchased);
                 positionDeletePurchased = -1;
+            } else {
+                if (flagDel) {
+                    createAndInstallAdapter();
+                }
             }
         }
-    }
+    }//updateTwoLists
+
+    private void createAndInstallAdapter() {
+        OnItemListener onItemListener = new OnItemListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                itemClick(position, productList);
+            }
+
+            @Override
+            public void onItemLongClick(int position, View v) {
+                itemLongClick(position, v, productList);
+            }
+        };
+
+        OnItemListener onItemListenerPurchased = new OnItemListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                itemClick(position, listPurchased);
+            }
+
+            @Override
+            public void onItemLongClick(int position, View v) {
+                itemLongClick(position, v, listPurchased);
+            }
+        };
+
+        adapterProductList = new AdapterProductList(this, productList, getSupportFragmentManager(), onItemListener);//адаптер для не купленных
+        adapterProductListPurchased = new AdapterProductListPurchased(this, listPurchased, getSupportFragmentManager(), onItemListenerPurchased);//для купленных
+        recyclerProd.setAdapter(adapterProductList);//подсоединяем адаптер к ресайклеру
+        recyclerProdPurchased.setAdapter(adapterProductListPurchased);
+    }//createAndInstallAdapter
 
     private void itemClick(int position, List<Product> list) {
+        flagDel = true;
         Product productPurchased = list.get(position);
         if (productPurchased.isBought())
             productPurchased.setBought(false);//устанавливаем, что не куплен
@@ -166,8 +175,10 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 public boolean onMenuItemClick(MenuItem item) {
                     product = list.get(position);
                     idProduct = product.getId();
+                    Boolean bought = product.isBought();
                     Bundle args = new Bundle();
                     args.putParcelable("product", product);
+                    flagDel = true;
                     switch (item.getItemId()) {
                         case R.id.edit:
                             Intent intent = new Intent(Products.this, AddEdit.class);
@@ -177,7 +188,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                             startActivityForResult(intent, REQEST_EDIT);
                             return true;
                         case R.id.delete:
-                            positionDelete = position;
+                            if (bought) positionDeletePurchased = position;
+                            else positionDelete = position;
                             requestsLists.deleteProductForList(Products.this, idProduct, idList);
                             return true;
                         default:
@@ -201,7 +213,9 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     @Override
     public void onListProductsLoaded(List<Product> lists) {
         Log.d("ddd", "onListProductsLoaded");
+
         updateTwoLists(lists);
+        flagDel = false;
     }
 
     //добавили продукт в таблицу товаров
@@ -210,7 +224,6 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         Log.d("ddd", "onProductAdded");
         //получаем последний добавленный продукт
         requestsLists.getlastProduct(Products.this);
-        flagAdd = false;
     }
 
     //получаем последнюю запись из таблици продуктов
@@ -226,6 +239,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     //добавили запись в таблицу "товары в списке"
     @Override
     public void onProductForListAdded() {
+        flagDel = true;
         Log.d("ddd", "добавили запись в таблицу \"товары в списке\"");
     }
 
@@ -252,7 +266,6 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     @Override
     public void onProductDeleted() {
         Log.d("ddd", "onProductDeleted");
-        flagAdd = false;
     }
 
     @Override
@@ -307,7 +320,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         outState.putInt("positionDelete", positionDelete);
         outState.putInt("positionDeletePurchased", positionDeletePurchased);
         outState.putInt("idProduct", idProduct);
-        outState.putBoolean("flagAdd", flagAdd);
+        outState.putBoolean("flagDel", flagDel);
         outState.putParcelableArrayList("productList", (ArrayList<? extends Parcelable>) productList);
         outState.putParcelableArrayList("listPurchased", (ArrayList<? extends Parcelable>) listPurchased);
     }
@@ -319,7 +332,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         positionDelete = savedInstanceState.getInt("positionDelete");
         positionDeletePurchased = savedInstanceState.getInt("positionDeletePurchased");
         idProduct = savedInstanceState.getInt("idProduct");
-        flagAdd = savedInstanceState.getBoolean("flagAdd");
+        flagDel = savedInstanceState.getBoolean("flagDel");
         productList = savedInstanceState.getParcelableArrayList("productList");
         listPurchased = savedInstanceState.getParcelableArrayList("listPurchased");
     }

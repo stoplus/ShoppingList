@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.den.shoppinglist.BigPhotoFragment;
+import com.example.den.shoppinglist.dialogs.BigPhotoFragment;
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Product;
+import com.example.den.shoppinglist.interfaces.OnItemListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,13 +33,14 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
     private List<Product> list;    // коллекция выводимых данных
     private Context context;
     private FragmentManager fm;
-    private static ClickListener clickListener;
+    private OnItemListener OnItemListener;
 
-    public AdapterProductListPurchased(Context context, List<Product> list, FragmentManager fm) {
+    public AdapterProductListPurchased(Context context, List<Product> list, FragmentManager fm, OnItemListener OnItemListener) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.context = context;
         this.fm = fm;
+        this.OnItemListener = OnItemListener;
     }//AdapterProductListPurchased
 
     @Override
@@ -60,7 +61,7 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
     } // onCreateViewHolder
 
     //внутрений класс ViewHolder для хранения элементов разметки
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.textView)
         TextView textView;
         @BindView(R.id.imageView)
@@ -72,31 +73,22 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
         private ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
+
+            constraintLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    OnItemListener.onItemClick(getAdapterPosition(), v);
+                }
+            });
+            constraintLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    OnItemListener.onItemLongClick(getAdapterPosition(), v);
+                    return false;
+                }
+            });
         }//ViewHolder
-
-        @Override
-        public void onClick(View v) {
-            clickListener.onItemClick(getAdapterPosition(), v);
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            clickListener.onItemLongClick(getAdapterPosition(), v);
-            return false;
-        }
     }//class ViewHolder
-
-    public void setOnItemClickListener(ClickListener clickListener) {
-        AdapterProductListPurchased.clickListener = clickListener;
-    }
-
-    public interface ClickListener {
-        void onItemClick(int position, View v);
-        void onItemLongClick(int position, View v);
-    }
-
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
@@ -130,7 +122,6 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
                         .into(holder.imageView);
             }
 
-
             final String url = String.valueOf(uri);
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
@@ -143,7 +134,7 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
                 }
             };
             holder.imageView.setOnClickListener(listener);
-        }
+        }//if
     }//onBindViewHolder
 
     public void deleteFromListAdapter(int pos) {

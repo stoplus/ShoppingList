@@ -34,6 +34,7 @@ public class RequestsLists {
     public Disposable disposable; //переменная для отписывания наблюдателя
     public Disposable dispListId;
     public Disposable dispSameId;
+    public Disposable dispSameIdList;
     public Disposable dispInOtherLists;
     private boolean flag = false;
 
@@ -384,7 +385,7 @@ public class RequestsLists {
 
     public void getSameIdListForList(final DatabaseCallbackLists databaseCallbackLists, int idList) {
         Log.d("ddd1", "getSameIdListForList ");
-        dispSameId = productForListDao.getSameIdListForList(idList)
+        dispSameIdList = productForListDao.getSameIdListForList(idList)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {

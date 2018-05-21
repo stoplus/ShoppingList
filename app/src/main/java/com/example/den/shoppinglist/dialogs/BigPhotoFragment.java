@@ -1,4 +1,4 @@
-package com.example.den.shoppinglist;
+package com.example.den.shoppinglist.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.den.shoppinglist.R;
 
 import java.util.Objects;
 
