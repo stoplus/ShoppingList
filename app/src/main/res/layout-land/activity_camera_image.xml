@@ -40,14 +40,6 @@
                 android:text="@string/add" />
 
             <Button
-                android:id="@+id/idAddPhoto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="addPhoto"
-                android:text="@string/addPhoto" />
-
-            <Button
                 android:id="@+id/idCancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

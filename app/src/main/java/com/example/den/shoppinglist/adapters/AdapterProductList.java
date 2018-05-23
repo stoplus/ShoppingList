@@ -107,8 +107,8 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
                             .load(uri)
                             .override(80, 80)
                             .centerCrop()
-                            .error(R.mipmap.ic_launcher_round)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .error(R.mipmap.no_photo)
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(holder.imageView);
                 }
                 if (list.get(position).getCamera() == 1) {
@@ -117,8 +117,8 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
                             .load(uri)
                             .override(80, 80)
                             .centerCrop()
-                            .error(R.mipmap.ic_launcher_round)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .error(R.mipmap.no_photo)
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(holder.imageView);
                 }
             }

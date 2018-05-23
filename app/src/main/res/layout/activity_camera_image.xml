@@ -14,7 +14,7 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:adjustViewBounds="true"
-        app:srcCompat="@android:drawable/sym_def_app_icon" />
+        app:srcCompat="@mipmap/default_photo" />
 
     <EditText
         android:id="@+id/editText"
@@ -40,14 +40,6 @@
             android:layout_weight="1"
             android:onClick="cancel"
             android:text="@string/cancel" />
-
-        <Button
-            android:id="@+id/idAddPhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="addPhoto"
-            android:text="@string/addPhoto" />
 
         <Button
             android:id="@+id/idAdd"

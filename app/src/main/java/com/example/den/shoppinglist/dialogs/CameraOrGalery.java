@@ -27,7 +27,7 @@ public class CameraOrGalery extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setMessage("Выбрать фото из галереи или снять на камеру?")
-                .setTitle("Сделайте выбор")
+                .setTitle("Откуда возмем фото?")
                 .setIcon(R.mipmap.question)
                 .setNegativeButton("Галерея", new DialogInterface.OnClickListener() {
                     @Override

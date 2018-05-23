@@ -107,7 +107,6 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 listPurchased.add(lists.get(i));
             } else productList.add(lists.get(i));
         }
-//            if (adapterProductList == null || (positionDelete == -1 && positionDeletePurchased == -1)) {
         if (adapterProductList == null) {
             createAndInstallAdapter();
         } else {
@@ -212,6 +211,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     //смотрим изменение в таблице "продукты"
     @Override
     public void onListProductsLoaded(List<Product> lists) {
+        requestsLists.disposable.dispose();//отписываем наблюдателя
         Log.d("ddd", "onListProductsLoaded");
 
         updateTwoLists(lists);
@@ -240,6 +240,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     @Override
     public void onProductForListAdded() {
         flagDel = true;
+        requestsLists.getAllForList(Products.this, idList);
         Log.d("ddd", "добавили запись в таблицу \"товары в списке\"");
     }
 
@@ -259,12 +260,13 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         requestsLists.dispSameId.dispose();
         if (list.size() == 0) {
             requestsLists.deleteProduct(Products.this, product);
-        }
+        }else requestsLists.getAllForList(Products.this, idList);
     }
 
     //удалили запись в таблице "товары"
     @Override
     public void onProductDeleted() {
+        requestsLists.getAllForList(Products.this, idList);
         Log.d("ddd", "onProductDeleted");
     }
 
@@ -275,11 +277,13 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
     @Override
     public void onProductUpdated() {
+        requestsLists.getAllForList(Products.this, idList);
         Log.d("ddd", "onProductUpdated");
     }
 
     @Override
     public void onUpdateList() {
+        requestsLists.getAllForList(Products.this, idList);
         Log.d("ddd", "onUpdateList");
     }
 
@@ -303,6 +307,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                     if (!productList.get(i).isBought())
                         productList.get(i).setBought(true);
                 }
+                flagDel = true;
                 requestsLists.updateListProduct(this, productList);
                 break;
             case R.id.back://назад
@@ -340,6 +345,5 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        requestsLists.disposable.dispose();//отписываем наблюдателя
     }
 }

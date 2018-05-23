@@ -3,7 +3,9 @@
     <string name="lists">Списки</string>
     <string name="listsProducts">Список покупок</string>
     <string name="edit">Изменить</string>
+    <string name="change_photo">Заменить фото</string>
     <string name="delete">Удалить</string>
+    <string name="delete_photo">Удалить фото</string>
     <string name="allItemsPurchased">Отметить все как купленные</string>
     <string name="back">Назад</string>
     <string name="exit">Выход</string>
@@ -14,4 +16,7 @@
     <string name="add">Добавить</string>
     <string name="list">Список</string>
     <string name="createNewProduct">Создание нового товара</string>
+    <string name="device_no_camera">Ваше устройство не поддерживает съемку</string>
+    <string name="not_take_photo">Вы не сделали фото</string>
+    <string name="not_selected_photo">Вы не выбрали фото</string>
 </resources>

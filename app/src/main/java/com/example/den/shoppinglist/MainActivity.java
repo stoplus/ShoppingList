@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private RequestsLists requestsLists;
     private int idList;
     private List<ProductForList> sameIdList;
+    private List<Lists> listLists;
 
 
     @Override
@@ -82,19 +83,20 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     //==============================================================================================
     @Override
     public void onListsLoaded(final List<Lists> lists) {
+        listLists = lists;
         if (adapter == null || positionDelete == -1) {
             OnItemListener onItemListener = new OnItemListener() {
                 @Override
                 public void onItemClick(int position, View v) {
-                    itemClick(position, lists);
+                    itemClick(position, listLists);
                 }
 
                 @Override
                 public void onItemLongClick(int position, View v) {
-                    itemLongClick(position, v, lists);
+                    itemLongClick(position, v, listLists);
                 }
             };
-            adapter = new AdapterList(MainActivity.this, lists, onItemListener);//адаптер для ресайклера
+            adapter = new AdapterList(MainActivity.this, listLists, onItemListener);//адаптер для ресайклера
             recyclerView.setAdapter(adapter);//подсоединяем адаптер к ресайклеру
         } else {
             adapter.deleteFromListAdapter(positionDelete);
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         }
     }
 
-    private void itemClick(int position,  List<Lists> list){
+    private void itemClick(int position, List<Lists> list) {
         Intent intent = new Intent(MainActivity.this, Products.class);
         idList = list.get(position).getListId();
         String nameList = list.get(position).getListName();
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         startActivity(intent);
     }//itemClick
 
-    private void itemLongClick(final int position, View v, final  List<Lists> list){
+    private void itemLongClick(final int position, View v, final List<Lists> list) {
         PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
         popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
@@ -141,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         popup.show();//показываем окно меню
     }//itemLongClick
 
-
     @Override
     public void onListDeleted() {
         //ищем в таблице "товары в списке" записи с таким же id СПИСКА
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     //удалили из таблици "товары в списке" все записи с таким же id СПИСКА
     @Override
     public void onDeletedListProductForList() {
-        //получаем Список с повторяющимися в других стисках
+        //получаем Список с повторяющимися в других списках
         List<Integer> listIdProduct = new ArrayList<>();
         for (int i = 0; i < sameIdList.size(); i++) {
             listIdProduct.add(sameIdList.get(i).getIdProduct());
@@ -182,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         }
         if (listForDeleting.size() > 0)
             requestsLists.deleteProductList(MainActivity.this, listForDeleting);
-
     }
 
     @Override
@@ -192,14 +192,17 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void onListsAdded() {
+        Log.d("lll", "jjj");
     }
 
     @Override
     public void onDataNotAvailable() {
+        Log.d("lll", "jjj");
     }
 
     @Override
     public void onListsUpdated() {
+        Log.d("lll", "jjj");
     }
 
     @Override
