@@ -12,6 +12,8 @@ import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.interfaces.DeleteListInterface;
 
+import java.util.Objects;
+
 public class DeleteListDialog extends DialogFragment {
     private DeleteListInterface datable;
 
@@ -24,15 +26,15 @@ public class DeleteListDialog extends DialogFragment {
     @NonNull // построить диалог с получением данных из активности и обработчиком кнопки
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final Lists lists = getArguments().getParcelable("lists");
+        final Lists lists = Objects.requireNonNull(getArguments()).getParcelable("lists");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
-                .setTitle("Подтверждение")
+                .setTitle(getResources().getString(R.string.confirmation))
                 .setIcon(R.mipmap.warning)
-                .setMessage("Удалить выбранный список?")
-                .setNegativeButton("Нет", null)
-                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                .setMessage(getResources().getString(R.string.delete_select_list))
+                .setNegativeButton(getResources().getString(R.string.cancel), null)
+                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // удалить выбранный элемент списка при помощи метода интерфейса

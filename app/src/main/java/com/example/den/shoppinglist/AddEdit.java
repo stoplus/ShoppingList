@@ -65,7 +65,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private int idList;
     private Product productReceived;
     private String linkNewPicture = "";
-    private String finalPath = "";  //путь к файлу
+    private String finalPath = "";
     private boolean newImageFlag;
     private View.OnClickListener clickListener;
     private int dateAdded;
@@ -92,7 +92,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE})
     void chekPerm() {
-        productReceived = getIntent().getParcelableExtra("product");//для обновления
+        productReceived = getIntent().getParcelableExtra("product");
         idList = getIntent().getIntExtra("idList", -1);
         Uri pathForGlide = null;
         int idErrorPhoto;
@@ -112,12 +112,12 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
             switch (productReceived.getCamera()) {
                 case 1:
-                    pathForGlide = Uri.parse(productReceived.getPictureLink());//без поворота и при обычном повороте
+                    pathForGlide = Uri.parse(productReceived.getPictureLink());
                     if (newImageFlag) pathForGlide = createPathForGlide();
                     installListenerPhoto(START_CONTEXT_MENU);
                     break;
                 case 2:
-                    pathForGlide = Uri.fromFile(new File(productReceived.getPictureLink()));//без поворота и при обычном повороте
+                    pathForGlide = Uri.fromFile(new File(productReceived.getPictureLink()));
                     if (newImageFlag) pathForGlide = createPathForGlide();
                     installListenerPhoto(START_CONTEXT_MENU);
                     break;
@@ -172,7 +172,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             }
 
             if (productReceived == null) {
-                //создаем новый
+                //create new
                 Product product = new Product();
                 product.setNameProduct(name);
                 product.setBought(false);
@@ -180,25 +180,26 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 product.setPictureLink(path);
                 intent.putExtra("product", product);
             } else {
-                //обновляем
+                //update
                 productReceived.setNameProduct(name);
                 productReceived.setPictureLink(path);
                 productReceived.setCamera(camera);
                 intent.putExtra("productUpdate", productReceived);
             }
-            setResult(RESULT_OK, intent);//возращаем результат
+            setResult(RESULT_OK, intent);//return the result
             finish();
         } else {
-            Snackbar.make(view, "Введите название покупки", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(view, getResources().getString(R.string.enter_name_product), Snackbar.LENGTH_LONG).show();
         }
     }//add
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("AddEditclass", "requestCode = "+ requestCode +"resultCode = " + resultCode + "data.getData = " +data);
         imageView.setOnClickListener(clickListener);
         camera = 0;
         switch (requestCode) {
-            case CAMERA_CAPTURE://reqCode камеры
+            case CAMERA_CAPTURE://reqCode camera
                 if (resultCode == Activity.RESULT_OK) {
                     createPathPhoto();
                     if (productReceived != null && (productReceived.getPictureLink().isEmpty() || camera != productReceived.getCamera())) {
@@ -209,7 +210,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 } else
                     Toast.makeText(this, getResources().getString(R.string.not_take_photo), Toast.LENGTH_LONG).show();
                 break;
-            case 111://reqCode системы при выборе картинок
+            case 111:// reqCode system when selecting images
                 if (resultCode == Activity.RESULT_OK) {
                     Uri uri = data.getData();
                     linkNewPicture = finalPath = String.valueOf(uri);
@@ -273,6 +274,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 dateAdded = Integer.parseInt(myCursorLargeE.getString(myCursorLargeE.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)));
                 path = myCursorLargeE.getString(myCursorLargeE.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
             }
+        }catch (Exception e){
+            Log.d("AddEditclass", "e.getMessage() = "+ e.getMessage());
         }
         return path;
     }
@@ -302,9 +305,9 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     if (way == START_DIALOG_CHOICE_PHOTO) {
                         selectWayForLoadPhoto();
                     } else if (way == START_CONTEXT_MENU) {
-                        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
-                        popup.inflate(R.menu.click_foto_menu);//закачиваем меню из XML файла
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
+                        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//create the menu window object
+                        popup.inflate(R.menu.click_foto_menu);//inflate a menu from an XML file
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//define the clicks on the menu items
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 switch (item.getItemId()) {
@@ -328,12 +331,12 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                                 return false;
                             }//onMenuItemClick
                         });
-                        popup.show();//показываем окно меню
+                        popup.show();//show the menu window
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    Log.d("AddEdit", e.getMessage());
+                    Log.d("AddEditclass", e.getMessage());
                 }
-            }
+            }//onClick
         };
     }//installListenerPhoto
 
@@ -369,8 +372,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         newImageFlag = savedInstanceState.getBoolean("newImageFlag");
     }//onRestoreInstanceState
 
-    //=========================================================================================================
-    //возврат после соглашения/отказа пользователя
+    //refund after agreement / denial of the user
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -388,10 +390,11 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
     @OnNeverAskAgain({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE})
     void onNeverAskAgain() {
-        new android.app.AlertDialog.Builder(this)
-                .setTitle("Title")
-                .setMessage("Message")
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(getResources().getString(R.string.attention))
+                .setIcon(R.mipmap.warning)
+                .setMessage(getResources().getString(R.string.need_get_permissions))
+                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent();
@@ -399,29 +402,31 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                         Uri uri = Uri.fromParts("package", getPackageName(), null);
                         intent.setData(uri);
                         startActivity(intent);
+                        finish();
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        finish();
                     }
                 })
-                .create()
                 .show();
+        dialog.setCancelable(false);
     }
 
     @OnShowRationale({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE})
     void showRationaleForCamera(final PermissionRequest request) {
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage("Это надо вам!!!")
-                .setPositiveButton("хорошо", new DialogInterface.OnClickListener() {
+                .setMessage(getResources().getString(R.string.need_obtain_permissions))
+                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         request.proceed();
                     }
                 })
-                .setNegativeButton("низачто", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         request.cancel();

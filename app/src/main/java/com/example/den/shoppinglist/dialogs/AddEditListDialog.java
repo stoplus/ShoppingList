@@ -18,7 +18,7 @@ import com.example.den.shoppinglist.interfaces.AddEditListInterface;
 public class AddEditListDialog extends DialogFragment {
     private AddEditListInterface datable;
 
-    @Override // Метод onAttach() вызывается в начале жизненного цикла фрагмента
+    @Override //The onAttach () method is called at the beginning of the fragment's life cycle
     public void onAttach(Context context) {
         super.onAttach(context);
         datable = (AddEditListInterface) context;
@@ -28,7 +28,7 @@ public class AddEditListDialog extends DialogFragment {
     String positiveButton;
     int image;
 
-    @NonNull // построить диалог с получением данных из активности и обработчиком кнопки
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Lists lists = null;
         if (getArguments() != null) {
@@ -40,14 +40,14 @@ public class AddEditListDialog extends DialogFragment {
         input.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (lists == null) {
-            input.setHint("Название");
-            title = "Создание нового списка";
-            positiveButton = "Добавить";
+            input.setHint(getResources().getString(R.string.name));
+            title = getResources().getString(R.string.create_new_list);
+            positiveButton = getResources().getString(R.string.add);
             image = R.mipmap.add;
         } else {
             input.setText(lists.getListName());
-            title = "Изменение названия списка";
-            positiveButton = "Изменить";
+            title =  getResources().getString(R.string.edit_name_list);
+            positiveButton = getResources().getString(R.string.edit);
             image = R.mipmap.edit;
         }
 
@@ -55,7 +55,7 @@ public class AddEditListDialog extends DialogFragment {
         builder.setTitle(title)
                 .setIcon(image)
                 .setView(input)
-                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) { dialog.cancel();
                     }
@@ -72,10 +72,10 @@ public class AddEditListDialog extends DialogFragment {
                                 datable.update(finalLists);
                             }
                         }
-//                        Snackbar.make(view, "Введите название списка", Snackbar.LENGTH_SHORT).show();
+                        // TODO: 24.05.2018
+//                        Snackbar.make(view,getResources().getString(R.string.enter_name_list), Snackbar.LENGTH_SHORT).show();
                     }
                 });
         return builder.create();
     } // onCreateDialog
-
 }

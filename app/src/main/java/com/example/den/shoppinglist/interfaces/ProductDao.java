@@ -37,7 +37,7 @@ public interface ProductDao {
     @Update
     void update(Product... product);
 
-    //обновление по списку продуктов
+    //update in the list
     @Update
     void updateList(List<Product> productList);
 
@@ -47,7 +47,7 @@ public interface ProductDao {
     @Delete
     void deleteListProduct(List<Product> list);
 
-    //удаление по списку id
+    //delete list id
     @Query("DELETE from Product WHERE id IN (:idList)")
     int deleteByIdList(List<Integer> idList);
 }

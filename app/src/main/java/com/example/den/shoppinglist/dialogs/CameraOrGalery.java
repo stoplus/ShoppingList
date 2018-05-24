@@ -15,7 +15,7 @@ public class CameraOrGalery extends DialogFragment {
 
     private CameraOrGaleryInterface cameraOrGaleryInterface;
 
-    @Override // Метод onAttach() вызывается в начале жизненного цикла фрагмента
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         cameraOrGaleryInterface = (CameraOrGaleryInterface) context;
@@ -26,15 +26,15 @@ public class CameraOrGalery extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        builder.setMessage("Выбрать фото из галереи или снять на камеру?")
-                .setTitle("Откуда возмем фото?")
+        builder.setMessage(getResources().getString(R.string.camera_or_galery))
+                .setTitle(getResources().getString(R.string.where_take_pictures))
                 .setIcon(R.mipmap.question)
-                .setNegativeButton("Галерея", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.galery), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         cameraOrGaleryInterface.choiceForPhoto(true);
                     }
-                }).setPositiveButton("Камера", new DialogInterface.OnClickListener() {
+                }).setPositiveButton(getResources().getString(R.string.camera), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 cameraOrGaleryInterface.choiceForPhoto(false);

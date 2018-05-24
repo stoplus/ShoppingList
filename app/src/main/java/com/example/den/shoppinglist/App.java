@@ -20,7 +20,6 @@ public class App extends Application {
         super.onCreate();
         app = this;
         appComponent = DaggerAppComponent.builder()
-//                .databaseModule(new DatabaseModule(getApplicationContext()))
                 .requestsListsModule(new RequestsListsModule())
                 .build();
         listsComponent = DaggerListsComponent.builder()

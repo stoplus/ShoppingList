@@ -19,4 +19,20 @@
     <string name="device_no_camera">Ваше устройство не поддерживает съемку</string>
     <string name="not_take_photo">Вы не сделали фото</string>
     <string name="not_selected_photo">Вы не выбрали фото</string>
+    <string name="enter_name_product">Введите название покупки</string>
+    <string name="attention">Внимание!</string>
+    <string name="need_get_permissions">Необходимо получить разрешения!</string>
+    <string name="need_obtain_permissions">Для использования приложения необходимо получить разрешения</string>
+    <string name="ok">Ок</string>
+    <string name="name">Название</string>
+    <string name="create_new_list">Создание нового списка</string>
+    <string name="edit_name_list">Изменение названия списка</string>
+    <string name="enter_name_list">Введите название списка</string>
+    <string name="camera_or_galery">Выбрать фото из галереи или снять на камеру?</string>
+    <string name="where_take_pictures">Откуда возмем фото?</string>
+    <string name="galery">Галерея</string>
+    <string name="camera">Камера</string>
+    <string name="confirmation">Подтверждение</string>
+    <string name="delete_select_list">Удалить выбранный список?</string>
+
 </resources>

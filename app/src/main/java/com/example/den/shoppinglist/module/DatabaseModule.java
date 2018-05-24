@@ -21,19 +21,4 @@ public class DatabaseModule {
     public Context provideContext(){
         return context;
     }
-
-//    @Singleton @Provides
-//    public AppDatabase provideAppDatabase(Context context){
-//        return Room.databaseBuilder(context, AppDatabase.class, "database").build();
-//    }
-//
-//    @Singleton @Provides
-//    public ListsDao provideListsDao(AppDatabase appDatabase){
-//        return appDatabase.listsDao();
-//    }
-//
-//    @Singleton @Provides
-//    public ProductDao provideListProductDao(AppDatabase appDatabase){
-//        return appDatabase.listProductDao();
-//    }
 }

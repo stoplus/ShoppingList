@@ -30,8 +30,8 @@ public class RequestsLists {
     ProductDao productDao;
     @Inject
     ProductForListDao productForListDao;
-    public Disposable dispos; //переменная для отписывания наблюдателя
-    public Disposable disposable; //переменная для отписывания наблюдателя
+    public Disposable dispos;
+    public Disposable disposable;
     public Disposable dispListId;
     public Disposable dispSameId;
     public Disposable dispSameIdList;
@@ -39,14 +39,14 @@ public class RequestsLists {
     private boolean flag = false;
 
     public void getLists(final DatabaseCallbackLists databaseCallbackLists) {
-        Log.d("ddd1", "getLists ");
+        Log.d("RequestsListsClass", "getLists ");
         dispos = listsDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Lists>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<Lists> lists) throws Exception {
-                        Log.d("ddd1", "getLists1");
+                    public void accept(@io.reactivex.annotations.NonNull List<Lists> lists) {
+                        Log.d("RequestsListsClass", "getLists1");
                         databaseCallbackLists.onListsLoaded(lists);
                     }
                 });
@@ -55,7 +55,7 @@ public class RequestsLists {
     public void addLists(final DatabaseCallbackLists databaseCallbackLists, final Lists lists) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 listsDao.insert(lists);
             }
         }).observeOn(AndroidSchedulers.mainThread())
@@ -80,7 +80,7 @@ public class RequestsLists {
     public void deleteList(final DatabaseCallbackLists databaseCallbackLists, final Lists lists) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 listsDao.delete(lists);
             }
         }).subscribeOn(Schedulers.io())
@@ -105,7 +105,7 @@ public class RequestsLists {
     public void updateLists(final DatabaseCallbackLists databaseCallbackLists, final Lists lists) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 listsDao.update(lists);
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
@@ -127,7 +127,7 @@ public class RequestsLists {
 
     //===============================================================================================================
     public void getAllForList(final DatabaseCallbackProduct databaseCallbackProduct, int id) {
-        //на моем телефоне здесь было падение из-за очистки ресурсов
+        //on my phone there was a fall due to cleaning resources
         if (productDao == null) {
             flag = true;
             RequestsLists requestsLists = App.app().getComponent().getRequestsLists();
@@ -138,7 +138,7 @@ public class RequestsLists {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Product>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<Product> product) throws Exception {
+                    public void accept(@io.reactivex.annotations.NonNull List<Product> product) {
                         if (flag) {
                             Products products = new Products();
                             products.onRestart();
@@ -155,7 +155,7 @@ public class RequestsLists {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull Integer id) throws Exception {
+                    public void accept(@io.reactivex.annotations.NonNull Integer id) {
                         databaseCallbackProduct.onLastProduct(id);
                     }
                 });
@@ -164,7 +164,7 @@ public class RequestsLists {
     public void addListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 productDao.insert(product);
             }
         }).observeOn(AndroidSchedulers.mainThread())
@@ -176,7 +176,7 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        Log.d("ddd1", "addListProduct1");
+                        Log.d("RequestsListsClass", "addListProduct1");
                         databaseCallbackProduct.onProductAdded();
                     }
 
@@ -190,7 +190,7 @@ public class RequestsLists {
     public void deleteProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 productDao.delete(product);
             }
         }).subscribeOn(Schedulers.io())
@@ -215,7 +215,7 @@ public class RequestsLists {
     public void deleteProductList(final DatabaseCallbackLists databaseCallbackLists, final List<Integer> list) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 productDao.deleteByIdList(list);
             }
         }).subscribeOn(Schedulers.io())
@@ -238,32 +238,26 @@ public class RequestsLists {
     }
 
     public void updateProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
-        Log.d("ddd1", "product = " + product);
-        Log.d("ddd1", "productDao = " + productDao);
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
-                Log.d("ddd1", "Completable.fromAction");
+            public void run() {
                 productDao.update(product);
-                Log.d("ddd1", "productDao.update(product)");
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        Log.d("ddd1", "onSubscribe");
+                        Log.d("RequestsListsClass", "onSubscribe");
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.d("ddd1", "onComplete");
                         databaseCallbackProduct.onProductUpdated();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d("ddd1", "onError");
                         databaseCallbackProduct.onDataNotAvailable();
                     }
                 });
@@ -272,7 +266,7 @@ public class RequestsLists {
     public void updateListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final List<Product> productList) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 productDao.updateList(productList);
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
@@ -296,7 +290,7 @@ public class RequestsLists {
     public void addProductForList(final DatabaseCallbackProduct databaseCallbackProduct, final ProductForList productForList) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 productForListDao.insert(productForList);
             }
         }).observeOn(AndroidSchedulers.mainThread())
@@ -321,7 +315,7 @@ public class RequestsLists {
     public void deleteProductForList(final DatabaseCallbackProduct databaseCallbackProduct, final int idProduct, final int idList) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 productForListDao.deleteByIdListAndIdProduct(idProduct, idList);
             }
         }).subscribeOn(Schedulers.io())
@@ -343,11 +337,11 @@ public class RequestsLists {
                 });
     }
 
-    //удаляем список записей из таблици productForList
+    //remove the list of records from the productForList table
     public void deleteListProductForList(final DatabaseCallbackLists databaseCallbackLists, final List<ProductForList> list) {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 productForListDao.deleteList(list);
             }
         }).subscribeOn(Schedulers.io())
@@ -370,42 +364,42 @@ public class RequestsLists {
     }
 
     public void getSameIdProductForList(final DatabaseCallbackProduct databaseCallbackProduct, int idProduct) {
-        Log.d("ddd1", "getSameIdProductForList ");
+        Log.d("RequestsListsClass", "getSameIdProductForList ");
         dispSameId = productForListDao.getSameIdProductForList(idProduct)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) throws Exception {
-                        Log.d("ddd1", "getSameIdProductForList1 ");
+                    public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) {
+                        Log.d("RequestsListsClass", "getSameIdProductForList1 ");
                         databaseCallbackProduct.onSameIdProductForList(list);
                     }
                 });
     }
 
     public void getSameIdListForList(final DatabaseCallbackLists databaseCallbackLists, int idList) {
-        Log.d("ddd1", "getSameIdListForList ");
+        Log.d("RequestsListsClass", "getSameIdListForList ");
         dispSameIdList = productForListDao.getSameIdListForList(idList)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) throws Exception {
-                        Log.d("ddd1", "getSameIdListForList ");
+                    public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) {
+                        Log.d("RequestsListsClass", "getSameIdListForList ");
                         databaseCallbackLists.onSameIdList(list);
                     }
                 });
     }
 
     public void getInOtherLists(final DatabaseCallbackLists databaseCallbackLists, List<Integer> list) {
-        Log.d("ddd1", "getInOtherLists ");
+        Log.d("RequestsListsClass", "getInOtherLists ");
         dispInOtherLists = productForListDao.getInOtherLists(list)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<ProductForList>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) throws Exception {
-                        Log.d("ddd1", "getInOtherLists ");
+                    public void accept(@io.reactivex.annotations.NonNull List<ProductForList> list) {
+                        Log.d("RequestsListsClass", "getInOtherLists ");
                         databaseCallbackLists.onInOtherLists(list);
                     }
                 });

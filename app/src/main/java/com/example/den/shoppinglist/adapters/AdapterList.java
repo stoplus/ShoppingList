@@ -20,8 +20,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> {
-    private LayoutInflater inflater;    // для загрузки разметки элемента
-    private List<Lists> list;    // коллекция выводимых данных
+    private LayoutInflater inflater;
+    private List<Lists> list;
     private OnItemListener OnItemListener;
 
     public AdapterList(Context context, List<Lists> list, OnItemListener OnItemListener) {
@@ -47,14 +47,13 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> {
         return new ViewHolder(view);
     } // onCreateViewHolder
 
-    //внутрений класс ViewHolder для хранения элементов разметки
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.idTextViewLists)
         TextView category_id;
         @BindView(R.id.container)
         ConstraintLayout constraintLayout;
 
-        // в конструкторе получаем ссылки на элементы по id
+
         private ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
@@ -77,13 +76,12 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        // связать отображаемые элементы и значения полей
         holder.category_id.setText(list.get(position).getListName());
     }//onBindViewHolder
 
     public void deleteFromListAdapter(int pos) {
         list.remove(pos);
-        notifyItemRemoved(pos);//обновляет после удаления Item на позиции position
-        notifyItemRangeChanged(pos, list.size());//обновляет позиции последующих элементов
+        notifyItemRemoved(pos);//updates after removing Item at position
+        notifyItemRangeChanged(pos, list.size());//updates the items of the following items
     }//deleteFromListAdapter
 }//class Adapter

@@ -49,8 +49,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     private int idProduct;
     private Product product;
     private boolean flagDel = true;
-    public final int REQEST_EDIT = 101;                //ответ при изменении данных
-    private final int REQEST_ADD = 102;             //константа для добавления
+    public final int REQEST_EDIT = 101;             //response when changing data
+    private final int REQEST_ADD = 102;             //constant for adding
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +80,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         recyclerProdPurchased.setNestedScrollingEnabled(false);
     }//onCreate
 
-    //возврат из добавления / редактирования
+    //return from adding / editing
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -96,17 +96,17 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             }//switch
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
+    }//onActivityResult
 
-    //==============================================================================================
     public void updateTwoLists(List<Product> lists) {
-        productList = new ArrayList<>();//список не купленных
-        listPurchased = new ArrayList<>();//список купленых
-        for (int i = 0; i < lists.size(); i++) {//фильтруем общий список на купленный и не купленный
+        productList = new ArrayList<>();//list of not bought
+        listPurchased = new ArrayList<>();//list of purchased
+        for (int i = 0; i < lists.size(); i++) {//filter the general list on bought and not bought
             if (lists.get(i).isBought()) {
                 listPurchased.add(lists.get(i));
             } else productList.add(lists.get(i));
         }
+
         if (adapterProductList == null) {
             createAndInstallAdapter();
         } else {
@@ -116,12 +116,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             } else if (positionDeletePurchased > -1) {
                 adapterProductListPurchased.deleteFromListAdapter(positionDeletePurchased);
                 positionDeletePurchased = -1;
-            } else {
-                if (flagDel) {
-                    createAndInstallAdapter();
-                }
-            }
-        }
+            } else if (flagDel) createAndInstallAdapter();
+        }//if
     }//updateTwoLists
 
     private void createAndInstallAdapter() {
@@ -149,9 +145,11 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             }
         };
 
-        adapterProductList = new AdapterProductList(this, productList, getSupportFragmentManager(), onItemListener);//адаптер для не купленных
-        adapterProductListPurchased = new AdapterProductListPurchased(this, listPurchased, getSupportFragmentManager(), onItemListenerPurchased);//для купленных
-        recyclerProd.setAdapter(adapterProductList);//подсоединяем адаптер к ресайклеру
+        adapterProductList = new AdapterProductList(
+                this, productList, getSupportFragmentManager(), onItemListener);//adapter for non-purchased
+        adapterProductListPurchased = new AdapterProductListPurchased(
+                this, listPurchased, getSupportFragmentManager(), onItemListenerPurchased);//for purchased
+        recyclerProd.setAdapter(adapterProductList);
         recyclerProdPurchased.setAdapter(adapterProductListPurchased);
     }//createAndInstallAdapter
 
@@ -159,8 +157,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         flagDel = true;
         Product productPurchased = list.get(position);
         if (productPurchased.isBought())
-            productPurchased.setBought(false);//устанавливаем, что не куплен
-        else productPurchased.setBought(true);//устанавливаем, что куплен
+            productPurchased.setBought(false);//establish that we have not bought
+        else productPurchased.setBought(true);//establish that we bought
 
         requestsLists.updateProduct(Products.this, productPurchased);
     }//itemClick
@@ -191,15 +189,13 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                             else positionDelete = position;
                             requestsLists.deleteProductForList(Products.this, idProduct, idList);
                             return true;
-                        default:
-                            break;
                     }//switch
                     return false;
                 }//onMenuItemClick
             });
-            popup.show();//показываем окно меню
+            popup.show();
         } catch (IndexOutOfBoundsException e) {
-            Log.d("ddd", e.getMessage());
+            Log.d("Productsclass", e.getMessage());
         }
     }//itemLongClick
 
@@ -208,101 +204,99 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         super.onRestart();
     }
 
-    //смотрим изменение в таблице "продукты"
+    //see the change in the table "products"
     @Override
     public void onListProductsLoaded(List<Product> lists) {
-        requestsLists.disposable.dispose();//отписываем наблюдателя
-        Log.d("ddd", "onListProductsLoaded");
+        requestsLists.disposable.dispose();// unsubscribe the observer
+        Log.d("Productsclass", "onListProductsLoaded");
 
         updateTwoLists(lists);
         flagDel = false;
     }
 
-    //добавили продукт в таблицу товаров
+    // added the product to the product table
     @Override
     public void onProductAdded() {
-        Log.d("ddd", "onProductAdded");
-        //получаем последний добавленный продукт
+        Log.d("Productsclass", "onProductAdded");
+        // get the last added product
         requestsLists.getlastProduct(Products.this);
     }
 
-    //получаем последнюю запись из таблици продуктов
+    // get the last entry from the product table
     @Override
     public void onLastProduct(int idProduct) {
-        Log.d("ddd", "onLastProduct");
+        Log.d("Productsclass", "onLastProduct");
         requestsLists.dispListId.dispose();
-        //добавляем в таблицу "товары в списке"
+        // add to the table "goods in the list"
         ProductForList productForList = new ProductForList(idList, idProduct);
         requestsLists.addProductForList(Products.this, productForList);
     }
 
-    //добавили запись в таблицу "товары в списке"
+    // added an entry to the table "items in the list"
     @Override
     public void onProductForListAdded() {
         flagDel = true;
         requestsLists.getAllForList(Products.this, idList);
-        Log.d("ddd", "добавили запись в таблицу \"товары в списке\"");
+        Log.d("Productsclass", "добавили запись в таблицу \"товары в списке\"");
     }
 
-    //удалили запись с таблици "товары в списке"
+    // deleted the record from the table "goods in the list"
     @Override
     public void onProductForListDeleted() {
-        Log.d("ddd", "onProductForListDeleted");
-        //ищем запись с таким же id товара
+        Log.d("Productsclass", "onProductForListDeleted");
+        // Looking for a record with the same product id
         requestsLists.getSameIdProductForList(Products.this, idProduct);
     }
 
-    //получаем список записей из таблици "товары в списке" с таким же id
+    // get the list of records from the table "products in the list" with the same id
     @Override
     public void onSameIdProductForList(List<ProductForList> list) {
-        Log.d("ddd", "onSameIdProductForList");
-        //удаляем товар, если нет записей с таким же id товара
+        Log.d("Productsclass", "onSameIdProductForList");
+        // delete the goods, if there are no entries with the same product id
         requestsLists.dispSameId.dispose();
         if (list.size() == 0) {
             requestsLists.deleteProduct(Products.this, product);
-        }else requestsLists.getAllForList(Products.this, idList);
+        } else requestsLists.getAllForList(Products.this, idList);
     }
 
-    //удалили запись в таблице "товары"
+    // deleted the entry in the "Products" table
     @Override
     public void onProductDeleted() {
         requestsLists.getAllForList(Products.this, idList);
-        Log.d("ddd", "onProductDeleted");
+        Log.d("Productsclass", "onProductDeleted");
     }
 
     @Override
     public void onDataNotAvailable() {
-        Log.d("ddd", "onDataNotAvailable");
+        Log.d("Productsclass", "onDataNotAvailable");
     }
 
     @Override
     public void onProductUpdated() {
         requestsLists.getAllForList(Products.this, idList);
-        Log.d("ddd", "onProductUpdated");
+        Log.d("Productsclass", "onProductUpdated");
     }
 
     @Override
     public void onUpdateList() {
         requestsLists.getAllForList(Products.this, idList);
-        Log.d("ddd", "onUpdateList");
+        Log.d("Productsclass", "onUpdateList");
     }
 
-    //--------------------------------------------------------------------------------------------------------
-    // Загрузка меню в окне
+    //Loading the menu in the window
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }//onCreateOptionsMenu
 
-    // Обработка нажатий на кнопки в меню
+    //Processing of button presses in the menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // получим идентификатор выбранного пункта меню
+        // get the identifier of the selected menu item
         int id = item.getItemId();
-        // Операции для выбранного пункта меню
         switch (id) {
-            case R.id.allItemsPurchased://все куплены
+            case R.id.allItemsPurchased:// all bought
                 for (int i = 0; i < productList.size(); i++) {
                     if (!productList.get(i).isBought())
                         productList.get(i).setBought(true);
@@ -310,13 +304,11 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 flagDel = true;
                 requestsLists.updateListProduct(this, productList);
                 break;
-            case R.id.back://назад
+            case R.id.back:
                 finish();
         }//switch
         return super.onOptionsItemSelected(item);
     }//onOptionsItemSelected
-
-    //--------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

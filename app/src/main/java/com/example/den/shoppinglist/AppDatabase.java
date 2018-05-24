@@ -5,6 +5,7 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.DatabaseConfiguration;
 import android.arch.persistence.room.InvalidationTracker;
 import android.arch.persistence.room.RoomDatabase;
+import android.support.annotation.NonNull;
 
 import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.entity.Lists;
@@ -20,11 +21,13 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProductDao listProductDao();
     public abstract ProductForListDao productForListDao();
 
+    @NonNull
     @Override
     protected SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration config) {
         return null;
     }
 
+    @NonNull
     @Override
     protected InvalidationTracker createInvalidationTracker() {
         return null;

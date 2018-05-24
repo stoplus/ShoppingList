@@ -21,15 +21,15 @@ public interface ProductForListDao {
     @Query("SELECT * FROM productforlist WHERE id = :id")
     Flowable<ProductForList> getById(int... id);
 
-    //ищем запись(и) с таким же id товара
+    //looking for a record (s) with the same product id
     @Query("SELECT * FROM ProductForList WHERE id_product = :idProduct")
     Flowable<List<ProductForList>> getSameIdProductForList(int idProduct);
 
-    //ищем запись(и) с таким же id списка
+    //Looking for a record (s) with the same list id
     @Query("SELECT * FROM ProductForList WHERE id_list = :idList")
     Flowable<List<ProductForList>> getSameIdListForList(int idList);
 
-    //ищем запись(и) с таким же id списка
+    //Looking for a record (s) with the same list id
     @Query("SELECT * FROM ProductForList WHERE id_product IN (:list)")
     Flowable<List<ProductForList>> getInOtherLists(List<Integer> list);
 
@@ -50,7 +50,7 @@ public interface ProductForListDao {
     @Query("DELETE from ProductForList WHERE id_product =:idProduct AND id_list =:idList")
     int deleteByIdListAndIdProduct(int idProduct, int idList);
 
-    //удаление по списку id
+    // delete list id
     @Query("DELETE from ProductForList WHERE id IN (:idList)")
     int deleteByIdList(List<Integer> idList);
 }

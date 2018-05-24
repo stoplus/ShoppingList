@@ -28,8 +28,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.ViewHolder> {
-    private LayoutInflater inflater;    // для загрузки разметки элемента
-    private List<Product> list;    // коллекция выводимых данных
+    private LayoutInflater inflater;
+    private List<Product> list;
     private Context context;
     private FragmentManager fm;
     private OnItemListener OnItemListener;
@@ -59,7 +59,6 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         return new ViewHolder(view);
     } // onCreateViewHolder
 
-    //внутрений класс ViewHolder для хранения элементов разметки
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.textView)
         TextView textView;
@@ -68,7 +67,6 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         @BindView(R.id.container)
         ConstraintLayout constraintLayout;
 
-        // в конструкторе получаем ссылки на элементы по id
         private ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
@@ -94,32 +92,21 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         holder.textView.setText(list.get(position).nameProduct);
 
         if (!list.get(position).getPictureLink().equals("")) {
-            // связать отображаемые элементы и значения полей
             holder.textView.setText(list.get(position).nameProduct);
 
             Uri uri = null;
             if (!list.get(position).getPictureLink().isEmpty()) {
                 String finalPath = list.get(position).getPictureLink();
 
-                if (list.get(position).getCamera() == 2) {
-                    uri = Uri.fromFile(new File(finalPath));
-                    Glide.with(context)
-                            .load(uri)
-                            .override(80, 80)
-                            .centerCrop()
-                            .error(R.mipmap.no_photo)
-                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                            .into(holder.imageView);
-                }
-                if (list.get(position).getCamera() == 1) {
-                    uri = Uri.parse(finalPath);
-                    Glide.with(context)
-                            .load(uri)
-                            .override(80, 80)
-                            .centerCrop()
-                            .error(R.mipmap.no_photo)
-                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                            .into(holder.imageView);
+                switch (list.get(position).getCamera()){
+                    case 2:
+                        uri = Uri.fromFile(new File(finalPath));
+                        setPhoto(uri, holder);
+                        break;
+                    case  1:
+                        uri = Uri.parse(finalPath);
+                        setPhoto(uri, holder);
+                        break;
                 }
             }
 
@@ -138,9 +125,19 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         }
     }//onBindViewHolder
 
+    private void setPhoto(Uri uri, ViewHolder holder){
+        Glide.with(context)
+                .load(uri)
+                .override(80, 80)
+                .centerCrop()
+                .error(R.mipmap.no_photo)
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .into(holder.imageView);
+    }//setPhoto
+
     public void deleteFromListAdapter(int pos) {
         list.remove(pos);
-        notifyItemRemoved(pos);//обновляет после удаления Item на позиции position
-        notifyItemRangeChanged(pos, list.size());//обновляет позиции последующих элементов
+        notifyItemRemoved(pos);//updates after removing Item at position
+        notifyItemRangeChanged(pos, list.size());//updates the items of the following items
     }//deleteFromListAdapter
 }//class AdapterProductList

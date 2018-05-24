@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         });
 
         requestsLists.getLists(this);
-    }
+    }//onCreate
 
     @Override
     public void addList(final Lists lists) {
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         requestsLists.deleteList(this, lists);
     }
 
-    //==============================================================================================
+
     @Override
     public void onListsLoaded(final List<Lists> lists) {
         listLists = lists;
@@ -92,17 +92,16 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                 }
 
                 @Override
-                public void onItemLongClick(int position, View v) {
-                    itemLongClick(position, v, listLists);
+                public void onItemLongClick(int position, View v) { itemLongClick(position, v, listLists);
                 }
             };
-            adapter = new AdapterList(MainActivity.this, listLists, onItemListener);//адаптер для ресайклера
-            recyclerView.setAdapter(adapter);//подсоединяем адаптер к ресайклеру
+            adapter = new AdapterList(MainActivity.this, listLists, onItemListener);
+            recyclerView.setAdapter(adapter);
         } else {
             adapter.deleteFromListAdapter(positionDelete);
             positionDelete = -1;
         }
-    }
+    }//onListsLoaded
 
     private void itemClick(int position, List<Lists> list) {
         Intent intent = new Intent(MainActivity.this, Products.class);
@@ -114,8 +113,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     }//itemClick
 
     private void itemLongClick(final int position, View v, final List<Lists> list) {
-        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
-        popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
+        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);
+        popup.inflate(R.menu.context_menu);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -140,74 +139,74 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                 return false;
             }//onMenuItemClick
         });
-        popup.show();//показываем окно меню
+        popup.show();
     }//itemLongClick
 
     @Override
     public void onListDeleted() {
-        //ищем в таблице "товары в списке" записи с таким же id СПИСКА
+        //search in the table "goods in the list" records with the same id LIST
         requestsLists.getSameIdListForList(MainActivity.this, idList);
     }
 
-    //нашли в таблице "товары в списке" все записи с таким же id СПИСКА
+    //found in the table "goods in the list" all records with the same id LIST
     @Override
     public void onSameIdList(List<ProductForList> list) {
         requestsLists.dispSameIdList.dispose();
-        sameIdList = list;//все записи с таким же id СПИСКА
-        //удаляем из таблици "товары в списке" записи с таким же id СПИСКА
+        sameIdList = list;//all records with the same id LIST
+        //delete from the table "goods in the list" records with the same id LIST
         if (list.size() > 0) {
             requestsLists.deleteListProductForList(MainActivity.this, list);
         }
     }
 
-    //удалили из таблици "товары в списке" все записи с таким же id СПИСКА
+    //removed from the table "goods in the list" all entries with the same id LIST
     @Override
     public void onDeletedListProductForList() {
-        //получаем Список с повторяющимися в других списках
+        //get a list with duplicates in other lists
         List<Integer> listIdProduct = new ArrayList<>();
         for (int i = 0; i < sameIdList.size(); i++) {
             listIdProduct.add(sameIdList.get(i).getIdProduct());
         }
         requestsLists.getInOtherLists(MainActivity.this, listIdProduct);
-    }
+    }//onDeletedListProductForList
 
-    //получили Список с повторяющимися в других стисках
+    //received a list with duplicates in other cliches
     @Override
     public void onInOtherLists(List<ProductForList> list) {
         requestsLists.dispInOtherLists.dispose();
-        // создаем список c id товаров, которые надо удалить и удаляем
-        List<Integer> listForDeleting = new ArrayList<>();//конечный список для удаления
+        //create a list c id of the goods that need to be deleted and deleted
+        List<Integer> listForDeleting = new ArrayList<>();//the final list to delete
         for (int i = 0; i < sameIdList.size(); i++) {
             if (!list.contains(sameIdList.get(i)))
                 listForDeleting.add(sameIdList.get(i).getIdProduct());
         }
         if (listForDeleting.size() > 0)
             requestsLists.deleteProductList(MainActivity.this, listForDeleting);
-    }
+    }//onInOtherLists
 
     @Override
     public void onDeletedProductList() {
-        Log.d("lll", "jjj");
+        Log.d("MainActivityclass", "jjj");
     }
 
     @Override
     public void onListsAdded() {
-        Log.d("lll", "jjj");
+        Log.d("MainActivityclass", "jjj");
     }
 
     @Override
     public void onDataNotAvailable() {
-        Log.d("lll", "jjj");
+        Log.d("MainActivityclass", "jjj");
     }
 
     @Override
     public void onListsUpdated() {
-        Log.d("lll", "jjj");
+        Log.d("MainActivityclass", "jjj");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        requestsLists.dispos.dispose();//отписываем наблюдателя
+        requestsLists.dispos.dispose();
     }
 }
