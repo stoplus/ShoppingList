@@ -16,14 +16,13 @@ public class Product implements Parcelable {
     public String pictureLink;
     @ColumnInfo(name = "bought")
     public boolean bought;
-    @ColumnInfo(name = "camera")
-    public int camera;
 
-    public Product(String nameProduct, String pictureLink, boolean bought, int camera) {
+
+    public Product(String nameProduct, String pictureLink, boolean bought) {
         this.nameProduct = nameProduct;
         this.pictureLink = pictureLink;
         this.bought = bought;
-        this.camera = camera;
+//        this.camera = camera;
     }
 
     public int getId() {
@@ -39,8 +38,6 @@ public class Product implements Parcelable {
         nameProduct = in.readString();
         pictureLink = in.readString();
         bought = in.readByte() != 0;
-        camera = in.readInt();
-
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
@@ -79,13 +76,6 @@ public class Product implements Parcelable {
         this.bought = bought;
     }
 
-    public int getCamera() {
-        return camera;
-    }
-
-    public void setCamera(int camera) {
-        this.camera = camera;
-    }
 
     @Override
     public int describeContents() {
@@ -98,6 +88,5 @@ public class Product implements Parcelable {
         dest.writeString(nameProduct);
         dest.writeString(pictureLink);
         dest.writeByte((byte) (bought ? 1 : 0));
-        dest.writeInt(camera);
     }
 }

@@ -97,28 +97,23 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
         holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         holder.textView.setTextColor(context.getResources().getColor(R.color.colorTextShadowed));
 
-        Uri uri = null;
         if (!list.get(position).getPictureLink().isEmpty()) {
-            String finalPath = list.get(position).getPictureLink();
+            final String finalPath = list.get(position).getPictureLink();
+            Uri uri = Uri.parse(finalPath);
+            GlideApp.with(context)
+                    .load(uri)
+                    .override(80, 80)
+                    .centerCrop()
+                    .error(R.mipmap.no_photo)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .into(holder.imageView);
 
-            switch (list.get(position).getCamera()) {
-                case 2:
-                    uri = Uri.parse(finalPath);
-                    setPhoto(uri, holder);
-                    break;
-                case 1:
-                    uri = Uri.parse(finalPath);
-                    setPhoto(uri, holder);
-                    break;
-            }
-
-            final String url = String.valueOf(uri);
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     BigPhotoFragment bigPhotoFragment = new BigPhotoFragment();
                     Bundle args = new Bundle();
-                    args.putString("url", url);
+                    args.putString("url", finalPath);
                     bigPhotoFragment.setArguments(args);
                     bigPhotoFragment.show(fm, "bigPhotoFragment");
                 }
@@ -126,16 +121,6 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
             holder.imageView.setOnClickListener(listener);
         }//if
     }//onBindViewHolder
-
-    private void setPhoto(Uri uri, ViewHolder holder) {
-        GlideApp.with(context)
-                .load(uri)
-                .override(80, 80)
-                .centerCrop()
-                .error(R.mipmap.no_photo)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .into(holder.imageView);
-    }//setPhoto
 
     public void deleteFromListAdapter(int pos) {
         list.remove(pos);

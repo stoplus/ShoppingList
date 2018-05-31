@@ -95,47 +95,31 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
         if (!list.get(position).getPictureLink().equals("")) {
             holder.textView.setText(list.get(position).nameProduct);
 
-            Uri uri = null;
             if (!list.get(position).getPictureLink().isEmpty()) {
-                String finalPath = list.get(position).getPictureLink();
+                final String finalPath = list.get(position).getPictureLink();
+                Uri uri = Uri.parse(finalPath);
+                GlideApp.with(context)
+                        .load(uri)
+                        .override(80, 80)
+                        .centerCrop()
+                        .error(R.mipmap.no_photo)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .into(holder.imageView);
 
-                switch (list.get(position).getCamera()) {
-                    case 2:
-                        uri = Uri.parse(finalPath);
-                        setPhoto(uri, holder);
-                        break;
-                    case 1:
-                        uri = Uri.parse(finalPath);
-                        setPhoto(uri, holder);
-                        break;
-                }
+                View.OnClickListener listener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        BigPhotoFragment bigPhotoFragment = new BigPhotoFragment();
+                        Bundle args = new Bundle();
+                        args.putString("url", finalPath);
+                        bigPhotoFragment.setArguments(args);
+                        bigPhotoFragment.show(fm, "bigPhotoFragment");
+                    }
+                };
+                holder.imageView.setOnClickListener(listener);
             }
-
-            final String url = String.valueOf(uri);
-            View.OnClickListener listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    BigPhotoFragment bigPhotoFragment = new BigPhotoFragment();
-                    Bundle args = new Bundle();
-                    args.putString("url", url);
-                    bigPhotoFragment.setArguments(args);
-                    bigPhotoFragment.show(fm, "bigPhotoFragment");
-                }
-            };
-            holder.imageView.setOnClickListener(listener);
         }
     }//onBindViewHolder
-
-    private void setPhoto(Uri uri, ViewHolder holder) {
-        GlideApp.with(context)
-                .load(uri)
-                .override(80, 80)
-                .centerCrop()
-                .error(R.mipmap.no_photo)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .into(holder.imageView);
-
-    }//setPhoto
 
     public void deleteFromListAdapter(int pos) {
         list.remove(pos);
