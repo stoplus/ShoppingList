@@ -24,7 +24,7 @@
     <string name="need_get_permissions">Необходимо получить разрешения!</string>
     <string name="need_obtain_permissions">Для использования приложения необходимо получить разрешения</string>
     <string name="ok">Ок</string>
-    <string name="name">Название</string>
+    <string name="nameNewList">Название</string>
     <string name="create_new_list">Создание нового списка</string>
     <string name="edit_name_list">Изменение названия списка</string>
     <string name="enter_name_list">Введите название списка</string>
@@ -34,5 +34,9 @@
     <string name="camera">Камера</string>
     <string name="confirmation">Подтверждение</string>
     <string name="delete_select_list">Удалить выбранный список?</string>
+    <string name="purchased">Куплено</string>
+    <string name="add_post">Добавьте запись</string>
+    <string name="exit_from_app">Выйти из приложения?</string>
+    <string name="yes">Да</string>
 
 </resources>

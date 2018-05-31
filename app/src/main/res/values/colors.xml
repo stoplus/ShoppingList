@@ -16,4 +16,5 @@
     <color name="colorBotom">#a9b5d6</color>
     <color name="colorTop">#87a4f2</color>
     <color name="colorList">#a9ed84</color>
+    <color name="hint">#a0a0a0</color>
 </resources>

@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/generalLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -22,8 +23,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
-        android:hint="Название"
-        android:imeOptions="flagNoExtractUi" />
+        android:hint="@string/nameNewList"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textShortMessage" />
 
     <LinearLayout
         android:id="@+id/idLayoutBtn"
@@ -35,6 +37,7 @@
 
         <Button
             android:id="@+id/idCancel"
+            style="@android:style/Widget.DeviceDefault.Button.Inset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -43,6 +46,7 @@
 
         <Button
             android:id="@+id/idAdd"
+            style="@android:style/Widget.DeviceDefault.Button.Inset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

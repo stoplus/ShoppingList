@@ -1,10 +1,12 @@
 package com.example.den.shoppinglist;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -58,8 +61,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     Button btnCancel;
     @BindView(R.id.idAdd)
     Button btnAdd;
-    @BindView(R.id.idLayoutBtn)
-    LinearLayout layoutBtn;
     private final int CAMERA_CAPTURE = 2000;
     private final int REQUEST_PERMITIONS = 1100;
     private final int START_DIALOG_CHOICE_PHOTO = 200;
@@ -71,9 +72,10 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private String finalPath = "";
     private boolean newImageFlag;
     private View.OnClickListener clickListener;
-    String mCurrentPhotoPath;
+    private String mCurrentPhotoPath;
+    private PopupMenu popup;
 
-
+    @SuppressLint("InflateParams")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,20 +109,24 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             idErrorPhoto = R.mipmap.default_photo;
             btnAdd.setText(getResources().getString(R.string.add));
             pathForGlide = Uri.parse(finalPath);
-            if (linkNewPicture.isEmpty()) installListenerPhoto(START_DIALOG_CHOICE_PHOTO);
+            if (linkNewPicture.isEmpty())
+                installListenerPhoto(START_DIALOG_CHOICE_PHOTO);
             else installListenerPhoto(START_CONTEXT_MENU);
         } else {//update product
             editText.setText(productReceived.getNameProduct());
             btnAdd.setText(getResources().getString(R.string.edit));
             idErrorPhoto = R.mipmap.no_photo;
-
             pathForGlide = Uri.parse(productReceived.getPictureLink());
             if (newImageFlag) {
                 pathForGlide = Uri.parse(finalPath);
                 installListenerPhoto(START_CONTEXT_MENU);
-            }else {
-                idErrorPhoto = R.mipmap.default_photo;
-                installListenerPhoto(START_DIALOG_CHOICE_PHOTO);
+            } else {
+                if (productReceived.getPictureLink().isEmpty()) {
+                    installListenerPhoto(START_DIALOG_CHOICE_PHOTO);
+                    idErrorPhoto = R.mipmap.default_photo;
+                } else {
+                    installListenerPhoto(START_CONTEXT_MENU);
+                }
             }
         }//if
         setPhoto(pathForGlide, idErrorPhoto);
@@ -209,7 +215,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     Uri uri;
                     if (Build.VERSION.SDK_INT < 24) {
                         uri = data.getData();
-                    }else {
+                    } else {
                         File photoFile = new File(getRealPathFromURI(data.getData()));
                         uri = FileProvider.getUriForFile(AddEdit.this,
                                 BuildConfig.APPLICATION_ID + ".provider",
@@ -258,7 +264,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             // Ensure that there's a camera activity to handle the intent
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                 // Create the File where the photo should go
-                File photoFile = null;
+                File photoFile;
                 try {
                     photoFile = createImageFile();
                 } catch (IOException ex) {
@@ -268,7 +274,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
 
-                    Uri photoURI = null;
+                    Uri photoURI;
                     if (Build.VERSION.SDK_INT < 24) {
                         photoURI = Uri.fromFile(photoFile);
                     } else {
@@ -288,6 +294,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
     private File createImageFile() throws IOException {
         // Create an image file name
+        @SuppressLint("SimpleDateFormat")
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(
@@ -303,6 +310,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         return image;
     }
 
+
     private void installListenerPhoto(final int way) {
         clickListener = new View.OnClickListener() {
             @Override
@@ -311,7 +319,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     if (way == START_DIALOG_CHOICE_PHOTO) {
                         selectWayForLoadPhoto();
                     } else if (way == START_CONTEXT_MENU) {
-                        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//create the menu window object
+                        popup = new PopupMenu(AddEdit.this, editText, Gravity.CENTER_HORIZONTAL);//create the menu window object
                         popup.inflate(R.menu.click_foto_menu);//inflate a menu from an XML file
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//define the clicks on the menu items
                             @Override
@@ -422,5 +430,13 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 })
                 .show();
         dialog.setCancelable(false);
+    }
+
+    @Override
+    protected void onPause() {
+        if (popup !=null){
+            popup.dismiss();
+        }
+        super.onPause();
     }
 }

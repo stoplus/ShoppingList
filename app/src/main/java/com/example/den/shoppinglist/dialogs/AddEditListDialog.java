@@ -1,5 +1,6 @@
 package com.example.den.shoppinglist.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,15 +9,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Lists;
 import com.example.den.shoppinglist.interfaces.AddEditListInterface;
 
+import java.util.Objects;
+
 public class AddEditListDialog extends DialogFragment {
     private AddEditListInterface datable;
+    private EditText input;
 
     @Override //The onAttach () method is called at the beginning of the fragment's life cycle
     public void onAttach(Context context) {
@@ -34,19 +41,19 @@ public class AddEditListDialog extends DialogFragment {
         if (getArguments() != null) {
             lists = getArguments().getParcelable("lists");
         }
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final EditText input = new EditText(getContext());
-        input.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+
+        @SuppressLint("InflateParams") final View view = Objects.requireNonNull(getActivity()).
+                getLayoutInflater().inflate(R.layout.new_list, null);
+        input = view.findViewById(R.id.editTextNewList);
 
         if (lists == null) {
-            input.setHint(getResources().getString(R.string.name));
             title = getResources().getString(R.string.create_new_list);
             positiveButton = getResources().getString(R.string.add);
             image = R.mipmap.add;
         } else {
             input.setText(lists.getListName());
-            title =  getResources().getString(R.string.edit_name_list);
+            title = getResources().getString(R.string.edit_name_list);
             positiveButton = getResources().getString(R.string.edit);
             image = R.mipmap.edit;
         }
@@ -54,15 +61,21 @@ public class AddEditListDialog extends DialogFragment {
         final Lists finalLists = lists;
         builder.setTitle(title)
                 .setIcon(image)
-                .setView(input)
-                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+
+
+
+                .setView(view);
+        AlertDialog dialog = builder.create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button btnCancel = getDialog().findViewById(R.id.btnCancel);
+                Button btnAdd = getDialog().findViewById(R.id.btnAdd);
+
+                btnAdd.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) { dialog.cancel();
-                    }
-                })
-                .setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(View v) {
                         String name = input.getText().toString();
                         if (!name.isEmpty()) {
                             if (finalLists == null) {
@@ -71,11 +84,22 @@ public class AddEditListDialog extends DialogFragment {
                                 finalLists.setListName(name);
                                 datable.update(finalLists);
                             }
-                        }
-                        // TODO: 24.05.2018
-//                        Snackbar.make(view,getResources().getString(R.string.enter_name_list), Snackbar.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }else
+                        Snackbar.make(view, getResources().getString(R.string.enter_name_list),
+                                Snackbar.LENGTH_SHORT).show();
                     }
                 });
-        return builder.create();
+
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        return dialog;
     } // onCreateDialog
 }

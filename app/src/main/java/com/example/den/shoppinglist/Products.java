@@ -13,6 +13,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.den.shoppinglist.adapters.AdapterProductList;
 import com.example.den.shoppinglist.adapters.AdapterProductListPurchased;
@@ -38,6 +40,10 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     RecyclerView recyclerProdPurchased;
     @BindView(R.id.fabBtn)
     FloatingActionButton fabBtn;
+    @BindView(R.id.textView2)
+    TextView textPurchased;
+    @BindView(R.id.idLinearLayout)
+    LinearLayout layout;
     private RequestsLists requestsLists;
     private int positionDelete = -1;
     private int positionDeletePurchased = -1;
@@ -209,9 +215,21 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     public void onListProductsLoaded(List<Product> lists) {
         requestsLists.disposable.dispose();// unsubscribe the observer
         Log.d("Productsclass", "onListProductsLoaded");
-
-        updateTwoLists(lists);
-        flagDel = false;
+        if (lists.size() == 0) {
+            textPurchased.setText(getResources().getString(R.string.add_post));
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Products.this, AddEdit.class);
+                    intent.putExtra("idList", idList);
+                    intent.putExtra("newImageFlag", true);
+                    startActivityForResult(intent, REQEST_ADD);
+                }
+            });
+        }else {
+            updateTwoLists(lists);
+            flagDel = false;
+        }
     }
 
     // added the product to the product table
