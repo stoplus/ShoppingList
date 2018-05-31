@@ -3,6 +3,7 @@ package com.example.den.shoppinglist.adapters;
 import android.content.Context;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -14,8 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.den.shoppinglist.GlideApp;
 import com.example.den.shoppinglist.dialogs.BigPhotoFragment;
 import com.example.den.shoppinglist.R;
 import com.example.den.shoppinglist.entity.Product;
@@ -100,12 +101,12 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
         if (!list.get(position).getPictureLink().isEmpty()) {
             String finalPath = list.get(position).getPictureLink();
 
-            switch (list.get(position).getCamera()){
+            switch (list.get(position).getCamera()) {
                 case 2:
-                    uri = Uri.fromFile(new File(finalPath));
+                    uri = Uri.parse(finalPath);
                     setPhoto(uri, holder);
                     break;
-                case  1:
+                case 1:
                     uri = Uri.parse(finalPath);
                     setPhoto(uri, holder);
                     break;
@@ -126,13 +127,13 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
         }//if
     }//onBindViewHolder
 
-    private void setPhoto(Uri uri, ViewHolder holder){
-        Glide.with(context)
+    private void setPhoto(Uri uri, ViewHolder holder) {
+        GlideApp.with(context)
                 .load(uri)
                 .override(80, 80)
                 .centerCrop()
                 .error(R.mipmap.no_photo)
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .into(holder.imageView);
     }//setPhoto
 

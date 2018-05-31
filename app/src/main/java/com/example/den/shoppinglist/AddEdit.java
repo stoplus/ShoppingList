@@ -6,11 +6,16 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -24,13 +29,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.den.shoppinglist.dialogs.CameraOrGalery;
 import com.example.den.shoppinglist.entity.Product;
 import com.example.den.shoppinglist.interfaces.CameraOrGaleryInterface;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,7 +67,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     @BindView(R.id.idLayoutBtn)
     LinearLayout layoutBtn;
     private int camera;
-    private final int CAMERA_CAPTURE = 1;
+    private final int CAMERA_CAPTURE = 2000;
     private final int REQUEST_PERMITIONS = 1100;
     private final int START_DIALOG_CHOICE_PHOTO = 200;
     private final int START_CONTEXT_MENU = 201;
@@ -69,6 +79,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private boolean newImageFlag;
     private View.OnClickListener clickListener;
     private int dateAdded;
+    String mCurrentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +128,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     installListenerPhoto(START_CONTEXT_MENU);
                     break;
                 case 2:
-                    pathForGlide = Uri.fromFile(new File(productReceived.getPictureLink()));
+                    pathForGlide = Uri.parse(productReceived.getPictureLink());
                     if (newImageFlag) pathForGlide = createPathForGlide();
                     installListenerPhoto(START_CONTEXT_MENU);
                     break;
@@ -140,7 +151,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 pathForGlide = Uri.parse(finalPath);
                 break;
             case 2:
-                pathForGlide = Uri.fromFile(new File(finalPath));
+                pathForGlide = Uri.parse(finalPath);
                 break;
         }//switch
         return pathForGlide;
@@ -173,12 +184,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
             if (productReceived == null) {
                 //create new
-                Product product = new Product();
-                product.setNameProduct(name);
-                product.setBought(false);
-                product.setCamera(camera);
-                product.setPictureLink(path);
-                intent.putExtra("product", product);
+                intent.putExtra("product", new Product(name, path, false, camera));
             } else {
                 //update
                 productReceived.setNameProduct(name);
@@ -195,13 +201,18 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("AddEditclass", "requestCode = "+ requestCode +"resultCode = " + resultCode + "data.getData = " +data);
+        Log.d("AddEditclass", "requestCode = " + requestCode + "resultCode = " + resultCode + "data.getData = " + data);
         imageView.setOnClickListener(clickListener);
         camera = 0;
         switch (requestCode) {
             case CAMERA_CAPTURE://reqCode camera
-                if (resultCode == Activity.RESULT_OK) {
-                    createPathPhoto();
+                if (resultCode == RESULT_OK) {
+                    // Show the thumbnail on ImageView
+                    Uri imageUri = Uri.parse(mCurrentPhotoPath);
+                    linkNewPicture = finalPath = String.valueOf(imageUri);
+                    camera = 2;
+                    newImageFlag = true;
+
                     if (productReceived != null && (productReceived.getPictureLink().isEmpty() || camera != productReceived.getCamera())) {
                         productReceived.setPictureLink(finalPath);
                         productReceived.setCamera(camera);
@@ -209,6 +220,9 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     chekPerm();
                 } else
                     Toast.makeText(this, getResources().getString(R.string.not_take_photo), Toast.LENGTH_LONG).show();
+                break;
+            default:
+                Snackbar.make(view, "Сработал default!!!!!", Snackbar.LENGTH_SHORT).show();
                 break;
             case 111:// reqCode system when selecting images
                 if (resultCode == Activity.RESULT_OK) {
@@ -231,55 +245,6 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         super.onActivityResult(requestCode, resultCode, data);
     }//onActivityResult
 
-    private void createPathPhoto() {
-        String largeImagePathE = getLastCreatedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        Log.d("AddEditclass", "largeImagePathE = "+ largeImagePathE);
-        int dateAddedEXTERNAL = dateAdded;
-        Log.d("AddEditclass", "dateAddedEXTERNAL = "+ dateAddedEXTERNAL);
-
-        String largeImagePathI = getLastCreatedPath(MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        Log.d("AddEditclass", "largeImagePathI = "+ largeImagePathI);
-        int dateAddedINTERNAL = dateAdded;
-        Log.d("AddEditclass", "dateAddedINTERNAL = "+ dateAddedINTERNAL);
-
-        if (dateAddedEXTERNAL > dateAddedINTERNAL) {
-            finalPath = largeImagePathE;
-        } else {
-            finalPath = largeImagePathI;
-        }
-        Uri uri = Uri.fromFile(new File(finalPath));
-        linkNewPicture = String.valueOf(uri);
-        camera = 2;
-        newImageFlag = true;
-    }//createPathPhoto
-
-    public String getLastCreatedPath(Uri internalContentUri) {
-        dateAdded = 0;
-        String[] fileProjection = {
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.DATE_ADDED
-        };
-        String fileSort = MediaStore.Images.ImageColumns._ID + " DESC";
-
-        String path = "";
-        try (Cursor myCursorLargeE = getContentResolver().query(
-                internalContentUri,
-                fileProjection,
-                null,
-                null,
-                fileSort)) {
-            if (myCursorLargeE != null && myCursorLargeE.getCount() > 0) {
-                myCursorLargeE.moveToFirst();
-                dateAdded = Integer.parseInt(myCursorLargeE.getString(myCursorLargeE.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)));
-                path = myCursorLargeE.getString(myCursorLargeE.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-            }
-        }catch (Exception e){
-            Log.d("AddEditclass", "e.getMessage() = "+ e.getMessage());
-        }
-        return path;
-    }
-
     @Override
     public void choiceForPhoto(boolean bool) {
         if (bool) {
@@ -287,15 +252,55 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             photoPickerIntent.setType("image/*");
             startActivityForResult(photoPickerIntent, 111);
         } else {
-            try {//Intention to start the camera
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, CAMERA_CAPTURE);
-            } catch (ActivityNotFoundException e) {
-                Snackbar.make(view, getResources().getString(R.string.device_no_camera),
-                        Snackbar.LENGTH_SHORT).show();
-            }
+            //Intention to start the camera
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Ensure that there's a camera activity to handle the intent
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                // Create the File where the photo should go
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                    return;
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+
+                    Uri photoURI = null;
+                    if (Build.VERSION.SDK_INT < 24) {
+                        photoURI = Uri.fromFile(photoFile);
+                    } else {
+                        photoURI = FileProvider.getUriForFile(AddEdit.this,
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                photoFile);
+                    }
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, CAMERA_CAPTURE);
+                }
+            } else Snackbar.make(view, getResources().getString(R.string.device_no_camera),
+                    Snackbar.LENGTH_SHORT).show();
         }//if
     }//choiceForPhoto
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM), "Camera");
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
 
     private void installListenerPhoto(final int way) {
         clickListener = new View.OnClickListener() {
@@ -341,12 +346,12 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     }//installListenerPhoto
 
     private void setPhoto(Uri uri, int errorPhoto) {
-        Glide.with(AddEdit.this)
+        GlideApp.with(AddEdit.this)
                 .load(uri)
                 .override(600, 600)
                 .fitCenter()
                 .error(errorPhoto)
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .into(imageView);
     }
 

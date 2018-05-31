@@ -8,7 +8,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.example.den.shoppinglist.entity.Product;
-import com.example.den.shoppinglist.entity.ProductForList;
 
 import java.util.List;
 
