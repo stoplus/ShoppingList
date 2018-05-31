@@ -226,16 +226,16 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                     startActivityForResult(intent, REQEST_ADD);
                 }
             });
-        }else {
-            updateTwoLists(lists);
-            flagDel = false;
         }
+        updateTwoLists(lists);
+        flagDel = false;
     }
 
     // added the product to the product table
     @Override
     public void onProductAdded() {
         Log.d("Productsclass", "onProductAdded");
+        textPurchased.setText(getResources().getString(R.string.purchased));
         // get the last added product
         requestsLists.getlastProduct(Products.this);
     }
@@ -350,10 +350,5 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         flagDel = savedInstanceState.getBoolean("flagDel");
         productList = savedInstanceState.getParcelableArrayList("productList");
         listPurchased = savedInstanceState.getParcelableArrayList("listPurchased");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }
