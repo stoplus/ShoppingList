@@ -61,9 +61,6 @@ public class AddEditListDialog extends DialogFragment {
         final Lists finalLists = lists;
         builder.setTitle(title)
                 .setIcon(image)
-
-
-
                 .setView(view);
         AlertDialog dialog = builder.create();
 
@@ -78,6 +75,7 @@ public class AddEditListDialog extends DialogFragment {
                     public void onClick(View v) {
                         String name = input.getText().toString();
                         if (!name.isEmpty()) {
+                            name = name.substring(0, 1).toUpperCase() + name.substring(1);
                             if (finalLists == null) {
                                 datable.addList(new Lists(name));
                             } else {
