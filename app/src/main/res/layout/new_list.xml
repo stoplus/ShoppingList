@@ -22,7 +22,7 @@
 
         <Button
             android:id="@+id/btnCancel"
-            style="@android:style/Widget.DeviceDefault.Button.Inset"
+            style="@android:style/Widget.Button.Inset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -30,7 +30,7 @@
 
         <Button
             android:id="@+id/btnAdd"
-            style="@android:style/Widget.DeviceDefault.Button.Inset"
+            style="@android:style/Widget.Button.Inset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

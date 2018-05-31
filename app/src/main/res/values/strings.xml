@@ -38,5 +38,6 @@
     <string name="add_post">Добавьте запись</string>
     <string name="exit_from_app">Выйти из приложения?</string>
     <string name="yes">Да</string>
+    <string name="picture">Изображение</string>
 
 </resources>

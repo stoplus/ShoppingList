@@ -15,7 +15,8 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:adjustViewBounds="true"
-        app:srcCompat="@mipmap/default_photo" />
+        app:srcCompat="@mipmap/default_photo"
+        android:contentDescription="@string/picture"/>
 
     <EditText
         android:id="@+id/editText"
@@ -37,7 +38,7 @@
 
         <Button
             android:id="@+id/idCancel"
-            style="@android:style/Widget.DeviceDefault.Button.Inset"
+            style="@android:style/Widget.Button.Inset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -46,7 +47,7 @@
 
         <Button
             android:id="@+id/idAdd"
-            style="@android:style/Widget.DeviceDefault.Button.Inset"
+            style="@android:style/Widget.Button.Inset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

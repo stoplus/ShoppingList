@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -20,7 +20,9 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:visibility="visible"
-            app:srcCompat="@android:drawable/sym_def_app_icon" />
+            app:srcCompat="@android:drawable/sym_def_app_icon"
+            tools:ignore="NestedWeights"
+            android:contentDescription="@string/picture" />
 
         <LinearLayout
             android:id="@+id/idLayoutBtn"
@@ -33,6 +35,7 @@
 
             <Button
                 android:id="@+id/idAdd"
+                style="@android:style/Widget.Button.Inset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -41,6 +44,7 @@
 
             <Button
                 android:id="@+id/idCancel"
+                style="@android:style/Widget.Button.Inset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -57,8 +61,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
-        android:hint="Название"
-        android:imeOptions="flagNoExtractUi" />
+        android:hint="@string/nameNewList"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textShortMessage"/>
 
 
 </LinearLayout>

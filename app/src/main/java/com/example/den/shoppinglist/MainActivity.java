@@ -84,30 +84,29 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void onListsLoaded(final List<Lists> lists) {
-        if (lists.size() == 0){
+        if (lists.size() == 0) {
             AddEditListDialog addEditListDialog = new AddEditListDialog();
             addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
-        }else {
-            listLists = lists;
-            if (adapter == null || positionDelete == -1) {
-                OnItemListener onItemListener = new OnItemListener() {
-                    @Override
-                    public void onItemClick(int position, View v) {
-                        itemClick(position, listLists);
-                    }
-
-                    @Override
-                    public void onItemLongClick(int position, View v) { itemLongClick(position, v, listLists);
-                    }
-                };
-                adapter = new AdapterList(MainActivity.this, listLists, onItemListener);
-                recyclerView.setAdapter(adapter);
-            } else {
-                adapter.deleteFromListAdapter(positionDelete);
-                positionDelete = -1;
-            }
         }
+        listLists = lists;
+        if (adapter == null || positionDelete == -1) {
+            OnItemListener onItemListener = new OnItemListener() {
+                @Override
+                public void onItemClick(int position, View v) {
+                    itemClick(position, listLists);
+                }
 
+                @Override
+                public void onItemLongClick(int position, View v) {
+                    itemLongClick(position, v, listLists);
+                }
+            };
+            adapter = new AdapterList(MainActivity.this, listLists, onItemListener);
+            recyclerView.setAdapter(adapter);
+        } else {
+            adapter.deleteFromListAdapter(positionDelete);
+            positionDelete = -1;
+        }
     }//onListsLoaded
 
     private void itemClick(int position, List<Lists> list) {
