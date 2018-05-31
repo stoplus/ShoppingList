@@ -20,9 +20,9 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:visibility="visible"
-            app:srcCompat="@android:drawable/sym_def_app_icon"
-            tools:ignore="NestedWeights"
-            android:contentDescription="@string/picture" />
+            app:srcCompat="@mipmap/default_photo"
+            android:contentDescription="@string/picture"
+            tools:ignore="NestedWeights" />
 
         <LinearLayout
             android:id="@+id/idLayoutBtn"
