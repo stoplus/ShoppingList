@@ -6,13 +6,13 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -22,11 +22,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -41,9 +40,6 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import android.support.annotation.NonNull;
-
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -61,6 +57,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     Button btnCancel;
     @BindView(R.id.idAdd)
     Button btnAdd;
+    @BindView(R.id.hint_image)
+    TextView hintImage;
     private final int CAMERA_CAPTURE = 2000;
     private final int REQUEST_PERMITIONS = 1100;
     private final int START_DIALOG_CHOICE_PHOTO = 200;
@@ -74,6 +72,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private View.OnClickListener clickListener;
     private String mCurrentPhotoPath;
     private PopupMenu popup;
+
 
     @SuppressLint("InflateParams")
     @Override
@@ -109,9 +108,10 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             idErrorPhoto = R.mipmap.default_photo;
             btnAdd.setText(getResources().getString(R.string.add));
             pathForGlide = Uri.parse(finalPath);
-            if (linkNewPicture.isEmpty())
+            if (linkNewPicture.isEmpty()) {
                 installListenerPhoto(START_DIALOG_CHOICE_PHOTO);
-            else installListenerPhoto(START_CONTEXT_MENU);
+
+            } else installListenerPhoto(START_CONTEXT_MENU);
         } else {//update product
             editText.setText(productReceived.getNameProduct());
             btnAdd.setText(getResources().getString(R.string.edit));
@@ -129,6 +129,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 }
             }
         }//if
+
         setPhoto(pathForGlide, idErrorPhoto);
         imageView.setOnClickListener(clickListener);
     }//chekPerm
@@ -313,6 +314,9 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
 
     private void installListenerPhoto(final int way) {
+        if (way == START_DIALOG_CHOICE_PHOTO) hintImage.setVisibility(View.VISIBLE);
+        else hintImage.setVisibility(View.GONE);
+
         clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -435,7 +439,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
     @Override
     protected void onPause() {
-        if (popup !=null){
+        if (popup != null) {
             popup.dismiss();
         }
         super.onPause();

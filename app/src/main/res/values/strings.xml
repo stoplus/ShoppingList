@@ -7,7 +7,7 @@
     <string name="delete">Удалить</string>
     <string name="delete_photo">Удалить фото</string>
     <string name="allItemsPurchased">Отметить все как купленные</string>
-    <string name="back">Назад</string>
+    <string name="back">Вернуться к спискам</string>
     <string name="exit">Выход</string>
     <string name="addPhoto">Добавить фото</string>
     <string name="editPhoto">Изменить фото</string>
@@ -19,7 +19,7 @@
     <string name="device_no_camera">Ваше устройство не поддерживает съемку</string>
     <string name="not_take_photo">Вы не сделали фото</string>
     <string name="not_selected_photo">Вы не выбрали фото</string>
-    <string name="enter_name_product">Введите название покупки</string>
+    <string name="enter_name_product">Введите название</string>
     <string name="attention">Внимание!</string>
     <string name="need_get_permissions">Необходимо получить разрешения!</string>
     <string name="need_obtain_permissions">Для использования приложения необходимо получить разрешения</string>
@@ -39,5 +39,6 @@
     <string name="exit_from_app">Выйти из приложения?</string>
     <string name="yes">Да</string>
     <string name="picture">Изображение</string>
+    <string name="touch_for_add_photo">Прикоснитесь для добавления фото</string>
 
 </resources>
