@@ -226,7 +226,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                     startActivityForResult(intent, REQEST_ADD);
                 }
             });
-        }
+        }else layout.setOnClickListener(null);
         updateTwoLists(lists);
         flagDel = false;
     }
