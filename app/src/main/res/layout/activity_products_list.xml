@@ -46,14 +46,37 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior" >
                 </android.support.v7.widget.RecyclerView>
 
-                <TextView
-                    android:id="@+id/textView2"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:text="@string/purchased" />
+                    android:orientation="horizontal"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp">
+
+                    <TextView
+                        android:id="@+id/textViewNotReady"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="@string/not_collected"
+                        android:textColor="@color/not_collected"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:id="@+id/textViewReady"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                       android:text="@string/collected"
+                        android:textColor="@color/collected" />
+
+                </LinearLayout>
+
 
 
                 <android.support.v7.widget.RecyclerView

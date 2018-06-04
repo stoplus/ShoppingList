@@ -2,6 +2,7 @@ package ru.deliveon.lists;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -11,12 +12,14 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.deliveon.lists.adapters.AdapterList;
 import ru.deliveon.lists.dialogs.AddEditListDialog;
 import ru.deliveon.lists.dialogs.DeleteListDialog;
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     RecyclerView recyclerView;
     @BindView(R.id.fabBtn)
     FloatingActionButton fabBtn;
+    @BindView(R.id.idMainLayout)
+    LinearLayout mainLayout;
     private AdapterList adapter;
     private int positionDelete = -1;
     private RequestsLists requestsLists;
@@ -56,13 +61,17 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         fabBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddEditListDialog addEditListDialog = new AddEditListDialog();
-                addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
+                openAddEditListDialog();
             }
         });
 
         requestsLists.getLists(this);
     }//onCreate
+
+    private void openAddEditListDialog() {
+        AddEditListDialog addEditListDialog = new AddEditListDialog();
+        addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
+    }
 
     @Override
     public void addList(final Lists lists) {
@@ -83,9 +92,14 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void onListsLoaded(final List<Lists> lists) {
         if (lists.size() == 0) {
-            AddEditListDialog addEditListDialog = new AddEditListDialog();
-            addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
-        }
+            openAddEditListDialog();
+            mainLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openAddEditListDialog();
+                }
+            });
+        } else mainLayout.setOnClickListener(null);
         listLists = lists;
         if (adapter == null || positionDelete == -1) {
             OnItemListener onItemListener = new OnItemListener() {

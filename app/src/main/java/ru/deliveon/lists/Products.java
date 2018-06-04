@@ -38,10 +38,13 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     RecyclerView recyclerProdPurchased;
     @BindView(R.id.fabBtn)
     FloatingActionButton fabBtn;
-    @BindView(R.id.textView2)
-    TextView textPurchased;
     @BindView(R.id.idLinearLayout)
     LinearLayout layout;
+    @BindView(R.id.textViewReady)
+    TextView textViewReady;
+    @BindView(R.id.textViewNotReady)
+    TextView textViewNotReady;
+
     private RequestsLists requestsLists;
     private int positionDelete = -1;
     private int positionDeletePurchased = -1;
@@ -105,10 +108,28 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     public void updateTwoLists(List<Product> lists) {
         productList = new ArrayList<>();//list of not bought
         listPurchased = new ArrayList<>();//list of purchased
+
         for (int i = 0; i < lists.size(); i++) {//filter the general list on bought and not bought
-            if (lists.get(i).isBought()) {
-                listPurchased.add(lists.get(i));
-            } else productList.add(lists.get(i));
+            if (lists.get(i).isBought()) listPurchased.add(lists.get(i));
+            else productList.add(lists.get(i));
+        }
+        if (lists.size() == 0) {
+            textViewReady.setText(getResources().getString(R.string.add_post));
+            textViewReady.setTextColor(getResources().getColor(R.color.colorAlert));
+            textViewReady.setGravity(Gravity.CENTER);
+            textViewNotReady.setVisibility(View.GONE);
+        }else {
+            StringBuilder builder = new StringBuilder();
+            builder.append(getResources().getString(R.string.collected)).append(" ")
+                    .append(listPurchased.size());
+            textViewReady.setText(builder);
+            textViewReady.setGravity(Gravity.END);
+            textViewReady.setTextColor(getResources().getColor(R.color.collected));
+            builder.delete(0, builder.length());
+            builder.append(getResources().getString(R.string.not_collected)).append(" ")
+                    .append(productList.size());
+            textViewNotReady.setVisibility(View.VISIBLE);
+            textViewNotReady.setText(builder);
         }
 
         if (adapterProductList == null) {
@@ -214,7 +235,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         requestsLists.disposable.dispose();// unsubscribe the observer
         Log.d("Productsclass", "onListProductsLoaded");
         if (lists.size() == 0) {
-            textPurchased.setText(getResources().getString(R.string.add_post));
+//            textViewReady.setText(getResources().getString(R.string.add_post));
             layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -224,7 +245,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                     startActivityForResult(intent, REQEST_ADD);
                 }
             });
-        }else layout.setOnClickListener(null);
+        } else layout.setOnClickListener(null);
         updateTwoLists(lists);
         flagDel = false;
     }
@@ -233,7 +254,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     @Override
     public void onProductAdded() {
         Log.d("Productsclass", "onProductAdded");
-        textPurchased.setText(getResources().getString(R.string.purchased));
+//        textViewReady.setText(getResources().getString(R.string.purchased));
         // get the last added product
         requestsLists.getlastProduct(Products.this);
     }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">List</string>
+    <string name="app_name">Lists</string>
     <string name="lists">Списки</string>
     <string name="edit">Изменить</string>
     <string name="change_photo">Заменить фото</string>
@@ -33,7 +33,8 @@
     <string name="camera">Камера</string>
     <string name="confirmation">Подтверждение</string>
     <string name="delete_select_list">Удалить выбранный список?</string>
-    <string name="purchased">Готово</string>
+    <string name="collected">Сложено:</string>
+    <string name="not_collected">Ожидает:</string>
     <string name="add_post">Добавьте запись</string>
     <string name="exit_from_app">Выйти из приложения?</string>
     <string name="yes">Да</string>
