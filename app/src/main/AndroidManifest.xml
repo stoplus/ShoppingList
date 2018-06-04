@@ -36,7 +36,6 @@
         </provider>
         <activity
             android:name=".Products"
-            android:label="@string/listsProducts"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AddEdit"
             android:theme="@style/AppTheme.NoActionBar"/>
