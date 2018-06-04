@@ -144,7 +144,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             textViewReady.setTextColor(getResources().getColor(R.color.collected));
 
             builder.delete(0, builder.length());
-            
+
             builder.append(getResources().getString(R.string.not_collected)).append(" ")
                     .append(productList.size());
             textViewNotReady.setVisibility(View.VISIBLE);
