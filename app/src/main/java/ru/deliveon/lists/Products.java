@@ -113,24 +113,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             if (lists.get(i).isBought()) listPurchased.add(lists.get(i));
             else productList.add(lists.get(i));
         }
-        if (lists.size() == 0) {
-            textViewReady.setText(getResources().getString(R.string.add_post));
-            textViewReady.setTextColor(getResources().getColor(R.color.colorAlert));
-            textViewReady.setGravity(Gravity.CENTER);
-            textViewNotReady.setVisibility(View.GONE);
-        }else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(getResources().getString(R.string.collected)).append(" ")
-                    .append(listPurchased.size());
-            textViewReady.setText(builder);
-            textViewReady.setGravity(Gravity.END);
-            textViewReady.setTextColor(getResources().getColor(R.color.collected));
-            builder.delete(0, builder.length());
-            builder.append(getResources().getString(R.string.not_collected)).append(" ")
-                    .append(productList.size());
-            textViewNotReady.setVisibility(View.VISIBLE);
-            textViewNotReady.setText(builder);
-        }
+
+        setHints(lists);
 
         if (adapterProductList == null) {
             createAndInstallAdapter();
@@ -144,6 +128,29 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             } else if (flagDel) createAndInstallAdapter();
         }//if
     }//updateTwoLists
+
+    private void setHints(List<Product> lists) {
+        if (lists.size() == 0) {
+            textViewReady.setText(getResources().getString(R.string.add_post));
+            textViewReady.setTextColor(getResources().getColor(R.color.colorAlert));
+            textViewReady.setGravity(Gravity.CENTER);
+            textViewNotReady.setVisibility(View.GONE);
+        }else {
+            StringBuilder builder = new StringBuilder();
+            builder.append(getResources().getString(R.string.collected)).append(" ")
+                    .append(listPurchased.size());
+            textViewReady.setText(builder);
+            textViewReady.setGravity(Gravity.END);
+            textViewReady.setTextColor(getResources().getColor(R.color.collected));
+
+            builder.delete(0, builder.length());
+            
+            builder.append(getResources().getString(R.string.not_collected)).append(" ")
+                    .append(productList.size());
+            textViewNotReady.setVisibility(View.VISIBLE);
+            textViewNotReady.setText(builder);
+        }//if
+    }//setHints
 
     private void createAndInstallAdapter() {
         OnItemListener onItemListener = new OnItemListener() {
