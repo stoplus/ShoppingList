@@ -105,7 +105,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         if (!newImageFlag) newImageFlag = getIntent().getBooleanExtra("newImageFlag", false);
 
         if (productReceived == null) {//new product
-            idErrorPhoto = R.mipmap.default_photo;
+            idErrorPhoto = R.drawable.default_photo;
             btnAdd.setText(getResources().getString(R.string.add));
             pathForGlide = Uri.parse(finalPath);
             if (linkNewPicture.isEmpty()) {
@@ -115,7 +115,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         } else {//update product
             editText.setText(productReceived.getNameProduct());
             btnAdd.setText(getResources().getString(R.string.edit));
-            idErrorPhoto = R.mipmap.no_photo;
+            idErrorPhoto = R.drawable.no_photo;
             pathForGlide = Uri.parse(productReceived.getPictureLink());
             if (newImageFlag) {
                 pathForGlide = Uri.parse(finalPath);
@@ -123,7 +123,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             } else {
                 if (productReceived.getPictureLink().isEmpty()) {
                     installListenerPhoto(START_DIALOG_CHOICE_PHOTO);
-                    idErrorPhoto = R.mipmap.default_photo;
+                    idErrorPhoto = R.drawable.default_photo;
                 } else {
                     installListenerPhoto(START_CONTEXT_MENU);
                 }
@@ -392,7 +392,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     void onNeverAskAgain() {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(getResources().getString(R.string.attention))
-                .setIcon(R.mipmap.warning)
+                .setIcon(R.drawable.warning)
                 .setMessage(getResources().getString(R.string.need_get_permissions))
                 .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override

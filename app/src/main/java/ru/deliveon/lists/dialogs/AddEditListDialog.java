@@ -48,12 +48,12 @@ public class AddEditListDialog extends DialogFragment {
         if (lists == null) {
             title = getResources().getString(R.string.create_new_list);
             positiveButton = getResources().getString(R.string.add);
-            image = R.mipmap.add;
+            image = R.drawable.add;
         } else {
             input.setText(lists.getListName());
             title = getResources().getString(R.string.edit_name_list);
             positiveButton = getResources().getString(R.string.edit);
-            image = R.mipmap.edit;
+            image = R.drawable.edit;
         }
 
         final Lists finalLists = lists;

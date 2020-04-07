@@ -48,7 +48,7 @@ public class BigPhotoFragment extends DialogFragment {
                 .load(uri)
                 .fitCenter()
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .error(R.mipmap.no_photo)
+                .error(R.drawable.no_photo)
                 .into(imageViewBigPhoto);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 

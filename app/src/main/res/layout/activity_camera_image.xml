@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:adjustViewBounds="true"
-            app:srcCompat="@mipmap/default_photo"
+            app:srcCompat="@drawable/default_photo"
             android:contentDescription="@string/picture"/>
 
         <TextView

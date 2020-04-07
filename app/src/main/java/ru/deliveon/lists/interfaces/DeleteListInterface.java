@@ -4,4 +4,5 @@ import ru.deliveon.lists.entity.Lists;
 
 public interface DeleteListInterface {
     void deleteList(Lists lists);
+    void cancelDeleteList();
 }

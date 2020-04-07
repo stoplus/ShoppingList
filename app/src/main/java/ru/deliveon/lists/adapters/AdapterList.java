@@ -1,32 +1,42 @@
 package ru.deliveon.lists.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.deliveon.lists.R;
+import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperAdapter;
+import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperViewHolder;
+import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.entity.Lists;
 import ru.deliveon.lists.interfaces.OnItemListener;
 
-public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> {
+public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> implements ItemTouchHelperAdapter  {
     private LayoutInflater inflater;
     private List<Lists> list;
-    private OnItemListener OnItemListener;
+    private OnItemListener onItemListener;
+    private final OnStartDragListener mDragStartListener;
 
-    public AdapterList(Context context, List<Lists> list, OnItemListener OnItemListener) {
+    public AdapterList(Context context, List<Lists> list, OnItemListener onItemListener, OnStartDragListener mDragStartListener) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
-        this.OnItemListener = OnItemListener;
+        this.onItemListener = onItemListener;
+        this.mDragStartListener = mDragStartListener;
     }//AdapterForAdmin
 
     @Override
@@ -46,36 +56,58 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> {
         return new ViewHolder(view);
     } // onCreateViewHolder
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.idTextViewLists)
-        TextView category_id;
-        @BindView(R.id.container)
-        ConstraintLayout constraintLayout;
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(list, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
 
+    @Override
+    public void onItemDismiss(int position) {
+        onItemListener.onRemoveItem(position, null);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+        @BindView(R.id.idTextViewLists) TextView category_id;
+        @BindView(R.id.move) ImageView move;
+        @BindView(R.id.container) ConstraintLayout constraintLayout;
 
         private ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
 
-            constraintLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    OnItemListener.onItemClick(getAdapterPosition(), v);
-                }
-            });
-            constraintLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    OnItemListener.onItemLongClick(getAdapterPosition(), v);
-                    return false;
-                }
+            constraintLayout.setOnClickListener(v -> onItemListener.onItemClick(getAdapterPosition(), v));
+            constraintLayout.setOnLongClickListener(v -> {
+                onItemListener.onItemLongClick(getAdapterPosition(), v);
+                return false;
             });
         }//ViewHolder
+
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorListDrag));
+        }
+
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorList));
+        }
     }//class ViewHolder
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.category_id.setText(list.get(position).getListName());
+        // Start a drag whenever the handle view it touched
+        holder.move.setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                mDragStartListener.onStartDrag(holder);
+            } else {
+                v.performClick();
+            }
+            return false;
+        });
     }//onBindViewHolder
 
     public void deleteFromListAdapter(int pos) {

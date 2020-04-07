@@ -187,12 +187,8 @@ public class RequestsLists {
     }
 
     public void deleteProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                productDao.delete(product);
-            }
-        }).subscribeOn(Schedulers.io())
+        Completable.fromAction(() -> productDao.delete(product))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
@@ -212,12 +208,8 @@ public class RequestsLists {
     }
 
     public void deleteProductList(final DatabaseCallbackLists databaseCallbackLists, final List<Integer> list) {
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                productDao.deleteByIdList(list);
-            }
-        }).subscribeOn(Schedulers.io())
+        Completable.fromAction(() -> productDao.deleteByIdList(list))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
@@ -237,12 +229,8 @@ public class RequestsLists {
     }
 
     public void updateProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                productDao.update(product);
-            }
-        }).subscribeOn(Schedulers.io())
+        Completable.fromAction(() -> productDao.update(product))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override

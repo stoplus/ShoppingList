@@ -18,7 +18,7 @@ public class ExitDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
                 .setTitle(getResources().getString(R.string.exit_from_app))
-                .setIcon(R.mipmap.question)
+                .setIcon(R.drawable.question)
                 .setNegativeButton(getResources().getString(R.string.cancel), null)
                 .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override

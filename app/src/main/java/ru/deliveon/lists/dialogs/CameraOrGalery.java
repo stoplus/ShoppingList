@@ -28,7 +28,7 @@ public class CameraOrGalery extends DialogFragment {
 
         builder.setMessage(getResources().getString(R.string.camera_or_galery))
                 .setTitle(getResources().getString(R.string.where_take_pictures))
-                .setIcon(R.mipmap.question)
+                .setIcon(R.drawable.question)
                 .setNegativeButton(getResources().getString(R.string.galery), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

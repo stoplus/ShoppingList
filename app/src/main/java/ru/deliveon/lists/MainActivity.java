@@ -2,15 +2,14 @@ package ru.deliveon.lists;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -19,8 +18,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import ru.deliveon.lists.adapters.AdapterList;
+import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
+import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
 import ru.deliveon.lists.dialogs.AddEditListDialog;
 import ru.deliveon.lists.dialogs.DeleteListDialog;
 import ru.deliveon.lists.dialogs.ExitDialog;
@@ -31,7 +31,8 @@ import ru.deliveon.lists.interfaces.DatabaseCallbackLists;
 import ru.deliveon.lists.interfaces.DeleteListInterface;
 import ru.deliveon.lists.interfaces.OnItemListener;
 
-public class MainActivity extends AppCompatActivity implements DeleteListInterface, AddEditListInterface, DatabaseCallbackLists {
+public class MainActivity extends AppCompatActivity implements DeleteListInterface,
+        AddEditListInterface, DatabaseCallbackLists, OnStartDragListener {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.idRecycler)
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private int idList;
     private List<ProductForList> sameIdList;
     private List<Lists> listLists;
-
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +59,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         App.app().getListComponent().inject(requestsLists);
         setSupportActionBar(toolbar);
 
-        fabBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openAddEditListDialog();
-            }
-        });
+        fabBtn.setOnClickListener(view -> openAddEditListDialog());
 
         requestsLists.getLists(this);
     }//onCreate
@@ -88,18 +84,21 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         requestsLists.deleteList(this, lists);
     }
 
+    @Override
+    public void cancelDeleteList() {
+        adapter = null;
+        positionDelete = -1;
+        requestsLists.getLists(this);
+    }
 
     @Override
     public void onListsLoaded(final List<Lists> lists) {
         if (lists.size() == 0) {
             openAddEditListDialog();
-            mainLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openAddEditListDialog();
-                }
-            });
-        } else mainLayout.setOnClickListener(null);
+            mainLayout.setOnClickListener(v -> openAddEditListDialog());
+        } else{
+            mainLayout.setOnClickListener(null);
+        }
         listLists = lists;
         if (adapter == null || positionDelete == -1) {
             OnItemListener onItemListener = new OnItemListener() {
@@ -110,11 +109,20 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
                 @Override
                 public void onItemLongClick(int position, View v) {
-                    itemLongClick(position, v, listLists);
+                    itemLongClick(position, v, listLists, false);
+                }
+
+                @Override
+                public void onRemoveItem(int position, View v) {
+                    itemLongClick(position, v, listLists, true);
                 }
             };
-            adapter = new AdapterList(MainActivity.this, listLists, onItemListener);
+            adapter = new AdapterList(MainActivity.this, listLists, onItemListener, this);
             recyclerView.setAdapter(adapter);
+
+            ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+            mItemTouchHelper = new ItemTouchHelper(callback);
+            mItemTouchHelper.attachToRecyclerView(recyclerView);
         } else {
             adapter.deleteFromListAdapter(positionDelete);
             positionDelete = -1;
@@ -130,34 +138,27 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         startActivity(intent);
     }//itemClick
 
-    private void itemLongClick(final int position, View v, final List<Lists> list) {
-        PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);
-        popup.inflate(R.menu.context_menu);
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Lists lists = list.get(position);
-                Bundle args = new Bundle();
-                args.putParcelable("lists", lists);
-                switch (item.getItemId()) {
-                    case R.id.edit:
-                        AddEditListDialog addEditListDialog = new AddEditListDialog();
-                        addEditListDialog.setArguments(args);
-                        addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
-                        return true;
-                    case R.id.delete:
-                        positionDelete = position;
-                        DeleteListDialog deleteDialog = new DeleteListDialog();
-                        deleteDialog.setArguments(args);
-                        deleteDialog.show(getSupportFragmentManager(), "deleteList");
-                        return true;
-                    default:
-                        break;
-                }//switch
+    private void itemLongClick(final int position, View v, final List<Lists> list, boolean remove) {
+        Lists lists = list.get(position);
+        Bundle args = new Bundle();
+        args.putParcelable("lists", lists);
+        if (remove && v == null) {
+            positionDelete = position;
+            DeleteListDialog deleteDialog = new DeleteListDialog();
+            deleteDialog.setArguments(args);
+            deleteDialog.show(getSupportFragmentManager(), "deleteList");
+        } else {
+            PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);
+            popup.inflate(R.menu.context_menu);
+            //определяем нажатия на элементы меню
+            popup.setOnMenuItemClickListener(item -> {
+                AddEditListDialog addEditListDialog = new AddEditListDialog();
+                addEditListDialog.setArguments(args);
+                addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
                 return false;
-            }//onMenuItemClick
-        });
-        popup.show();
+            });
+            popup.show();
+        }
     }//itemLongClick
 
     @Override
@@ -220,6 +221,11 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void onListsUpdated() {
         Log.d("MainActivityclass", "jjj");
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
     }
 
     @Override

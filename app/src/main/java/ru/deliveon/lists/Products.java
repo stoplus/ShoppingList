@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -23,6 +24,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.deliveon.lists.adapters.AdapterProductList;
 import ru.deliveon.lists.adapters.AdapterProductListPurchased;
+import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
+import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
 import ru.deliveon.lists.entity.Product;
 import ru.deliveon.lists.entity.ProductForList;
 import ru.deliveon.lists.interfaces.DatabaseCallbackProduct;
@@ -58,6 +61,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     private boolean flagDel = true;
     public final int REQEST_EDIT = 101;             //response when changing data
     private final int REQEST_ADD = 102;             //constant for adding
+    private ItemTouchHelper mItemTouchHelper;
+    private ItemTouchHelper mItemTouchHelperPurchased;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +91,11 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
         recyclerProdPurchased.setNestedScrollingEnabled(false);
     }//onCreate
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
 
     //return from adding / editing
     @Override
@@ -135,7 +145,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             textViewReady.setTextColor(getResources().getColor(R.color.colorAlert));
             textViewReady.setGravity(Gravity.CENTER);
             textViewNotReady.setVisibility(View.GONE);
-        }else {
+        } else {
             StringBuilder builder = new StringBuilder();
             builder.append(getResources().getString(R.string.collected)).append(" ")
                     .append(listPurchased.size());
@@ -161,7 +171,12 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
             @Override
             public void onItemLongClick(int position, View v) {
-                itemLongClick(position, v, productList);
+                itemLongClickOrRemove(position, v, productList, false);
+            }
+
+            @Override
+            public void onRemoveItem(int position, View v) {
+                itemLongClickOrRemove(position, v, productList, true);
             }
         };
 
@@ -173,16 +188,35 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
             @Override
             public void onItemLongClick(int position, View v) {
-                itemLongClick(position, v, listPurchased);
+                itemLongClickOrRemove(position, v, listPurchased, false);
+            }
+
+            @Override
+            public void onRemoveItem(int position, View v) {
+                itemLongClickOrRemove(position, v, listPurchased, true);
             }
         };
 
+        //адаптер для ожидающих
         adapterProductList = new AdapterProductList(
-                this, productList, getSupportFragmentManager(), onItemListener);//adapter for non-purchased
+                this, productList, getSupportFragmentManager(), onItemListener, viewHolder -> {
+            mItemTouchHelper.startDrag(viewHolder);//делаем вызов для перетаскивания или свайпа
+        });//adapter for non-purchased
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapterProductList);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+
+        //адаптер для сложенных
         adapterProductListPurchased = new AdapterProductListPurchased(
-                this, listPurchased, getSupportFragmentManager(), onItemListenerPurchased);//for purchased
+                this, listPurchased, getSupportFragmentManager(), onItemListenerPurchased, viewHolder -> {
+            mItemTouchHelperPurchased.startDrag(viewHolder);//делаем вызов для перетаскивания или свайпа
+        });//for purchased
+        ItemTouchHelper.Callback callbackPurchased = new SimpleItemTouchHelperCallback(adapterProductListPurchased);
+        mItemTouchHelperPurchased = new ItemTouchHelper(callbackPurchased);
+
         recyclerProd.setAdapter(adapterProductList);
         recyclerProdPurchased.setAdapter(adapterProductListPurchased);
+        mItemTouchHelper.attachToRecyclerView(recyclerProd);
+        mItemTouchHelperPurchased.attachToRecyclerView(recyclerProdPurchased);
     }//createAndInstallAdapter
 
     private void itemClick(int position, List<Product> list) {
@@ -195,46 +229,35 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         requestsLists.updateProduct(Products.this, productPurchased);
     }//itemClick
 
-    private void itemLongClick(final int position, View v, final List<Product> list) {
-        try {
-            PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
-            popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
-            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    product = list.get(position);
-                    idProduct = product.getId();
-                    Boolean bought = product.isBought();
-                    Bundle args = new Bundle();
-                    args.putParcelable("product", product);
-                    flagDel = true;
-                    switch (item.getItemId()) {
-                        case R.id.edit:
-                            Intent intent = new Intent(Products.this, AddEdit.class);
-                            intent.putExtra("idList", idList);
-                            intent.putExtra("product", product);
-                            intent.putExtra("newImageFlag", false);
-                            startActivityForResult(intent, REQEST_EDIT);
-                            return true;
-                        case R.id.delete:
-                            if (bought) positionDeletePurchased = position;
-                            else positionDelete = position;
-                            requestsLists.deleteProductForList(Products.this, idProduct, idList);
-                            return true;
-                    }//switch
-                    return false;
-                }//onMenuItemClick
-            });
-            popup.show();
-        } catch (IndexOutOfBoundsException e) {
-            Log.d("Productsclass", e.getMessage());
+    private void itemLongClickOrRemove(final int position, View v, final List<Product> list, boolean remove) {
+        product = list.get(position);
+        idProduct = product.getId();
+        flagDel = true;
+        if (remove && v == null) {
+            if (product.isBought()) positionDeletePurchased = position;
+            else positionDelete = position;
+            requestsLists.deleteProductForList(Products.this, idProduct, idList);
+        } else {
+            try {
+                PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
+                popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(Products.this, AddEdit.class);
+                        intent.putExtra("idList", idList);
+                        intent.putExtra("product", product);
+                        intent.putExtra("newImageFlag", false);
+                        startActivityForResult(intent, REQEST_EDIT);
+                        return false;
+                    }//onMenuItemClick
+                });
+                popup.show();
+            } catch (IndexOutOfBoundsException e) {
+                Log.d("Productsclass", e.getMessage());
+            }
         }
     }//itemLongClick
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
 
     //see the change in the table "products"
     @Override

@@ -14,8 +14,11 @@
     <color name="colorAlert">#f44337</color>
     <color name="colorTitleText">#33691E</color>
     <color name="colorBotom">#a9b5d6</color>
+    <color name="colorBotomDrag">#BEC9E4</color>
     <color name="colorTop">#87a4f2</color>
+    <color name="colorTopDrag">#B2C4F4</color>
     <color name="colorList">#a9ed84</color>
+    <color name="colorListDrag">#CCFBB2</color>
     <color name="hint">#a0a0a0</color>
     <color name="collected">#595959</color>
     <color name="not_collected">#303aff</color>

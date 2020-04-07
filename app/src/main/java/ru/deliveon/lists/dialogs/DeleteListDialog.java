@@ -31,15 +31,15 @@ public class DeleteListDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
                 .setTitle(getResources().getString(R.string.confirmation))
-                .setIcon(R.mipmap.warning)
+                .setIcon(R.drawable.warning)
                 .setMessage(getResources().getString(R.string.delete_select_list))
-                .setNegativeButton(getResources().getString(R.string.cancel), null)
-                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // удалить выбранный элемент списка при помощи метода интерфейса
-                        datable.deleteList(lists);
-                    }
+                .setNegativeButton(getResources().getString(R.string.cancel), (dialog, which) -> {
+                    // отмена удаления
+                    datable.cancelDeleteList();
+                })
+                .setPositiveButton(getResources().getString(R.string.ok), (dialog, which) -> {
+                    // удалить выбранный элемент списка при помощи метода интерфейса
+                    datable.deleteList(lists);
                 });
         return builder.create();
     } // onCreateDialog

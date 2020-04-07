@@ -25,7 +25,7 @@
                 android:layout_centerInParent="true"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/picture"
-                app:srcCompat="@mipmap/default_photo" />
+                app:srcCompat="@drawable/default_photo" />
 
             <TextView
                 android:id="@+id/hint_image"

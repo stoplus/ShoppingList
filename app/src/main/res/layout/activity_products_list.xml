@@ -27,10 +27,11 @@
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
-        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:animateLayoutChanges="true">
 
             <LinearLayout
                 android:id="@+id/idLinearLayout"
@@ -42,7 +43,7 @@
                     android:id="@+id/idRecyclerProd"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior" >
                 </android.support.v7.widget.RecyclerView>
 
@@ -83,11 +84,11 @@
                     android:id="@+id/idRecyclerProdPurchased"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                   />
             </LinearLayout>
 
-        </ScrollView>
+        </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -96,6 +97,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/ic_add" />
+        android:src="@drawable/ic_add" />
 
 </android.support.design.widget.CoordinatorLayout>
