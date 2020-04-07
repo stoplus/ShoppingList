@@ -1,4 +1,4 @@
-package ru.deliveon.lists.module;
+package ru.deliveon.lists.di.module;
 
 import android.arch.persistence.room.Room;
 import android.content.Context;
@@ -7,10 +7,10 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import ru.deliveon.lists.AppDatabase;
-import ru.deliveon.lists.interfaces.ListsDao;
-import ru.deliveon.lists.interfaces.ProductDao;
-import ru.deliveon.lists.interfaces.ProductForListDao;
+import ru.deliveon.lists.database.AppDatabase;
+import ru.deliveon.lists.database.dao.ListsDao;
+import ru.deliveon.lists.database.dao.ProductDao;
+import ru.deliveon.lists.database.dao.ProductForListDao;
 
 @Module
 public class ListsModule {

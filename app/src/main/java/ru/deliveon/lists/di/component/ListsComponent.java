@@ -1,10 +1,10 @@
-package ru.deliveon.lists.interfaces;
+package ru.deliveon.lists.di.component;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
 import ru.deliveon.lists.RequestsLists;
-import ru.deliveon.lists.module.ListsModule;
+import ru.deliveon.lists.di.module.ListsModule;
 
 @Singleton
 @Component(modules = {ListsModule.class})

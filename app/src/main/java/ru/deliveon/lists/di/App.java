@@ -1,13 +1,14 @@
-package ru.deliveon.lists;
+package ru.deliveon.lists.di;
 
 import android.app.Application;
 
-import ru.deliveon.lists.interfaces.AppComponent;
-import ru.deliveon.lists.interfaces.DaggerAppComponent;
-import ru.deliveon.lists.interfaces.DaggerListsComponent;
-import ru.deliveon.lists.interfaces.ListsComponent;
-import ru.deliveon.lists.module.ListsModule;
-import ru.deliveon.lists.module.RequestsListsModule;
+import ru.deliveon.lists.di.component.AppComponent;
+
+import ru.deliveon.lists.di.component.DaggerAppComponent;
+import ru.deliveon.lists.di.component.DaggerListsComponent;
+import ru.deliveon.lists.di.component.ListsComponent;
+import ru.deliveon.lists.di.module.ListsModule;
+import ru.deliveon.lists.di.module.RequestsListsModule;
 
 public class App extends Application {
     private static App app;

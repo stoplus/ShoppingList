@@ -3,7 +3,6 @@ package ru.deliveon.lists.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -11,7 +10,7 @@ import android.support.v4.app.DialogFragment;
 import java.util.Objects;
 
 import ru.deliveon.lists.R;
-import ru.deliveon.lists.entity.Lists;
+import ru.deliveon.lists.database.entity.Lists;
 import ru.deliveon.lists.interfaces.DeleteListInterface;
 
 public class DeleteListDialog extends DialogFragment {

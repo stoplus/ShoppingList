@@ -2,8 +2,8 @@ package ru.deliveon.lists.interfaces;
 
 import java.util.List;
 
-import ru.deliveon.lists.entity.Lists;
-import ru.deliveon.lists.entity.ProductForList;
+import ru.deliveon.lists.database.entity.Lists;
+import ru.deliveon.lists.database.entity.ProductForList;
 
 public interface DatabaseCallbackLists {
 

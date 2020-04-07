@@ -16,7 +16,7 @@ import android.widget.EditText;
 import java.util.Objects;
 
 import ru.deliveon.lists.R;
-import ru.deliveon.lists.entity.Lists;
+import ru.deliveon.lists.database.entity.Lists;
 import ru.deliveon.lists.interfaces.AddEditListInterface;
 
 public class AddEditListDialog extends DialogFragment {

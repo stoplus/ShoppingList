@@ -1,4 +1,4 @@
-package ru.deliveon.lists.entity;
+package ru.deliveon.lists.database.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

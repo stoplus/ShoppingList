@@ -1,4 +1,4 @@
-package ru.deliveon.lists.module;
+package ru.deliveon.lists.di.module;
 
 import javax.inject.Singleton;
 

@@ -23,7 +23,7 @@ import ru.deliveon.lists.R;
 import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperAdapter;
 import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperViewHolder;
 import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
-import ru.deliveon.lists.entity.Lists;
+import ru.deliveon.lists.database.entity.Lists;
 import ru.deliveon.lists.interfaces.OnItemListener;
 
 public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> implements ItemTouchHelperAdapter  {

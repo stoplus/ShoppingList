@@ -44,7 +44,7 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 import ru.deliveon.lists.dialogs.CameraOrGalery;
-import ru.deliveon.lists.entity.Product;
+import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.interfaces.CameraOrGaleryInterface;
 
 @RuntimePermissions

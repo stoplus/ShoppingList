@@ -13,14 +13,15 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import ru.deliveon.lists.entity.Lists;
-import ru.deliveon.lists.entity.Product;
-import ru.deliveon.lists.entity.ProductForList;
+import ru.deliveon.lists.di.App;
+import ru.deliveon.lists.database.entity.Lists;
+import ru.deliveon.lists.database.entity.Product;
+import ru.deliveon.lists.database.entity.ProductForList;
 import ru.deliveon.lists.interfaces.DatabaseCallbackLists;
 import ru.deliveon.lists.interfaces.DatabaseCallbackProduct;
-import ru.deliveon.lists.interfaces.ListsDao;
-import ru.deliveon.lists.interfaces.ProductDao;
-import ru.deliveon.lists.interfaces.ProductForListDao;
+import ru.deliveon.lists.database.dao.ListsDao;
+import ru.deliveon.lists.database.dao.ProductDao;
+import ru.deliveon.lists.database.dao.ProductForListDao;
 
 public class RequestsLists {
     @Inject
@@ -135,16 +136,13 @@ public class RequestsLists {
         disposable = productDao.getAllFromList(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Product>>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<Product> product) {
-                        if (flag) {
-                            Products products = new Products();
-                            products.onRestart();
-                            flag = false;
-                        }
-                        databaseCallbackProduct.onListProductsLoaded(product);
+                .subscribe(product -> {
+                    if (flag) {
+                        Products products = new Products();
+                        products.onRestart();
+                        flag = false;
                     }
+                    databaseCallbackProduct.onListProductsLoaded(product);
                 });
     }
 
@@ -251,12 +249,10 @@ public class RequestsLists {
     }
 
     public void updateListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final List<Product> productList) {
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                productDao.updateList(productList);
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
+        Completable.fromAction(() -> productDao.updateList(productList))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
             }

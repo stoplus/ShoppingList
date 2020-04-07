@@ -30,7 +30,7 @@ import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperAdapter;
 import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperViewHolder;
 import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.dialogs.BigPhotoFragment;
-import ru.deliveon.lists.entity.Product;
+import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.interfaces.OnItemListener;
 
 public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.ViewHolder> implements ItemTouchHelperAdapter {

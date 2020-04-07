@@ -1,4 +1,4 @@
-package ru.deliveon.lists.interfaces;
+package ru.deliveon.lists.database.dao;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -10,7 +10,7 @@ import android.arch.persistence.room.Update;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import ru.deliveon.lists.entity.ProductForList;
+import ru.deliveon.lists.database.entity.ProductForList;
 
 @Dao
 public interface ProductForListDao {

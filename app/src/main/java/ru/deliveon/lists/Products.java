@@ -24,10 +24,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.deliveon.lists.adapters.AdapterProductList;
 import ru.deliveon.lists.adapters.AdapterProductListPurchased;
-import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
-import ru.deliveon.lists.entity.Product;
-import ru.deliveon.lists.entity.ProductForList;
+import ru.deliveon.lists.di.App;
+import ru.deliveon.lists.database.entity.Product;
+import ru.deliveon.lists.database.entity.ProductForList;
 import ru.deliveon.lists.interfaces.DatabaseCallbackProduct;
 import ru.deliveon.lists.interfaces.OnItemListener;
 
