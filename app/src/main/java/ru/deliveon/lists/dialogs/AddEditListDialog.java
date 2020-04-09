@@ -62,38 +62,27 @@ public class AddEditListDialog extends DialogFragment {
                 .setView(view);
         AlertDialog dialog = builder.create();
 
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(final DialogInterface dialog) {
-                Button btnCancel = getDialog().findViewById(R.id.btnCancel);
-                Button btnAdd = getDialog().findViewById(R.id.btnAdd);
+        dialog.setOnShowListener(dialog1 -> {
+            Button btnCancel = getDialog().findViewById(R.id.btnCancel);
+            Button btnAdd = getDialog().findViewById(R.id.btnAdd);
 
-                btnAdd.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String name = input.getText().toString();
-                        if (!name.isEmpty()) {
-                            name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                            if (finalLists == null) {
-                                datable.addList(new Lists(name));
-                            } else {
-                                finalLists.setListName(name);
-                                datable.update(finalLists);
-                            }
-                            dialog.dismiss();
-                        }else
-                        Snackbar.make(view, getResources().getString(R.string.enter_name_list),
-                                Snackbar.LENGTH_SHORT).show();
+            btnAdd.setOnClickListener(v -> {
+                String name = input.getText().toString();
+                if (!name.isEmpty()) {
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    if (finalLists == null) {
+                        datable.addList(new Lists(name));
+                    } else {
+                        finalLists.setListName(name);
+                        datable.update(finalLists);
                     }
-                });
+                    dialog1.dismiss();
+                }else
+                Snackbar.make(view, getResources().getString(R.string.enter_name_list),
+                        Snackbar.LENGTH_SHORT).show();
+            });
 
-                btnCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-            }
+            btnCancel.setOnClickListener(v -> dialog1.dismiss());
         });
 
         return dialog;

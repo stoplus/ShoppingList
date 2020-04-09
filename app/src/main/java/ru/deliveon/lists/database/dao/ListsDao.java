@@ -11,6 +11,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import ru.deliveon.lists.database.entity.Lists;
+import ru.deliveon.lists.database.entity.Product;
 
 @Dao
 public interface ListsDao {
@@ -28,6 +29,9 @@ public interface ListsDao {
 
     @Update
     void update(Lists lists);
+
+    @Update
+    void updateList(List<Lists> list); //обновляем список списков
 
     @Delete
     void delete(Lists... lists);

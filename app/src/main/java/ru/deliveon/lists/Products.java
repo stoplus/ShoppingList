@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -63,6 +64,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     private final int REQEST_ADD = 102;             //constant for adding
     private ItemTouchHelper mItemTouchHelper;
     private ItemTouchHelper mItemTouchHelperPurchased;
+    boolean isUpdate = false;
+    boolean isUpdatePurchased = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +81,12 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         String nameList = getIntent().getStringExtra("nameList");
         setTitle(getResources().getString(R.string.list) + ": " + nameList);
 
-        fabBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Products.this, AddEdit.class);
-                intent.putExtra("idList", idList);
-                intent.putExtra("newImageFlag", true);
-                startActivityForResult(intent, REQEST_ADD);
-            }
+        fabBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(Products.this, AddEdit.class);
+            intent.putExtra("idList", idList);
+            intent.putExtra("sortNum", productList.size() + 1);
+            intent.putExtra("newImageFlag", true);
+            startActivityForResult(intent, REQEST_ADD);
         });
         requestsLists.getAllForList(Products.this, idList);
 
@@ -108,7 +109,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                     break;
                 case REQEST_EDIT:
                     Product productUpdate = data.getParcelableExtra("productUpdate");
-                    requestsLists.updateProduct(this, productUpdate);
+                    requestsLists.updateProduct(this, productUpdate, idList);
                     break;
             }//switch
         }
@@ -123,10 +124,19 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             if (lists.get(i).isBought()) listPurchased.add(lists.get(i));
             else productList.add(lists.get(i));
         }
+        if (checkSortNum(productList, isUpdate) | checkSortNum(listPurchased, isUpdatePurchased)) {
+            isUpdate = false;
+            isUpdatePurchased = false;
+            requestsLists.getAllForList(Products.this, idList);
+            return;
+        }
+
+        Collections.sort(productList, (obj1, obj2) -> Integer.compare(obj1.sortNum, obj2.sortNum));
+        Collections.sort(listPurchased, (obj1, obj2) -> Integer.compare(obj1.sortNum, obj2.sortNum));
 
         setHints(lists);
 
-        if (adapterProductList == null) {
+        if (adapterProductList == null || flagDel) {
             createAndInstallAdapter();
         } else {
             if (positionDelete > -1) {
@@ -135,9 +145,30 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             } else if (positionDeletePurchased > -1) {
                 adapterProductListPurchased.deleteFromListAdapter(positionDeletePurchased);
                 positionDeletePurchased = -1;
-            } else if (flagDel) createAndInstallAdapter();
+            }
         }//if
     }//updateTwoLists
+
+    private boolean checkSortNum(List<Product> productList, boolean update) {
+        List<Product> newListProduct = new ArrayList<>();
+
+        for (int i = 0; i < productList.size(); i++) {
+            Product product = productList.get(i);
+            if (product.sortNum == 0 || update) {
+                product.sortNum = i + 1;
+                update = true;
+            }
+            newListProduct.add(product);
+        }
+        if (update) {
+            //если обновляли, отправляем на сохранение нового списка с обновленными номерами сортировки
+            requestsLists.updateListProduct(Products.this, newListProduct, 0);
+            return true;
+        } else {
+            flagDel = true;//разрешаем пересоздать адаптер
+            return false;
+        }
+    }
 
     private void setHints(List<Product> lists) {
         if (lists.size() == 0) {
@@ -165,35 +196,23 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     private void createAndInstallAdapter() {
         OnItemListener onItemListener = new OnItemListener() {
             @Override
-            public void onItemClick(int position, View v) {
-                itemClick(position, productList);
+            public void onItemClick(int position, View v, List<Product> list) {
+                itemClick(position, list);
             }
 
             @Override
-            public void onItemLongClick(int position, View v) {
-                itemLongClickOrRemove(position, v, productList, false);
+            public void onItemLongClick(int position, View v, List<Product> list) {
+                itemLongClickOrRemove(position, v, list, false);
             }
 
             @Override
-            public void onRemoveItem(int position, View v) {
-                itemLongClickOrRemove(position, v, productList, true);
-            }
-        };
-
-        OnItemListener onItemListenerPurchased = new OnItemListener() {
-            @Override
-            public void onItemClick(int position, View v) {
-                itemClick(position, listPurchased);
+            public void onRemoveItem(int position, View v, List<Product> list) {
+                itemLongClickOrRemove(position, v, list, true);
             }
 
             @Override
-            public void onItemLongClick(int position, View v) {
-                itemLongClickOrRemove(position, v, listPurchased, false);
-            }
-
-            @Override
-            public void onRemoveItem(int position, View v) {
-                itemLongClickOrRemove(position, v, listPurchased, true);
+            public void onCheckSortNum(List<Product> list) {
+                checkSortNum(list, true);
             }
         };
 
@@ -207,7 +226,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
         //адаптер для сложенных
         adapterProductListPurchased = new AdapterProductListPurchased(
-                this, listPurchased, getSupportFragmentManager(), onItemListenerPurchased, viewHolder -> {
+                this, listPurchased, getSupportFragmentManager(), onItemListener, viewHolder -> {
             mItemTouchHelperPurchased.startDrag(viewHolder);//делаем вызов для перетаскивания или свайпа
         });//for purchased
         ItemTouchHelper.Callback callbackPurchased = new SimpleItemTouchHelperCallback(adapterProductListPurchased);
@@ -221,12 +240,18 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
     private void itemClick(int position, List<Product> list) {
         flagDel = true;
-        Product productPurchased = list.get(position);
-        if (productPurchased.isBought())
-            productPurchased.setBought(false);//establish that we have not bought
-        else productPurchased.setBought(true);//establish that we bought
+        Product product = list.get(position);
+        if (product.isBought()) {
+            product.setBought(false);//establish that we have not bought
+            product.sortNum = productList.size() + 1;
+            isUpdatePurchased = true;// разрешаем переписать sortNum
+        } else {
+            product.setBought(true);//establish that we bought
+            product.sortNum = listPurchased.size() + 1;
+            isUpdate = true;// разрешаем переписать sortNum
+        }
 
-        requestsLists.updateProduct(Products.this, productPurchased);
+        requestsLists.updateProduct(Products.this, product, idList);
     }//itemClick
 
     private void itemLongClickOrRemove(final int position, View v, final List<Product> list, boolean remove) {
@@ -265,15 +290,12 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         requestsLists.disposable.dispose();// unsubscribe the observer
         Log.d("Productsclass", "onListProductsLoaded");
         if (lists.size() == 0) {
-//            textViewReady.setText(getResources().getString(R.string.add_post));
-            layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Products.this, AddEdit.class);
-                    intent.putExtra("idList", idList);
-                    intent.putExtra("newImageFlag", true);
-                    startActivityForResult(intent, REQEST_ADD);
-                }
+            layout.setOnClickListener(v -> {
+                Intent intent = new Intent(Products.this, AddEdit.class);
+                intent.putExtra("idList", idList);
+                intent.putExtra("sortNum", productList.size() + 1);
+                intent.putExtra("newImageFlag", true);
+                startActivityForResult(intent, REQEST_ADD);
             });
         } else layout.setOnClickListener(null);
         updateTwoLists(lists);
@@ -322,32 +344,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         // delete the goods, if there are no entries with the same product id
         requestsLists.dispSameId.dispose();
         if (list.size() == 0) {
-            requestsLists.deleteProduct(Products.this, product);
+            requestsLists.deleteProduct(Products.this, product, idList);
         } else requestsLists.getAllForList(Products.this, idList);
-    }
-
-    // deleted the entry in the "Products" table
-    @Override
-    public void onProductDeleted() {
-        requestsLists.getAllForList(Products.this, idList);
-        Log.d("Productsclass", "onProductDeleted");
-    }
-
-    @Override
-    public void onDataNotAvailable() {
-        Log.d("Productsclass", "onDataNotAvailable");
-    }
-
-    @Override
-    public void onProductUpdated() {
-        requestsLists.getAllForList(Products.this, idList);
-        Log.d("Productsclass", "onProductUpdated");
-    }
-
-    @Override
-    public void onUpdateList() {
-        requestsLists.getAllForList(Products.this, idList);
-        Log.d("Productsclass", "onUpdateList");
     }
 
     //Loading the menu in the window
@@ -369,7 +367,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                         productList.get(i).setBought(true);
                 }
                 flagDel = true;
-                requestsLists.updateListProduct(this, productList);
+                requestsLists.updateListProduct(this, productList, idList);
                 break;
             case R.id.back:
                 finish();

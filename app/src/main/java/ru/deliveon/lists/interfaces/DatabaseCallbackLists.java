@@ -11,17 +11,9 @@ public interface DatabaseCallbackLists {
 
     void onListDeleted();
 
-    void onListsAdded();
-
-    void onDataNotAvailable();
-
-    void onListsUpdated();
-
     void onSameIdList(List<ProductForList> list);
 
     void onDeletedListProductForList();
 
     void onInOtherLists(List<ProductForList> list);
-
-    void onDeletedProductList();
 }

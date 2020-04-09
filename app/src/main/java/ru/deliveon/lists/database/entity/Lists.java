@@ -12,6 +12,8 @@ public class Lists implements Parcelable {
     public int id;
     @ColumnInfo(name = "name")
     public String name;
+    @ColumnInfo(name = "sort_num")
+    private int sortNum;
 
     public Lists(String name) {
         this.name = name;
@@ -20,6 +22,7 @@ public class Lists implements Parcelable {
     protected Lists(Parcel in) {
         id = in.readInt();
         name = in.readString();
+        sortNum = in.readInt();
     }
 
     public static final Creator<Lists> CREATOR = new Creator<Lists>() {
@@ -33,6 +36,14 @@ public class Lists implements Parcelable {
             return new Lists[size];
         }
     };
+
+    public int getSortNum() {
+        return sortNum;
+    }
+
+    public void setSortNum(int sortNum) {
+        this.sortNum = sortNum;
+    }
 
     public int getListId() {
         return id;
@@ -59,6 +70,7 @@ public class Lists implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
+        dest.writeInt(sortNum);
     }
 }
 

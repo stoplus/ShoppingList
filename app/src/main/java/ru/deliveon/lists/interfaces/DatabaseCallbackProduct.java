@@ -9,22 +9,13 @@ public interface DatabaseCallbackProduct {
 
     void onListProductsLoaded(List<Product> list);
 
-    void onProductDeleted();
-
     void onProductForListDeleted();
 
     void onProductAdded();
 
     void onProductForListAdded();
 
-    void onDataNotAvailable();
-
-    void onProductUpdated();
-
     void onLastProduct(int id);
 
     void onSameIdProductForList(List<ProductForList> list);
-
-    void onUpdateList();
-
 }

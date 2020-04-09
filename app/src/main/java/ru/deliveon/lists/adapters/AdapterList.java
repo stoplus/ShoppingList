@@ -2,15 +2,18 @@ package ru.deliveon.lists.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,15 +27,15 @@ import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperAdapter;
 import ru.deliveon.lists.adapters.recyclerHelper.ItemTouchHelperViewHolder;
 import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.database.entity.Lists;
-import ru.deliveon.lists.interfaces.OnItemListener;
+import ru.deliveon.lists.mainList.OnItemListenerMain;
 
-public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> implements ItemTouchHelperAdapter  {
+public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> implements ItemTouchHelperAdapter {
     private LayoutInflater inflater;
     private List<Lists> list;
-    private OnItemListener onItemListener;
+    private OnItemListenerMain onItemListener;
     private final OnStartDragListener mDragStartListener;
 
-    public AdapterList(Context context, List<Lists> list, OnItemListener onItemListener, OnStartDragListener mDragStartListener) {
+    public AdapterList(Context context, List<Lists> list, OnItemListenerMain onItemListener, OnStartDragListener mDragStartListener) {
         this.inflater = LayoutInflater.from(context);
         this.list = new ArrayList<>(list);
         this.onItemListener = onItemListener;
@@ -59,27 +62,31 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         Collections.swap(list, fromPosition, toPosition);
+        onItemListener.onCheckSortNum(list);
         notifyItemMoved(fromPosition, toPosition);
         return true;
     }
 
     @Override
     public void onItemDismiss(int position) {
-        onItemListener.onRemoveItem(position, null);
+        onItemListener.onRemoveItem(position, null, list);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
-        @BindView(R.id.idTextViewLists) TextView category_id;
-        @BindView(R.id.move) ImageView move;
-        @BindView(R.id.container) ConstraintLayout constraintLayout;
+        @BindView(R.id.idTextViewLists)
+        TextView category_id;
+        @BindView(R.id.move)
+        ImageView move;
+        @BindView(R.id.container)
+        ConstraintLayout constraintLayout;
 
         private ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
 
-            constraintLayout.setOnClickListener(v -> onItemListener.onItemClick(getAdapterPosition(), v));
+            constraintLayout.setOnClickListener(v -> onItemListener.onItemClick(getAdapterPosition(), v, list));
             constraintLayout.setOnLongClickListener(v -> {
-                onItemListener.onItemLongClick(getAdapterPosition(), v);
+                onItemListener.onItemLongClick(getAdapterPosition(), v, list);
                 return false;
             });
         }//ViewHolder

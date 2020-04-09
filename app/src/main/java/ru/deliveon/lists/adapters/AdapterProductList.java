@@ -70,13 +70,14 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         Collections.swap(list, fromPosition, toPosition);
+        onItemListener.onCheckSortNum(list);
         notifyItemMoved(fromPosition, toPosition);
         return true;
     }
 
     @Override
     public void onItemDismiss(int position) {
-        onItemListener.onRemoveItem(position, null);
+        onItemListener.onRemoveItem(position, null, list);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
@@ -89,9 +90,9 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
             super(view);
             ButterKnife.bind(this, view);
 
-            constraintLayout.setOnClickListener(v -> onItemListener.onItemClick(getAdapterPosition(), v));
+            constraintLayout.setOnClickListener(v -> onItemListener.onItemClick(getAdapterPosition(), v, list));
             constraintLayout.setOnLongClickListener(v -> {
-                onItemListener.onItemLongClick(getAdapterPosition(), v);
+                onItemListener.onItemLongClick(getAdapterPosition(), v, list);
                 return false;
             });
         }//ViewHolder

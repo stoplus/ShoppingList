@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,6 +22,7 @@ import butterknife.ButterKnife;
 import ru.deliveon.lists.adapters.AdapterList;
 import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
+import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.di.App;
 import ru.deliveon.lists.dialogs.AddEditListDialog;
 import ru.deliveon.lists.dialogs.DeleteListDialog;
@@ -31,6 +33,7 @@ import ru.deliveon.lists.interfaces.AddEditListInterface;
 import ru.deliveon.lists.interfaces.DatabaseCallbackLists;
 import ru.deliveon.lists.interfaces.DeleteListInterface;
 import ru.deliveon.lists.interfaces.OnItemListener;
+import ru.deliveon.lists.mainList.OnItemListenerMain;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface,
         AddEditListInterface, DatabaseCallbackLists, OnStartDragListener {
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private List<ProductForList> sameIdList;
     private List<Lists> listLists;
     private ItemTouchHelper mItemTouchHelper;
+    boolean isItemMove = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,35 +91,47 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void cancelDeleteList() {
-        adapter = null;
-        positionDelete = -1;
-        requestsLists.getLists(this);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onListsLoaded(final List<Lists> lists) {
+        listLists = lists;
         if (lists.size() == 0) {
             openAddEditListDialog();
             mainLayout.setOnClickListener(v -> openAddEditListDialog());
         } else{
             mainLayout.setOnClickListener(null);
         }
-        listLists = lists;
+
+        if (checkSortNum(lists, false) || isItemMove){
+            isItemMove = false;
+            return;
+        }
+
+        Collections.sort(listLists, (obj1, obj2) -> Integer.compare(obj1.getSortNum(), obj2.getSortNum()));
+
         if (adapter == null || positionDelete == -1) {
-            OnItemListener onItemListener = new OnItemListener() {
+            OnItemListenerMain onItemListener = new OnItemListenerMain() {
                 @Override
-                public void onItemClick(int position, View v) {
-                    itemClick(position, listLists);
+                public void onItemClick(int position, View v, List<Lists> list) {
+                    itemClick(position, list);
                 }
 
                 @Override
-                public void onItemLongClick(int position, View v) {
-                    itemLongClick(position, v, listLists, false);
+                public void onItemLongClick(int position, View v, List<Lists> list) {
+                    itemLongClick(position, v, list, false);
                 }
 
                 @Override
-                public void onRemoveItem(int position, View v) {
-                    itemLongClick(position, v, listLists, true);
+                public void onRemoveItem(int position, View v, List<Lists> list) {
+                    itemLongClick(position, v, list, true);
+                }
+
+                @Override
+                public void onCheckSortNum(List<Lists> list) {
+                    isItemMove = true;
+                    checkSortNum(list, true);
                 }
             };
             adapter = new AdapterList(MainActivity.this, listLists, onItemListener, this);
@@ -129,6 +145,26 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
             positionDelete = -1;
         }
     }//onListsLoaded
+
+    private boolean checkSortNum(List<Lists> productList, boolean update) {
+        List<Lists> newListProduct = new ArrayList<>();
+
+        for (int i = 0; i < productList.size(); i++) {
+            Lists product = productList.get(i);
+            if (product.getSortNum() == 0 || update) {
+                product.setSortNum(i + 1);
+                update = true;
+            }
+            newListProduct.add(product);
+        }
+        if (update) {
+            //если обновляли, отправляем на сохранение нового списка с обновленными номерами сортировки
+            requestsLists.updateList(this, newListProduct);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     private void itemClick(int position, List<Lists> list) {
         Intent intent = new Intent(MainActivity.this, Products.class);
@@ -202,27 +238,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         }
         if (listForDeleting.size() > 0)
             requestsLists.deleteProductList(MainActivity.this, listForDeleting);
-    }//onInOtherLists
-
-    @Override
-    public void onDeletedProductList() {
-        Log.d("MainActivityclass", "jjj");
-    }
-
-    @Override
-    public void onListsAdded() {
-        Log.d("MainActivityclass", "jjj");
-    }
-
-    @Override
-    public void onDataNotAvailable() {
-        Log.d("MainActivityclass", "jjj");
-    }
-
-    @Override
-    public void onListsUpdated() {
-        Log.d("MainActivityclass", "jjj");
-    }
+    }//onInOtherList
 
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {

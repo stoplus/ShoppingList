@@ -16,16 +16,14 @@ public class Product implements Parcelable {
     public String pictureLink;
     @ColumnInfo(name = "bought")
     public boolean bought;
-//    @ColumnInfo(name = "sort_num")
-//    public int sortNum;
+    @ColumnInfo(name = "sort_num")
+    public int sortNum;
 
-
-    public Product(String nameProduct, String pictureLink, boolean bought) {
-//    public Product(String nameProduct, String pictureLink, boolean bought, int sortNum) {
+    public Product(String nameProduct, String pictureLink, boolean bought, int sortNum) {
         this.nameProduct = nameProduct;
         this.pictureLink = pictureLink;
         this.bought = bought;
-//        this.sortNum = sortNum;
+        this.sortNum = sortNum;
     }
 
     public int getId() {
@@ -41,7 +39,7 @@ public class Product implements Parcelable {
         nameProduct = in.readString();
         pictureLink = in.readString();
         bought = in.readByte() != 0;
-//        sortNum = in.readInt();
+        sortNum = in.readInt();
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
@@ -80,13 +78,13 @@ public class Product implements Parcelable {
         this.bought = bought;
     }
 
-//    public int getSortNum() {
-//        return sortNum;
-//    }
-//
-//    public void setSortNum(int sortNum) {
-//        this.sortNum = sortNum;
-//    }
+    public int getSortNum() {
+        return sortNum;
+    }
+
+    public void setSortNum(int sortNum) {
+        this.sortNum = sortNum;
+    }
 
     @Override
     public int describeContents() {
@@ -99,6 +97,6 @@ public class Product implements Parcelable {
         dest.writeString(nameProduct);
         dest.writeString(pictureLink);
         dest.writeByte((byte) (bought ? 1 : 0));
-//        dest.writeInt(sortNum);
+        dest.writeInt(sortNum);
     }
 }

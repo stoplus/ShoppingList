@@ -12,6 +12,8 @@ import ru.deliveon.lists.database.dao.ListsDao;
 import ru.deliveon.lists.database.dao.ProductDao;
 import ru.deliveon.lists.database.dao.ProductForListDao;
 
+import static ru.deliveon.lists.database.AppDatabase.MIGRATION_1_2;
+
 @Module
 public class ListsModule {
     private Context context;
@@ -28,7 +30,9 @@ public class ListsModule {
 
     @Singleton @Provides
     public AppDatabase provideAppDatabase(Context context){
-        return Room.databaseBuilder(context, AppDatabase.class, "database").build();
+        return Room.databaseBuilder(context, AppDatabase.class, "database")
+                .addMigrations(MIGRATION_1_2)
+                .build();
     }
 
     @Singleton @Provides

@@ -65,6 +65,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     private final int START_CONTEXT_MENU = 201;
     private View view;
     private int idList;
+    private int sortNum;
     private Product productReceived;
     private String linkNewPicture = "";
     private String finalPath = "";
@@ -88,6 +89,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             linkNewPicture = savedInstanceState.getString("linkNewPicture");
             mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
             idList = savedInstanceState.getInt("idList");
+            sortNum = savedInstanceState.getInt("sortNum");
             productReceived = savedInstanceState.getParcelable("productReceived");
         }//if savedInstanceState
 
@@ -99,6 +101,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     void chekPerm() {
         productReceived = getIntent().getParcelableExtra("product");
         idList = getIntent().getIntExtra("idList", -1);
+        sortNum = getIntent().getIntExtra("sortNum", 0);
         Uri pathForGlide;
         int idErrorPhoto;
 
@@ -174,7 +177,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             }
 
             if (productReceived == null) {
-                intent.putExtra("product", new Product(name, path, false));
+                intent.putExtra("product", new Product(name, path, false, sortNum));
             } else {
                 //update
                 productReceived.setNameProduct(name);
@@ -363,6 +366,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         super.onSaveInstanceState(outState);
         outState.putString("finalPath", finalPath);
         outState.putInt("idList", idList);
+        outState.putInt("sortNum", sortNum);
         outState.putBoolean("newImageFlag", newImageFlag);
         outState.putParcelable("productReceived", productReceived);
         outState.putString("linkNewPicture", linkNewPicture);

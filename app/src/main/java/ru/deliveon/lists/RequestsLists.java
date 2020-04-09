@@ -1,11 +1,8 @@
 package ru.deliveon.lists;
 
 import android.util.Log;
-
 import java.util.List;
-
 import javax.inject.Inject;
-
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,12 +40,9 @@ public class RequestsLists {
         dispos = listsDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Lists>>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<Lists> lists) {
-                        Log.d("RequestsListsClass", "getLists1");
-                        databaseCallbackLists.onListsLoaded(lists);
-                    }
+                .subscribe(lists -> {
+                    Log.d("RequestsListsClass", "getLists1");
+                    databaseCallbackLists.onListsLoaded(lists);
                 });
     }
 
@@ -67,23 +61,20 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackLists.onListsAdded();
+//                        getLists(databaseCallbackLists);
+                        Log.d("MainActivityclass", "onListsAdded");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackLists.onDataNotAvailable();
+                        Log.d("MainActivityclass", "onError");
                     }
                 });
     }
 
     public void deleteList(final DatabaseCallbackLists databaseCallbackLists, final Lists lists) {
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                listsDao.delete(lists);
-            }
-        }).subscribeOn(Schedulers.io())
+        Completable.fromAction(() -> listsDao.delete(lists))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
@@ -97,32 +88,51 @@ public class RequestsLists {
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackLists.onDataNotAvailable();
+                        Log.d("MainActivityclass", "onError");
                     }
                 });
     }
 
     public void updateLists(final DatabaseCallbackLists databaseCallbackLists, final Lists lists) {
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() {
-                listsDao.update(lists);
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new CompletableObserver() {
+        Completable.fromAction(() -> listsDao.update(lists))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
             }
 
             @Override
             public void onComplete() {
-                databaseCallbackLists.onListsUpdated();
+                Log.d("MainActivityclass", "updateLists");
             }
 
             @Override
             public void onError(Throwable e) {
-                databaseCallbackLists.onDataNotAvailable();
+                Log.d("MainActivityclass", "onError");
             }
         });
+    }
+
+    public void updateList(final DatabaseCallbackLists databaseCallbackLists, final List<Lists> lists) {
+        Completable.fromAction(() -> listsDao.updateList(lists))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("MainActivityclass", "updateList");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("MainActivityclass", "onError");
+                    }
+                });
     }
 
     //===============================================================================================================
@@ -136,13 +146,13 @@ public class RequestsLists {
         disposable = productDao.getAllFromList(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(product -> {
+                .subscribe(productList -> {
                     if (flag) {
                         Products products = new Products();
                         products.onRestart();
                         flag = false;
                     }
-                    databaseCallbackProduct.onListProductsLoaded(product);
+                    databaseCallbackProduct.onListProductsLoaded(productList);
                 });
     }
 
@@ -179,12 +189,12 @@ public class RequestsLists {
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackProduct.onDataNotAvailable();
+                        Log.d("Productsclass", "onDataNotAvailable");
                     }
                 });
     }
 
-    public void deleteProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
+    public void deleteProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product, int idList) {
         Completable.fromAction(() -> productDao.delete(product))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -195,12 +205,13 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackProduct.onProductDeleted();
+                        Log.d("Productsclass", "onProductDeleted");
+                        getAllForList(databaseCallbackProduct, idList);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackProduct.onDataNotAvailable();
+                        Log.d("Productsclass", "onDataNotAvailable");
                     }
                 });
     }
@@ -216,17 +227,17 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackLists.onDeletedProductList();
+                        Log.d("MainActivityclass", "onDeletedProductList");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackLists.onDataNotAvailable();
+                        Log.d("MainActivityclass", "onError");
                     }
                 });
     }
 
-    public void updateProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
+    public void updateProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product, int id) {
         Completable.fromAction(() -> productDao.update(product))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -238,35 +249,39 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackProduct.onProductUpdated();
+//                        databaseCallbackProduct.onProductUpdated();
+                        getAllForList(databaseCallbackProduct, id);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackProduct.onDataNotAvailable();
+                        Log.d("Productsclass", "onDataNotAvailable");
                     }
                 });
     }
 
-    public void updateListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final List<Product> productList) {
+    public void updateListProduct(final DatabaseCallbackProduct databaseCallbackProduct,
+                                  final List<Product> productList, int id) {
         Completable.fromAction(() -> productDao.updateList(productList))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
-            @Override
-            public void onSubscribe(Disposable d) {
-            }
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
 
-            @Override
-            public void onComplete() {
-                databaseCallbackProduct.onUpdateList();
-            }
+                    @Override
+                    public void onComplete() {
+                        if (id != 0){
+                            getAllForList(databaseCallbackProduct, id);
+                        }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                databaseCallbackProduct.onDataNotAvailable();
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("Productsclass", "onDataNotAvailable");
+                    }
+                });
     }
 
     //===============================================================================================================
@@ -290,7 +305,7 @@ public class RequestsLists {
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackProduct.onDataNotAvailable();
+                        Log.d("Productsclass", "onDataNotAvailable");
                     }
                 });
     }
@@ -315,7 +330,7 @@ public class RequestsLists {
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackProduct.onDataNotAvailable();
+                        Log.d("Productsclass", "onDataNotAvailable");
                     }
                 });
     }
@@ -341,7 +356,7 @@ public class RequestsLists {
 
                     @Override
                     public void onError(Throwable e) {
-                        databaseCallbackLists.onDataNotAvailable();
+                        Log.d("MainActivityclass", "onError");
                     }
                 });
     }

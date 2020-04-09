@@ -5,6 +5,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="50dp"
+    android:layout_marginBottom="0.5dp"
+    android:layout_marginTop="0.5dp"
     android:background="@color/colorList">
 
     <TextView
