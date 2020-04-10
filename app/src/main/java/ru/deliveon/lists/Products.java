@@ -206,13 +206,20 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             }
 
             @Override
-            public void onRemoveItem(int position, View v, List<Product> list) {
-                itemLongClickOrRemove(position, v, list, true);
+            public void onRemoveItem(int position, View v) {
+                itemLongClickOrRemove(position, v, productList, true);
+            }
+
+            @Override
+            public void onRemoveItemPurchase(int position, View v) {
+                itemLongClickOrRemove(position, v, listPurchased, true);
             }
 
             @Override
             public void onCheckSortNum(List<Product> list) {
                 checkSortNum(list, true);
+                Collections.sort(productList, (obj1, obj2) -> Integer.compare(obj1.sortNum, obj2.sortNum));
+                Collections.sort(listPurchased, (obj1, obj2) -> Integer.compare(obj1.sortNum, obj2.sortNum));
             }
         };
 
@@ -266,16 +273,15 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
             try {
                 PopupMenu popup = new PopupMenu(v.getContext(), v, Gravity.CENTER);//создаем объект окна меню
                 popup.inflate(R.menu.context_menu);//закачиваем меню из XML файла
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//определяем нажатия на элементы меню
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        Intent intent = new Intent(Products.this, AddEdit.class);
-                        intent.putExtra("idList", idList);
-                        intent.putExtra("product", product);
-                        intent.putExtra("newImageFlag", false);
-                        startActivityForResult(intent, REQEST_EDIT);
-                        return false;
-                    }//onMenuItemClick
+                //определяем нажатия на элементы меню
+                //onMenuItemClick
+                popup.setOnMenuItemClickListener(item -> {
+                    Intent intent = new Intent(Products.this, AddEdit.class);
+                    intent.putExtra("idList", idList);
+                    intent.putExtra("product", product);
+                    intent.putExtra("newImageFlag", false);
+                    startActivityForResult(intent, REQEST_EDIT);
+                    return false;
                 });
                 popup.show();
             } catch (IndexOutOfBoundsException e) {

@@ -76,9 +76,7 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
     }
 
     @Override
-    public void onItemDismiss(int position) {
-        onItemListener.onRemoveItem(position, null, list);
-    }
+    public void onItemDismiss(int position) { onItemListener.onRemoveItem(position, null); }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
         @BindView(R.id.textView) TextView textView;
@@ -127,15 +125,12 @@ public class AdapterProductList extends RecyclerView.Adapter<AdapterProductList.
                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                         .into(holder.imageView);
 
-                View.OnClickListener listener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        BigPhotoFragment bigPhotoFragment = new BigPhotoFragment();
-                        Bundle args = new Bundle();
-                        args.putString("url", finalPath);
-                        bigPhotoFragment.setArguments(args);
-                        bigPhotoFragment.show(fm, "bigPhotoFragment");
-                    }
+                View.OnClickListener listener = v -> {
+                    BigPhotoFragment bigPhotoFragment = new BigPhotoFragment();
+                    Bundle args = new Bundle();
+                    args.putString("url", finalPath);
+                    bigPhotoFragment.setArguments(args);
+                    bigPhotoFragment.show(fm, "bigPhotoFragment");
                 };
                 holder.imageView.setOnClickListener(listener);
             }

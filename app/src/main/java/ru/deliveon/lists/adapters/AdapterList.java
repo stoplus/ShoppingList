@@ -69,7 +69,7 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
 
     @Override
     public void onItemDismiss(int position) {
-        onItemListener.onRemoveItem(position, null, list);
+        onItemListener.onRemoveItem(position, null);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {

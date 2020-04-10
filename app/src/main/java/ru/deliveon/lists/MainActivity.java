@@ -8,7 +8,6 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -22,7 +21,6 @@ import butterknife.ButterKnife;
 import ru.deliveon.lists.adapters.AdapterList;
 import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
-import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.di.App;
 import ru.deliveon.lists.dialogs.AddEditListDialog;
 import ru.deliveon.lists.dialogs.DeleteListDialog;
@@ -32,7 +30,6 @@ import ru.deliveon.lists.database.entity.ProductForList;
 import ru.deliveon.lists.interfaces.AddEditListInterface;
 import ru.deliveon.lists.interfaces.DatabaseCallbackLists;
 import ru.deliveon.lists.interfaces.DeleteListInterface;
-import ru.deliveon.lists.interfaces.OnItemListener;
 import ru.deliveon.lists.mainList.OnItemListenerMain;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface,
@@ -120,12 +117,12 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
                 @Override
                 public void onItemLongClick(int position, View v, List<Lists> list) {
-                    itemLongClick(position, v, list, false);
+                    itemLongClickOrRemove(position, v, list, false);
                 }
 
                 @Override
-                public void onRemoveItem(int position, View v, List<Lists> list) {
-                    itemLongClick(position, v, list, true);
+                public void onRemoveItem(int position, View v) {
+                    itemLongClickOrRemove(position, v, listLists, true);
                 }
 
                 @Override
@@ -175,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         startActivity(intent);
     }//itemClick
 
-    private void itemLongClick(final int position, View v, final List<Lists> list, boolean remove) {
+    private void itemLongClickOrRemove(final int position, View v, final List<Lists> list, boolean remove) {
         Lists lists = list.get(position);
         Bundle args = new Bundle();
         args.putParcelable("lists", lists);

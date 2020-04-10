@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ import ru.deliveon.lists.interfaces.AddEditListInterface;
 public class AddEditListDialog extends DialogFragment {
     private AddEditListInterface datable;
     private EditText input;
+    private TextView addEditBtn;
 
     @Override //The onAttach () method is called at the beginning of the fragment's life cycle
     public void onAttach(Context context) {
@@ -30,7 +32,6 @@ public class AddEditListDialog extends DialogFragment {
     } // onAttach
 
     String title;
-    String positiveButton;
     int image;
 
     @NonNull
@@ -44,15 +45,16 @@ public class AddEditListDialog extends DialogFragment {
         @SuppressLint("InflateParams") final View view = Objects.requireNonNull(getActivity()).
                 getLayoutInflater().inflate(R.layout.new_list, null);
         input = view.findViewById(R.id.editTextNewList);
+        addEditBtn = view.findViewById(R.id.btnAdd);
 
         if (lists == null) {
             title = getResources().getString(R.string.create_new_list);
-            positiveButton = getResources().getString(R.string.add);
+            addEditBtn.setText(getResources().getString(R.string.add));
             image = R.drawable.add;
         } else {
             input.setText(lists.getListName());
             title = getResources().getString(R.string.edit_name_list);
-            positiveButton = getResources().getString(R.string.edit);
+            addEditBtn.setText(getResources().getString(R.string.edit));
             image = R.drawable.edit;
         }
 

@@ -79,7 +79,7 @@ public class AdapterProductListPurchased extends RecyclerView.Adapter<AdapterPro
 
     @Override
     public void onItemDismiss(int position) {
-        onItemListener.onRemoveItem(position, null, list);
+        onItemListener.onRemoveItemPurchase(position, null);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
