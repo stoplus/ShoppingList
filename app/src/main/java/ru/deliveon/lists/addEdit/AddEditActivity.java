@@ -137,7 +137,6 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
         }//if
 
         setPhoto(pathForGlide, idErrorPhoto);
-        imageView.setOnClickListener(clickListener);
     }//chekPerm
 
 
@@ -320,44 +319,47 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
 
 
     private void installListenerPhoto(final int way) {
-        if (way == START_DIALOG_CHOICE_PHOTO) hintImage.setVisibility(View.VISIBLE);
-        else hintImage.setVisibility(View.GONE);
-
-        //onClick
-        clickListener = v -> {
-            try {
-                if (way == START_DIALOG_CHOICE_PHOTO) {
-                    selectWayForLoadPhoto();
-                } else if (way == START_CONTEXT_MENU) {
-                    popup = new PopupMenu(AddEditActivity.this, editText, Gravity.CENTER_HORIZONTAL);//create the menu window object
-                    popup.inflate(R.menu.click_foto_menu);//inflate a menu from an XML file
-                    //define the clicks on the menu items
-                    //onMenuItemClick
-                    popup.setOnMenuItemClickListener(item -> {
-                        switch (item.getItemId()) {
-                            case R.id.change_photo:
-                                selectWayForLoadPhoto();
-                                return true;
-                            case R.id.delete_photo:
-                                finalPath = "";
-                                linkNewPicture = "";
-                                newImageFlag = false;
-                                if (productReceived != null) {
-                                    productReceived.setPictureLink(finalPath);
-                                }
-                                chekPerm();
-                                return true;
-                            default:
-                                break;
-                        }//switch
-                        return false;
-                    });
-                    popup.show();//show the menu window
+        if (way == START_DIALOG_CHOICE_PHOTO) {
+            hintImage.setVisibility(View.VISIBLE);
+            clickListener = v -> selectWayForLoadPhoto();
+            hintImage.setOnClickListener(clickListener);//если нет картинки, ставим лиснер на текст-подсказку
+            imageView.setOnClickListener(null);
+        } else {
+            hintImage.setVisibility(View.GONE);
+            clickListener = v -> {//если есть картинка, ставим лиснер на картинку
+                try {
+                    if (way == START_CONTEXT_MENU) {
+                        popup = new PopupMenu(AddEditActivity.this, editText, Gravity.CENTER_HORIZONTAL);//create the menu window object
+                        popup.inflate(R.menu.click_foto_menu);//inflate a menu from an XML file
+                        //define the clicks on the menu items
+                        //onMenuItemClick
+                        popup.setOnMenuItemClickListener(item -> {
+                            switch (item.getItemId()) {
+                                case R.id.change_photo:
+                                    selectWayForLoadPhoto();
+                                    return true;
+                                case R.id.delete_photo:
+                                    finalPath = "";
+                                    linkNewPicture = "";
+                                    newImageFlag = false;
+                                    if (productReceived != null) {
+                                        productReceived.setPictureLink(finalPath);
+                                    }
+                                    chekPerm();
+                                    return true;
+                                default:
+                                    break;
+                            }//switch
+                            return false;
+                        });
+                        popup.show();//show the menu window
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    Log.d("AddEditclass", e.getMessage());
                 }
-            } catch (IndexOutOfBoundsException e) {
-                Log.d("AddEditclass", e.getMessage());
-            }
-        };
+            };
+            imageView.setOnClickListener(clickListener);
+        }
     }//installListenerPhoto
 
 
