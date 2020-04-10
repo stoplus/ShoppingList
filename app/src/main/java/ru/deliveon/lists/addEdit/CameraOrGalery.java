@@ -1,4 +1,4 @@
-package ru.deliveon.lists.dialogs;
+package ru.deliveon.lists.addEdit;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,17 +29,10 @@ public class CameraOrGalery extends DialogFragment {
         builder.setMessage(getResources().getString(R.string.camera_or_galery))
                 .setTitle(getResources().getString(R.string.where_take_pictures))
                 .setIcon(R.drawable.question)
-                .setNegativeButton(getResources().getString(R.string.galery), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        cameraOrGaleryInterface.choiceForPhoto(true);
-                    }
-                }).setPositiveButton(getResources().getString(R.string.camera), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                cameraOrGaleryInterface.choiceForPhoto(false);
-            }
-        });
+                .setNegativeButton(getResources().getString(R.string.galery), (dialog, which) ->
+                        cameraOrGaleryInterface.choiceForPhoto(true))
+                .setPositiveButton(getResources().getString(R.string.camera), (dialog, which) ->
+                        cameraOrGaleryInterface.choiceForPhoto(false));
         return builder.create();
     }
 }

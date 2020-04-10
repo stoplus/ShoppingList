@@ -1,4 +1,4 @@
-package ru.deliveon.lists;
+package ru.deliveon.lists.mainList;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,11 +18,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ru.deliveon.lists.Products;
+import ru.deliveon.lists.R;
+import ru.deliveon.lists.RequestsLists;
 import ru.deliveon.lists.adapters.AdapterList;
 import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
 import ru.deliveon.lists.di.App;
-import ru.deliveon.lists.dialogs.AddEditListDialog;
+import ru.deliveon.lists.addEdit.AddEditListDialog;
 import ru.deliveon.lists.dialogs.DeleteListDialog;
 import ru.deliveon.lists.dialogs.ExitDialog;
 import ru.deliveon.lists.database.entity.Lists;
@@ -30,7 +33,6 @@ import ru.deliveon.lists.database.entity.ProductForList;
 import ru.deliveon.lists.interfaces.AddEditListInterface;
 import ru.deliveon.lists.interfaces.DatabaseCallbackLists;
 import ru.deliveon.lists.interfaces.DeleteListInterface;
-import ru.deliveon.lists.mainList.OnItemListenerMain;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface,
         AddEditListInterface, DatabaseCallbackLists, OnStartDragListener {

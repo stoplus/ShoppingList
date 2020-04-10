@@ -1,4 +1,4 @@
-package ru.deliveon.lists;
+package ru.deliveon.lists.addEdit;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -43,12 +43,15 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import ru.deliveon.lists.dialogs.CameraOrGalery;
+import ru.deliveon.lists.BuildConfig;
+import ru.deliveon.lists.GlideApp;
+import ru.deliveon.lists.Products;
+import ru.deliveon.lists.R;
 import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.interfaces.CameraOrGaleryInterface;
 
 @RuntimePermissions
-public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterface {
+public class AddEditActivity extends AppCompatActivity implements CameraOrGaleryInterface {
     @BindView(R.id.editText)
     EditText editText;
     @BindView(R.id.imageView)
@@ -93,7 +96,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
             productReceived = savedInstanceState.getParcelable("productReceived");
         }//if savedInstanceState
 
-        AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
+        AddEditActivityPermissionsDispatcher.chekPermWithPermissionCheck(AddEditActivity.this);
     }//onCreate
 
 
@@ -139,7 +142,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
 
 
     private void setPhoto(Uri uri, int errorPhoto) {
-        GlideApp.with(AddEdit.this)
+        GlideApp.with(AddEditActivity.this)
                 .load(uri)
                 .override(600, 600)
                 .fitCenter()
@@ -149,7 +152,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     }
 
     public void cancel(View view) {
-        Intent intent = new Intent(AddEdit.this, Products.class);
+        Intent intent = new Intent(AddEditActivity.this, Products.class);
         intent.putExtra("idList", idList);
         setResult(RESULT_CANCELED, intent);//возращаем результат
         finish();
@@ -222,7 +225,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                         uri = data.getData();
                     } else {
                         File photoFile = new File(getRealPathFromURI(data.getData()));
-                        uri = FileProvider.getUriForFile(AddEdit.this,
+                        uri = FileProvider.getUriForFile(AddEditActivity.this,
                                 BuildConfig.APPLICATION_ID + ".provider",
                                 photoFile);
                     }
@@ -237,7 +240,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     Toast.makeText(this, getResources().getString(R.string.not_selected_photo), Toast.LENGTH_LONG).show();
                 break;
             case REQUEST_PERMITIONS:
-                AddEditPermissionsDispatcher.chekPermWithPermissionCheck(AddEdit.this);
+                AddEditActivityPermissionsDispatcher.chekPermWithPermissionCheck(AddEditActivity.this);
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -283,7 +286,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                     if (Build.VERSION.SDK_INT < 24) {
                         photoURI = Uri.fromFile(photoFile);
                     } else {
-                        photoURI = FileProvider.getUriForFile(AddEdit.this,
+                        photoURI = FileProvider.getUriForFile(AddEditActivity.this,
                                 BuildConfig.APPLICATION_ID + ".provider",
                                 photoFile);
                     }
@@ -320,43 +323,40 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
         if (way == START_DIALOG_CHOICE_PHOTO) hintImage.setVisibility(View.VISIBLE);
         else hintImage.setVisibility(View.GONE);
 
-        clickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (way == START_DIALOG_CHOICE_PHOTO) {
-                        selectWayForLoadPhoto();
-                    } else if (way == START_CONTEXT_MENU) {
-                        popup = new PopupMenu(AddEdit.this, editText, Gravity.CENTER_HORIZONTAL);//create the menu window object
-                        popup.inflate(R.menu.click_foto_menu);//inflate a menu from an XML file
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {//define the clicks on the menu items
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                switch (item.getItemId()) {
-                                    case R.id.change_photo:
-                                        selectWayForLoadPhoto();
-                                        return true;
-                                    case R.id.delete_photo:
-                                        finalPath = "";
-                                        linkNewPicture = "";
-                                        newImageFlag = false;
-                                        if (productReceived != null) {
-                                            productReceived.setPictureLink(finalPath);
-                                        }
-                                        chekPerm();
-                                        return true;
-                                    default:
-                                        break;
-                                }//switch
-                                return false;
-                            }//onMenuItemClick
-                        });
-                        popup.show();//show the menu window
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    Log.d("AddEditclass", e.getMessage());
+        //onClick
+        clickListener = v -> {
+            try {
+                if (way == START_DIALOG_CHOICE_PHOTO) {
+                    selectWayForLoadPhoto();
+                } else if (way == START_CONTEXT_MENU) {
+                    popup = new PopupMenu(AddEditActivity.this, editText, Gravity.CENTER_HORIZONTAL);//create the menu window object
+                    popup.inflate(R.menu.click_foto_menu);//inflate a menu from an XML file
+                    //define the clicks on the menu items
+                    //onMenuItemClick
+                    popup.setOnMenuItemClickListener(item -> {
+                        switch (item.getItemId()) {
+                            case R.id.change_photo:
+                                selectWayForLoadPhoto();
+                                return true;
+                            case R.id.delete_photo:
+                                finalPath = "";
+                                linkNewPicture = "";
+                                newImageFlag = false;
+                                if (productReceived != null) {
+                                    productReceived.setPictureLink(finalPath);
+                                }
+                                chekPerm();
+                                return true;
+                            default:
+                                break;
+                        }//switch
+                        return false;
+                    });
+                    popup.show();//show the menu window
                 }
-            }//onClick
+            } catch (IndexOutOfBoundsException e) {
+                Log.d("AddEditclass", e.getMessage());
+            }
         };
     }//installListenerPhoto
 
@@ -378,7 +378,7 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        AddEditPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        AddEditActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }//onRequestPermissionsResult
 
 
@@ -398,23 +398,17 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
                 .setTitle(getResources().getString(R.string.attention))
                 .setIcon(R.drawable.warning)
                 .setMessage(getResources().getString(R.string.need_get_permissions))
-                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivity(intent);
-                        finish();
-                    }
+                .setPositiveButton(getResources().getString(R.string.ok), (dialog1, which) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                    finish();
                 })
-                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        finish();
-                    }
+                .setNegativeButton(getResources().getString(R.string.cancel), (dialog12, which) -> {
+                    dialog12.dismiss();
+                    finish();
                 })
                 .show();
         dialog.setCancelable(false);
@@ -425,18 +419,8 @@ public class AddEdit extends AppCompatActivity implements CameraOrGaleryInterfac
     void showRationaleForCamera(final PermissionRequest request) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(getResources().getString(R.string.need_obtain_permissions))
-                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.proceed();
-                    }
-                })
-                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.cancel();
-                    }
-                })
+                .setPositiveButton(getResources().getString(R.string.ok), (dialog1, which) -> request.proceed())
+                .setNegativeButton(getResources().getString(R.string.cancel), (dialog12, which) -> request.cancel())
                 .show();
         dialog.setCancelable(false);
     }

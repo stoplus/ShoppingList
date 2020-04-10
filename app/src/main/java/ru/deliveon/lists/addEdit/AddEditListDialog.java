@@ -1,10 +1,9 @@
-package ru.deliveon.lists.dialogs;
+package ru.deliveon.lists.addEdit;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -22,8 +21,6 @@ import ru.deliveon.lists.interfaces.AddEditListInterface;
 
 public class AddEditListDialog extends DialogFragment {
     private AddEditListInterface datable;
-    private EditText input;
-    private TextView addEditBtn;
 
     @Override //The onAttach () method is called at the beginning of the fragment's life cycle
     public void onAttach(Context context) {
@@ -31,12 +28,12 @@ public class AddEditListDialog extends DialogFragment {
         datable = (AddEditListInterface) context;
     } // onAttach
 
-    String title;
-    int image;
-
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        String title;
+        int image;
         Lists lists = null;
+
         if (getArguments() != null) {
             lists = getArguments().getParcelable("lists");
         }
@@ -44,8 +41,8 @@ public class AddEditListDialog extends DialogFragment {
 
         @SuppressLint("InflateParams") final View view = Objects.requireNonNull(getActivity()).
                 getLayoutInflater().inflate(R.layout.new_list, null);
-        input = view.findViewById(R.id.editTextNewList);
-        addEditBtn = view.findViewById(R.id.btnAdd);
+        EditText input = view.findViewById(R.id.editTextNewList);
+        TextView addEditBtn = view.findViewById(R.id.btnAdd);
 
         if (lists == null) {
             title = getResources().getString(R.string.create_new_list);

@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 import ru.deliveon.lists.adapters.AdapterProductList;
 import ru.deliveon.lists.adapters.AdapterProductListPurchased;
 import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
+import ru.deliveon.lists.addEdit.AddEditActivity;
 import ru.deliveon.lists.di.App;
 import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.database.entity.ProductForList;
@@ -82,7 +83,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         setTitle(getResources().getString(R.string.list) + ": " + nameList);
 
         fabBtn.setOnClickListener(view -> {
-            Intent intent = new Intent(Products.this, AddEdit.class);
+            Intent intent = new Intent(Products.this, AddEditActivity.class);
             intent.putExtra("idList", idList);
             intent.putExtra("sortNum", productList.size() + 1);
             intent.putExtra("newImageFlag", true);
@@ -276,7 +277,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 //определяем нажатия на элементы меню
                 //onMenuItemClick
                 popup.setOnMenuItemClickListener(item -> {
-                    Intent intent = new Intent(Products.this, AddEdit.class);
+                    Intent intent = new Intent(Products.this, AddEditActivity.class);
                     intent.putExtra("idList", idList);
                     intent.putExtra("product", product);
                     intent.putExtra("newImageFlag", false);
@@ -297,7 +298,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         Log.d("Productsclass", "onListProductsLoaded");
         if (lists.size() == 0) {
             layout.setOnClickListener(v -> {
-                Intent intent = new Intent(Products.this, AddEdit.class);
+                Intent intent = new Intent(Products.this, AddEditActivity.class);
                 intent.putExtra("idList", idList);
                 intent.putExtra("sortNum", productList.size() + 1);
                 intent.putExtra("newImageFlag", true);
