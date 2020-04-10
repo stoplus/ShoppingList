@@ -14,6 +14,8 @@ public class Lists implements Parcelable {
     public String name;
     @ColumnInfo(name = "sort_num")
     private int sortNum;
+    @ColumnInfo(name = "color")
+    private int color;
 
     public Lists(String name) {
         this.name = name;
@@ -23,6 +25,7 @@ public class Lists implements Parcelable {
         id = in.readInt();
         name = in.readString();
         sortNum = in.readInt();
+        color = in.readInt();
     }
 
     public static final Creator<Lists> CREATOR = new Creator<Lists>() {
@@ -37,9 +40,13 @@ public class Lists implements Parcelable {
         }
     };
 
-    public int getSortNum() {
-        return sortNum;
+    public int getColor() { return color; }
+
+    public void setColor(int color) {
+        this.color = color;
     }
+
+    public int getSortNum() { return sortNum; }
 
     public void setSortNum(int sortNum) {
         this.sortNum = sortNum;
@@ -71,6 +78,7 @@ public class Lists implements Parcelable {
         dest.writeInt(id);
         dest.writeString(name);
         dest.writeInt(sortNum);
+        dest.writeInt(color);
     }
 }
 

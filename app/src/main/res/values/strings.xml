@@ -27,6 +27,7 @@
     <string name="create_new_list">Создание нового списка</string>
     <string name="edit_name_list">Изменение названия списка</string>
     <string name="enter_name_list">Введите название списка</string>
+    <string name="selected_colour_list">Цвет списка:</string>
     <string name="camera_or_galery">Выбрать фото из галереи или снять на камеру?</string>
     <string name="where_take_pictures">Откуда возмем фото?</string>
     <string name="galery">Галерея</string>
@@ -40,5 +41,10 @@
     <string name="yes">Да</string>
     <string name="picture">Изображение</string>
     <string name="touch_for_add_photo">Прикоснитесь для добавления фото</string>
+
+    <string name="select_color">Выберите цвет</string>
+    <string name="select">Выбрать</string>
+    <string name="custom">Расширено</string>
+    <string name="presets">Предустановленные</string>
 
 </resources>

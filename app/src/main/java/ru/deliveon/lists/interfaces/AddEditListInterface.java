@@ -5,4 +5,5 @@ import ru.deliveon.lists.database.entity.Lists;
 public interface AddEditListInterface {
     void addList(Lists lists);
     void update(Lists lists);
+    void openPicker(int colorForStartDialog, Lists lists);
 }

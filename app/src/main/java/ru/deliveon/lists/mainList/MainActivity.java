@@ -12,6 +12,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.jaredrummler.android.colorpicker.ColorPickerDialog;
+import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +38,7 @@ import ru.deliveon.lists.interfaces.DatabaseCallbackLists;
 import ru.deliveon.lists.interfaces.DeleteListInterface;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface,
-        AddEditListInterface, DatabaseCallbackLists, OnStartDragListener {
+        AddEditListInterface, DatabaseCallbackLists, OnStartDragListener, ColorPickerDialogListener {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.idRecycler)
@@ -52,6 +55,10 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private List<Lists> listLists;
     private ItemTouchHelper mItemTouchHelper;
     boolean isItemMove = false;
+    private ColorPickerDialog.Builder colorDialog;
+    private int colorForStartDialog = 0;
+    private final int DIALOG_ID_COLOR = 0;
+    private Lists lists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +88,23 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void update(Lists lists) {
         requestsLists.updateLists(this, lists);
+    }
+
+    @Override
+    public void openPicker(int colorForStartDialog, Lists lists) {
+        this.lists = lists;
+        colorDialog = ColorPickerDialog.newBuilder();
+        colorDialog.setDialogType(ColorPickerDialog.TYPE_PRESETS)
+                .setAllowPresets(false)
+                .setDialogId(DIALOG_ID_COLOR)
+                .setColor(colorForStartDialog)
+                .setDialogTitle(R.string.select_color)
+                .setSelectedButtonText(R.string.select)
+                .setShowAlphaSlider(false)
+                .setPresetsButtonText(R.string.presets)
+                .setCustomButtonText(R.string.custom)
+                .setShowAlphaSlider(false)
+                .show(this);
     }
 
     @Override
@@ -197,6 +221,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         }
     }//itemLongClick
 
+
+
     @Override
     public void onListDeleted() {
         //search in the table "goods in the list" records with the same id LIST
@@ -242,6 +268,25 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
+    }
+
+    @Override
+    public void onColorSelected(int dialogId, int selectedColor) {
+        if (dialogId == DIALOG_ID_COLOR) {
+            colorForStartDialog = selectedColor;
+//            datable.saveColor(selectedColor);
+         //   lists.setColor();
+            Bundle args = new Bundle();
+            args.putParcelable("lists", lists);
+            AddEditListDialog addEditListDialog = new AddEditListDialog();
+            addEditListDialog.setArguments(args);
+            addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");
+        }
+    }
+
+    @Override
+    public void onDialogDismissed(int dialogId) {
+        //auto generate
     }
 
     @Override

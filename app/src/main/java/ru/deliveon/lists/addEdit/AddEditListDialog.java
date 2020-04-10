@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,8 @@ import ru.deliveon.lists.interfaces.AddEditListInterface;
 
 public class AddEditListDialog extends DialogFragment {
     private AddEditListInterface datable;
+    private View colorBtn;
+    private int colorForStartDialog;
 
     @Override //The onAttach () method is called at the beginning of the fragment's life cycle
     public void onAttach(Context context) {
@@ -30,8 +33,7 @@ public class AddEditListDialog extends DialogFragment {
 
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String title;
-        int image;
+
         Lists lists = null;
 
         if (getArguments() != null) {
@@ -44,15 +46,19 @@ public class AddEditListDialog extends DialogFragment {
         EditText input = view.findViewById(R.id.editTextNewList);
         TextView addEditBtn = view.findViewById(R.id.btnAdd);
 
-        if (lists == null) {
-            title = getResources().getString(R.string.create_new_list);
-            addEditBtn.setText(getResources().getString(R.string.add));
-            image = R.drawable.add;
-        } else {
+        colorForStartDialog = ContextCompat.getColor(view.getContext(), R.color.colorList);
+        int image = R.drawable.add;
+        String title = getResources().getString(R.string.create_new_list);
+        addEditBtn.setText(getResources().getString(R.string.add));
+
+        //редактируем
+        if (lists != null) {
             input.setText(lists.getListName());
             title = getResources().getString(R.string.edit_name_list);
             addEditBtn.setText(getResources().getString(R.string.edit));
             image = R.drawable.edit;
+            colorForStartDialog = ContextCompat.getColor(view.getContext(), R.color.colorList);
+            // colorForStartDialog = ContextCompat.getColor(view.getContext(), lists.getColor());
         }
 
         final Lists finalLists = lists;
@@ -64,6 +70,14 @@ public class AddEditListDialog extends DialogFragment {
         dialog.setOnShowListener(dialog1 -> {
             Button btnCancel = getDialog().findViewById(R.id.btnCancel);
             Button btnAdd = getDialog().findViewById(R.id.btnAdd);
+            colorBtn = getDialog().findViewById(R.id.item_color);
+            colorBtn.setBackgroundColor(colorForStartDialog);
+
+            //выбор цвета айтема списка
+            colorBtn.setOnClickListener(v -> {
+                datable.openPicker(colorForStartDialog, finalLists);
+                dialog1.dismiss();
+            });
 
             btnAdd.setOnClickListener(v -> {
                 String name = input.getText().toString();
@@ -76,9 +90,8 @@ public class AddEditListDialog extends DialogFragment {
                         datable.update(finalLists);
                     }
                     dialog1.dismiss();
-                }else
-                Snackbar.make(view, getResources().getString(R.string.enter_name_list),
-                        Snackbar.LENGTH_SHORT).show();
+                } else
+                    Snackbar.make(view, getResources().getString(R.string.enter_name_list), Snackbar.LENGTH_SHORT).show();
             });
 
             btnCancel.setOnClickListener(v -> dialog1.dismiss());
@@ -86,4 +99,6 @@ public class AddEditListDialog extends DialogFragment {
 
         return dialog;
     } // onCreateDialog
+
+
 }

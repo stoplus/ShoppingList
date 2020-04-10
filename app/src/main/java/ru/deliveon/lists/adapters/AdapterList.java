@@ -73,12 +73,9 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
-        @BindView(R.id.idTextViewLists)
-        TextView category_id;
-        @BindView(R.id.move)
-        ImageView move;
-        @BindView(R.id.container)
-        ConstraintLayout constraintLayout;
+        @BindView(R.id.idTextViewLists) TextView category_id;
+        @BindView(R.id.move) ImageView move;
+        @BindView(R.id.container) ConstraintLayout constraintLayout;
 
         private ViewHolder(View view) {
             super(view);
@@ -105,6 +102,7 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+//        holder.constraintLayout.setBackgroundColor(list.get(position).getColor());
         holder.category_id.setText(list.get(position).getListName());
         // Start a drag whenever the handle view it touched
         holder.move.setOnTouchListener((v, event) -> {

@@ -40,6 +40,7 @@ public abstract class AppDatabase extends RoomDatabase {
         public void migrate(final SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE Product ADD COLUMN sort_num INTEGER DEFAULT 0 NOT NULL");
             database.execSQL("ALTER TABLE Lists ADD COLUMN sort_num INTEGER DEFAULT 0 NOT NULL");
+            database.execSQL("ALTER TABLE Lists ADD COLUMN color INTEGER DEFAULT 0 NOT NULL");
         }
     };
 }
