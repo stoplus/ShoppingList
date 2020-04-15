@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -375,6 +376,19 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 }
                 flagDel = true;
                 requestsLists.updateListProduct(this, productList, idList);
+                break;
+            case R.id.allItemsNotPurchased:
+                for (int i = 0; i < listPurchased.size(); i++) {
+                    if (listPurchased.get(i).isBought())
+                        listPurchased.get(i).setBought(false);
+                }
+                flagDel = true;
+                requestsLists.updateListProduct(this, listPurchased, idList);
+                break;
+            case R.id.sortByName:
+                Collections.sort(productList, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
+                Collections.sort(listPurchased, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
+                createAndInstallAdapter();
                 break;
             case R.id.back:
                 finish();
