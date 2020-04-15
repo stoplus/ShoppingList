@@ -17,8 +17,9 @@ public class Lists implements Parcelable {
     @ColumnInfo(name = "color")
     private int color;
 
-    public Lists(String name) {
+    public Lists(String name, int color) {
         this.name = name;
+        this.color = color;
     }
 
     protected Lists(Parcel in) {

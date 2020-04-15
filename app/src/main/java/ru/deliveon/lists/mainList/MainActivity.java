@@ -55,10 +55,11 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private List<Lists> listLists;
     private ItemTouchHelper mItemTouchHelper;
     boolean isItemMove = false;
+    boolean isItemRemove = false;
     private ColorPickerDialog.Builder colorDialog;
-    private int colorForStartDialog = 0;
     private final int DIALOG_ID_COLOR = 0;
     private Lists lists;
+    private String selectedName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,16 +83,19 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void addList(final Lists lists) {
+        selectedName = "";
         requestsLists.addLists(this, lists);
     }
 
     @Override
     public void update(Lists lists) {
+        selectedName = "";
         requestsLists.updateLists(this, lists);
     }
 
     @Override
-    public void openPicker(int colorForStartDialog, Lists lists) {
+    public void openPicker(int colorForStartDialog, Lists lists, String name) {
+        selectedName = name;
         this.lists = lists;
         colorDialog = ColorPickerDialog.newBuilder();
         colorDialog.setDialogType(ColorPickerDialog.TYPE_PRESETS)
@@ -109,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void deleteList(Lists lists) {
+        isItemRemove = true;
         requestsLists.deleteList(this, lists);
     }
 
@@ -119,16 +124,12 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void onListsLoaded(final List<Lists> lists) {
-        listLists = lists;
-        if (lists.size() == 0) {
-            openAddEditListDialog();
-            mainLayout.setOnClickListener(v -> openAddEditListDialog());
-        } else{
-            mainLayout.setOnClickListener(null);
-        }
+        setListener(lists);
 
-        if (checkSortNum(lists, false) || isItemMove){
+        if (checkSortNum(lists, isItemRemove) || isItemMove) {
             isItemMove = false;
+            isItemRemove = false;
+            Collections.sort(listLists, (obj1, obj2) -> Integer.compare(obj1.getSortNum(), obj2.getSortNum()));
             return;
         }
 
@@ -163,11 +164,21 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
             ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
             mItemTouchHelper = new ItemTouchHelper(callback);
             mItemTouchHelper.attachToRecyclerView(recyclerView);
-        } else {
+        }
+        else {
             adapter.deleteFromListAdapter(positionDelete);
             positionDelete = -1;
         }
     }//onListsLoaded
+
+    private void setListener(List<Lists> lists) {
+        if (lists.size() == 0) {
+            openAddEditListDialog();
+            mainLayout.setOnClickListener(v -> openAddEditListDialog());
+        } else {
+            mainLayout.setOnClickListener(null);
+        }
+    }
 
     private boolean checkSortNum(List<Lists> productList, boolean update) {
         List<Lists> newListProduct = new ArrayList<>();
@@ -180,6 +191,9 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
             }
             newListProduct.add(product);
         }
+
+        listLists = newListProduct;
+
         if (update) {
             //если обновляли, отправляем на сохранение нового списка с обновленными номерами сортировки
             requestsLists.updateList(this, newListProduct);
@@ -220,7 +234,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
             popup.show();
         }
     }//itemLongClick
-
 
 
     @Override
@@ -266,6 +279,11 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     }//onInOtherList
 
     @Override
+    public void productRemoved() {
+
+    }
+
+    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
     }
@@ -273,11 +291,10 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     @Override
     public void onColorSelected(int dialogId, int selectedColor) {
         if (dialogId == DIALOG_ID_COLOR) {
-            colorForStartDialog = selectedColor;
-//            datable.saveColor(selectedColor);
-         //   lists.setColor();
             Bundle args = new Bundle();
             args.putParcelable("lists", lists);
+            args.putInt("color", selectedColor);
+            args.putString("name", selectedName);
             AddEditListDialog addEditListDialog = new AddEditListDialog();
             addEditListDialog.setArguments(args);
             addEditListDialog.show(getSupportFragmentManager(), "addEditListDialog");

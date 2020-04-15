@@ -16,4 +16,6 @@ public interface DatabaseCallbackLists {
     void onDeletedListProductForList();
 
     void onInOtherLists(List<ProductForList> list);
+
+    void productRemoved();
 }

@@ -40,6 +40,8 @@ public class DeleteListDialog extends DialogFragment {
                     // удалить выбранный элемент списка при помощи метода интерфейса
                     datable.deleteList(lists);
                 });
-        return builder.create();
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        return dialog;
     } // onCreateDialog
 }

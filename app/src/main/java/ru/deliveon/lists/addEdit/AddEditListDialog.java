@@ -33,11 +33,14 @@ public class AddEditListDialog extends DialogFragment {
 
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         Lists lists = null;
+        int selectedColor = 0;
+        String selectedName = "";
 
         if (getArguments() != null) {
             lists = getArguments().getParcelable("lists");
+            selectedColor = getArguments().getInt("color", 0);
+            selectedName = getArguments().getString("name", "");
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -45,21 +48,36 @@ public class AddEditListDialog extends DialogFragment {
                 getLayoutInflater().inflate(R.layout.new_list, null);
         EditText input = view.findViewById(R.id.editTextNewList);
         TextView addEditBtn = view.findViewById(R.id.btnAdd);
+        colorBtn = view.findViewById(R.id.item_color);
 
-        colorForStartDialog = ContextCompat.getColor(view.getContext(), R.color.colorList);
         int image = R.drawable.add;
         String title = getResources().getString(R.string.create_new_list);
         addEditBtn.setText(getResources().getString(R.string.add));
 
+
         //редактируем
         if (lists != null) {
-            input.setText(lists.getListName());
+            input.setText(selectedName.isEmpty() ? lists.getListName() : selectedName);
             title = getResources().getString(R.string.edit_name_list);
             addEditBtn.setText(getResources().getString(R.string.edit));
             image = R.drawable.edit;
-            colorForStartDialog = ContextCompat.getColor(view.getContext(), R.color.colorList);
-            // colorForStartDialog = ContextCompat.getColor(view.getContext(), lists.getColor());
+        }else {
+            input.setText(selectedName);
         }
+
+        //присваиваем цвет
+        if (selectedColor != 0) {
+            // присваиваем выбранный цвет
+            colorForStartDialog = selectedColor;
+        } else if (lists != null) {
+            //берем из базы
+            colorForStartDialog = lists.getColor();
+        } else {
+            //если не выбирали цвет, берем по умолчанию
+            colorForStartDialog = ContextCompat.getColor(view.getContext(), R.color.colorList);//2
+        }
+
+        colorBtn.setBackgroundColor(colorForStartDialog);
 
         final Lists finalLists = lists;
         builder.setTitle(title)
@@ -70,12 +88,10 @@ public class AddEditListDialog extends DialogFragment {
         dialog.setOnShowListener(dialog1 -> {
             Button btnCancel = getDialog().findViewById(R.id.btnCancel);
             Button btnAdd = getDialog().findViewById(R.id.btnAdd);
-            colorBtn = getDialog().findViewById(R.id.item_color);
-            colorBtn.setBackgroundColor(colorForStartDialog);
 
             //выбор цвета айтема списка
             colorBtn.setOnClickListener(v -> {
-                datable.openPicker(colorForStartDialog, finalLists);
+                datable.openPicker(colorForStartDialog, finalLists, input.getText().toString());
                 dialog1.dismiss();
             });
 
@@ -84,9 +100,10 @@ public class AddEditListDialog extends DialogFragment {
                 if (!name.isEmpty()) {
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
                     if (finalLists == null) {
-                        datable.addList(new Lists(name));
+                        datable.addList(new Lists(name, colorForStartDialog));
                     } else {
                         finalLists.setListName(name);
+                        finalLists.setColor(colorForStartDialog);
                         datable.update(finalLists);
                     }
                     dialog1.dismiss();

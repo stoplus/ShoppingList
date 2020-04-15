@@ -3,9 +3,11 @@ package ru.deliveon.lists.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -52,6 +54,10 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
         return position;
     }//getItemId
 
+    public void setList(List<Lists> list) {
+        this.list = list;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -90,19 +96,44 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorListDrag));
+            int minIndex = 225;
+            int plusIndex = 30;
+            int color = list.get(getAdapterPosition()).getColor();
+
+            int R = (color >> 16) & 0xff;
+            int G = (color >> 8) & 0xff;
+            int B = (color) & 0xff;
+
+            if (R <= minIndex) {
+                R += plusIndex;
+            } else {
+                R = 255;
+            }
+            if (G <= minIndex) {
+                G += plusIndex;
+            } else {
+                G = 255;
+            }
+            if (B <= minIndex) {
+                B += plusIndex;
+            } else {
+                B = 255;
+            }
+            itemView.setBackgroundColor(Color.rgb(R, G, B));
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorList));
+            if (getAdapterPosition() != -1) {
+                itemView.setBackgroundColor(list.get(getAdapterPosition()).getColor());
+            }
         }
     }//class ViewHolder
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-//        holder.constraintLayout.setBackgroundColor(list.get(position).getColor());
+        holder.constraintLayout.setBackgroundColor(list.get(position).getColor());
         holder.category_id.setText(list.get(position).getListName());
         // Start a drag whenever the handle view it touched
         holder.move.setOnTouchListener((v, event) -> {
@@ -116,8 +147,12 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
     }//onBindViewHolder
 
     public void deleteFromListAdapter(int pos) {
-        list.remove(pos);
-        notifyItemRemoved(pos);//updates after removing Item at position
-        notifyItemRangeChanged(pos, list.size());//updates the items of the following items
+        if (pos < list.size()){
+            list.remove(pos);
+            notifyItemRemoved(pos);//updates after removing Item at position
+            notifyItemRangeChanged(pos, list.size());//updates the items of the following items
+        }else {
+            notifyDataSetChanged();
+        }
     }//deleteFromListAdapter
 }//class Adapter
