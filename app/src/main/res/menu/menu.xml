@@ -15,7 +15,11 @@
         android:title="@string/sort_by_name" />
 
     <item
-        android:id="@+id/back"
-        android:title="@string/back" />
+        android:id="@+id/share"
+        android:title="@string/share_list" />
+
+    <item
+        android:id="@+id/add_position"
+        android:title="@string/add_position" />
 
 </menu>

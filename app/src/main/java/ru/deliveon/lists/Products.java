@@ -1,9 +1,12 @@
 package ru.deliveon.lists;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -14,12 +17,12 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,6 +36,7 @@ import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.database.entity.ProductForList;
 import ru.deliveon.lists.interfaces.DatabaseCallbackProduct;
 import ru.deliveon.lists.interfaces.OnItemListener;
+import ru.deliveon.lists.utils.UtilIntentShare;
 
 public class Products extends AppCompatActivity implements DatabaseCallbackProduct {
 
@@ -83,17 +87,19 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         String nameList = getIntent().getStringExtra("nameList");
         setTitle(getResources().getString(R.string.list) + ": " + nameList);
 
-        fabBtn.setOnClickListener(view -> {
-            Intent intent = new Intent(Products.this, AddEditActivity.class);
-            intent.putExtra("idList", idList);
-            intent.putExtra("sortNum", productList.size() + 1);
-            intent.putExtra("newImageFlag", true);
-            startActivityForResult(intent, REQEST_ADD);
-        });
+        fabBtn.setOnClickListener(view -> addPosition());
         requestsLists.getAllForList(Products.this, idList);
 
         recyclerProdPurchased.setNestedScrollingEnabled(false);
     }//onCreate
+
+    private void addPosition() {
+        Intent intent = new Intent(Products.this, AddEditActivity.class);
+        intent.putExtra("idList", idList);
+        intent.putExtra("sortNum", productList.size() + 1);
+        intent.putExtra("newImageFlag", true);
+        startActivityForResult(intent, REQEST_ADD);
+    }
 
     @Override
     protected void onRestart() {
@@ -370,31 +376,118 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         int id = item.getItemId();
         switch (id) {
             case R.id.allItemsPurchased:// all bought
-                for (int i = 0; i < productList.size(); i++) {
-                    if (!productList.get(i).isBought())
-                        productList.get(i).setBought(true);
-                }
-                flagDel = true;
-                requestsLists.updateListProduct(this, productList, idList);
+                createAllItemsPurchased();
                 break;
             case R.id.allItemsNotPurchased:
-                for (int i = 0; i < listPurchased.size(); i++) {
-                    if (listPurchased.get(i).isBought())
-                        listPurchased.get(i).setBought(false);
-                }
-                flagDel = true;
-                requestsLists.updateListProduct(this, listPurchased, idList);
+                createAllItemsNotPurchased();
                 break;
             case R.id.sortByName:
                 Collections.sort(productList, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
                 Collections.sort(listPurchased, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
                 createAndInstallAdapter();
                 break;
-            case R.id.back:
-                finish();
+            case R.id.share:
+                if (productList.isEmpty() || listPurchased.isEmpty()){
+                    share(!productList.isEmpty(), !listPurchased.isEmpty());
+                }else {
+                    createShareDialog();
+                }
+                break;
+            case R.id.add_position:
+                addPosition();
         }//switch
         return super.onOptionsItemSelected(item);
     }//onOptionsItemSelected
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem share = menu.findItem(R.id.share);
+        MenuItem allItemsPurchased = menu.findItem(R.id.allItemsPurchased);
+        MenuItem allItemsNotPurchased = menu.findItem(R.id.allItemsNotPurchased);
+        MenuItem sortByName = menu.findItem(R.id.sortByName);
+        MenuItem addPosition = menu.findItem(R.id.add_position);
+
+        boolean show = productList.isEmpty() && listPurchased.isEmpty();
+        boolean showSort = (productList.size() + listPurchased.size()) > 1;
+
+        allItemsPurchased.setVisible(!show);
+        allItemsNotPurchased.setVisible(!show);
+        sortByName.setVisible(!show && showSort);
+        share.setVisible(!show);
+        addPosition.setVisible(show);
+        return true;
+    }
+
+    private void createAllItemsNotPurchased() {
+        for (int i = 0; i < listPurchased.size(); i++) {
+            if (listPurchased.get(i).isBought())
+                listPurchased.get(i).setBought(false);
+        }
+        flagDel = true;
+        requestsLists.updateListProduct(this, listPurchased, idList);
+    }
+
+    private void createAllItemsPurchased() {
+        for (int i = 0; i < productList.size(); i++) {
+            if (!productList.get(i).isBought())
+                productList.get(i).setBought(true);
+        }
+        flagDel = true;
+        requestsLists.updateListProduct(this, productList, idList);
+    }
+
+    private void createShareDialog() {
+        @SuppressLint("InflateParams") final View view =
+                this.getLayoutInflater().inflate(R.layout.dialog_selected_share, null);
+        CheckBox awaiting = view.findViewById(R.id.checkbox_awaiting);
+        CheckBox folded = view.findViewById(R.id.checkbox_folded);
+
+        String title = getResources().getString(R.string.dialog_selected_title);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setView(view)
+                .setNegativeButton(getResources().getString(R.string.cancel), null)
+                .setPositiveButton(getResources().getString(R.string.dialog_selected_btn_share), (dialog, which) -> {
+                    if (!awaiting.isChecked() && !folded.isChecked()){
+                        createShareDialog();
+                    }else {
+                        share(awaiting.isChecked(), folded.isChecked());
+                    }
+                });
+        builder.show();
+    }
+
+    private void share(boolean isAwaiting, boolean isFolded) {
+        StringBuilder message = new StringBuilder();
+        Collections.sort(productList, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
+        Collections.sort(listPurchased, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
+
+        //готовим список ожидающих
+        if (isAwaiting) {
+            for (Product product : productList) {
+                if (message.length() == 0) {
+                    message.append(getResources().getString(R.string.not_collected));
+                }
+                message.append("\n").append(product.nameProduct);
+            }
+            if (isFolded) {
+                message.append("\n").append("\n").append(getResources().getString(R.string.collected));
+            }
+        }
+
+        //готовим список сложенных
+        if (isFolded) {
+            for (Product product : listPurchased) {
+                if (message.length() == 0) {
+                    message.append(getResources().getString(R.string.collected));
+                }
+                message.append("\n").append(product.nameProduct);
+            }
+        }
+
+        UtilIntentShare.shareText(this, null, getTitle().toString(), message.toString());
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
