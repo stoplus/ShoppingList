@@ -3,11 +3,11 @@ package ru.deliveon.lists.database.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.os.Parcel;
-import android.os.Parcelable;
+
+import java.io.Serializable;
 
 @Entity
-public class Lists implements Parcelable {
+public class Lists implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int id;
     @ColumnInfo(name = "name")
@@ -21,25 +21,6 @@ public class Lists implements Parcelable {
         this.name = name;
         this.color = color;
     }
-
-    protected Lists(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        sortNum = in.readInt();
-        color = in.readInt();
-    }
-
-    public static final Creator<Lists> CREATOR = new Creator<Lists>() {
-        @Override
-        public Lists createFromParcel(Parcel in) {
-            return new Lists(in);
-        }
-
-        @Override
-        public Lists[] newArray(int size) {
-            return new Lists[size];
-        }
-    };
 
     public int getColor() { return color; }
 
@@ -67,19 +48,6 @@ public class Lists implements Parcelable {
 
     public void setListName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeInt(sortNum);
-        dest.writeInt(color);
     }
 }
 

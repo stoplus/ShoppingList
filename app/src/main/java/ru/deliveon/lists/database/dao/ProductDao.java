@@ -26,11 +26,11 @@ public interface ProductDao {
     Flowable<List<Product>> getAllFromList(int id);
 
     @Query("SELECT MAX(id) FROM Product")
-    Flowable<Integer> getlastProduct();
+    Flowable<Integer> getLastProductId();
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Product... product);
+    void insertProduct(Product... product);
 
     @Update
     void update(Product... product);

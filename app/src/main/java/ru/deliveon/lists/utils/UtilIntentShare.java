@@ -11,12 +11,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import ru.deliveon.lists.Products;
 import ru.deliveon.lists.R;
 import ru.deliveon.lists.database.entity.Lists;
+import ru.deliveon.lists.entity.ExportList;
 
 public class UtilIntentShare {
+    private static final String DATE_FORMAT_NAME = "yyMMdd_HHmmss";
 
     /**
      * Полелиться текстовым сообщением, возможно с заголовком
@@ -85,7 +90,7 @@ public class UtilIntentShare {
         }*/
     }
 
-    private static String fileExt(String url) {
+    public static String fileExt(String url) {
         if (url.indexOf("?") > -1) {
             url = url.substring(0, url.indexOf("?"));
         }
@@ -104,31 +109,39 @@ public class UtilIntentShare {
         }
     }
 
-    private static void saveFileTickets(Context context, Lists lotteryModel) {
+    public static boolean saveFileList(Context context, ExportList lotteryModel) {
         try {
             File folder = new File(context.getFilesDir(), context.getResources().getString(R.string.app_name));
             if (!folder.exists()) {
                 folder.mkdirs();
             }
-            File outFile = new File(folder, "${DateUtils.nameTimeString()}.data");
+//            File outFile = new File(folder, nameTimeString() + ".data");
+            File outFile = new File(folder,  "22.data");
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outFile));
             out.writeObject(lotteryModel);
             out.close();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private static Lists loadLotteryModel(Context context, String name) {
-        Lists lists = null;
+    public static ExportList loadListModel(Context context, String name) {
+        ExportList exportList = null;
         try {
             String path = new File(context.getFilesDir(), context.getResources().getString(R.string.app_name)).toString();
             ObjectInputStream inn = new ObjectInputStream(new FileInputStream(path + "/" + name));
-            lists = (Lists) inn.readObject();
+            exportList = (ExportList) inn.readObject();
             inn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return lists;
+        return exportList;
+    }
+
+    private static String nameTimeString() {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NAME, Locale.getDefault());
+        return sdf.format(new Date());
     }
 }

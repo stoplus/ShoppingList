@@ -18,4 +18,6 @@ public interface DatabaseCallbackLists {
     void onInOtherLists(List<ProductForList> list);
 
     void productRemoved();
+
+    void onProductImported();
 }

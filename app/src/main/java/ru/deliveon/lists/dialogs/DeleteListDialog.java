@@ -17,7 +17,7 @@ public class DeleteListDialog extends DialogFragment {
     private DeleteListInterface datable;
 
     @Override // Метод onAttach() вызывается в начале жизненного цикла фрагмента
-    public void onAttach(Context context){
+    public void onAttach(Context context) {
         super.onAttach(context);
         datable = (DeleteListInterface) context;
     } // onAttach
@@ -25,7 +25,7 @@ public class DeleteListDialog extends DialogFragment {
     @NonNull // построить диалог с получением данных из активности и обработчиком кнопки
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final Lists lists = Objects.requireNonNull(getArguments()).getParcelable("lists");
+        final Lists lists = (Lists) Objects.requireNonNull(getArguments()).getSerializable("lists");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder

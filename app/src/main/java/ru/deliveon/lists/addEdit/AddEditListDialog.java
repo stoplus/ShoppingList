@@ -38,7 +38,7 @@ public class AddEditListDialog extends DialogFragment {
         String selectedName = "";
 
         if (getArguments() != null) {
-            lists = getArguments().getParcelable("lists");
+            lists = (Lists) getArguments().getSerializable("lists");
             selectedColor = getArguments().getInt("color", 0);
             selectedName = getArguments().getString("name", "");
         }

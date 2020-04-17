@@ -22,4 +22,8 @@
         android:id="@+id/add_position"
         android:title="@string/add_position" />
 
+    <item
+        android:id="@+id/export_list"
+        android:title="@string/export_list" />
+
 </menu>

@@ -3,11 +3,11 @@ package ru.deliveon.lists.database.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.os.Parcel;
-import android.os.Parcelable;
+
+import java.io.Serializable;
 
 @Entity
-public class Product implements Parcelable {
+public class Product implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int id;
     @ColumnInfo(name = "name_product")
@@ -33,26 +33,6 @@ public class Product implements Parcelable {
     public void setId(int id) {
         this.id = id;
     }
-
-    protected Product(Parcel in) {
-        id = in.readInt();
-        nameProduct = in.readString();
-        pictureLink = in.readString();
-        bought = in.readByte() != 0;
-        sortNum = in.readInt();
-    }
-
-    public static final Creator<Product> CREATOR = new Creator<Product>() {
-        @Override
-        public Product createFromParcel(Parcel in) {
-            return new Product(in);
-        }
-
-        @Override
-        public Product[] newArray(int size) {
-            return new Product[size];
-        }
-    };
 
     public String getNameProduct() {
         return nameProduct;
@@ -84,19 +64,5 @@ public class Product implements Parcelable {
 
     public void setSortNum(int sortNum) {
         this.sortNum = sortNum;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(nameProduct);
-        dest.writeString(pictureLink);
-        dest.writeByte((byte) (bought ? 1 : 0));
-        dest.writeInt(sortNum);
     }
 }

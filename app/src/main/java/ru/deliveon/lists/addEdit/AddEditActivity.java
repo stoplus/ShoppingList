@@ -93,7 +93,7 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
             mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
             idList = savedInstanceState.getInt("idList");
             sortNum = savedInstanceState.getInt("sortNum");
-            productReceived = savedInstanceState.getParcelable("productReceived");
+            productReceived = (Product) savedInstanceState.getSerializable("productReceived");
         }//if savedInstanceState
 
         AddEditActivityPermissionsDispatcher.chekPermWithPermissionCheck(AddEditActivity.this);
@@ -102,7 +102,7 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE})
     void chekPerm() {
-        productReceived = getIntent().getParcelableExtra("product");
+        productReceived = (Product) getIntent().getSerializableExtra("product");
         idList = getIntent().getIntExtra("idList", -1);
         sortNum = getIntent().getIntExtra("sortNum", 0);
         Uri pathForGlide;
@@ -370,7 +370,7 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
         outState.putInt("idList", idList);
         outState.putInt("sortNum", sortNum);
         outState.putBoolean("newImageFlag", newImageFlag);
-        outState.putParcelable("productReceived", productReceived);
+        outState.putSerializable("productReceived", productReceived);
         outState.putString("linkNewPicture", linkNewPicture);
         outState.putString("mCurrentPhotoPath", mCurrentPhotoPath);
     }//onSaveInstanceState

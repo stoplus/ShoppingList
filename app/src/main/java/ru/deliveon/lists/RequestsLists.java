@@ -7,8 +7,6 @@ import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ru.deliveon.lists.di.App;
 import ru.deliveon.lists.database.entity.Lists;
@@ -152,15 +150,27 @@ public class RequestsLists {
                 });
     }
 
-    public void getlastProduct(final DatabaseCallbackProduct databaseCallbackProduct) {
-        dispListId = productDao.getlastProduct()
+    public void getLastProductId(final DatabaseCallbackLists databaseCallbackLists,
+                                 final DatabaseCallbackProduct databaseCallbackProduct, int idList) {
+        dispListId = productDao.getLastProductId()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(databaseCallbackProduct::onLastProduct);
+//                .subscribe(databaseCallbackProduct::onLastProduct);
+                .subscribe(lastProductId -> {
+                    Log.d("Productsclass", "onLastProduct");
+                    dispListId.dispose();
+                    // add to the table "goods in the list"
+                    ProductForList productForList = new ProductForList(idList, lastProductId);
+                    addProductForList(databaseCallbackLists, databaseCallbackProduct, productForList);
+                });
     }
 
-    public void addListProduct(final DatabaseCallbackProduct databaseCallbackProduct, final Product product) {
-        Completable.fromAction(() -> productDao.insert(product))
+    // added the product to the product table
+    public void addProduct(final DatabaseCallbackLists databaseCallbackLists,
+                           final DatabaseCallbackProduct databaseCallbackProduct,
+                           final Product product,
+                           int idList) {
+        Completable.fromAction(() -> productDao.insertProduct(product))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new CompletableObserver() {
@@ -171,7 +181,8 @@ public class RequestsLists {
                     @Override
                     public void onComplete() {
                         Log.d("RequestsListsClass", "addListProduct1");
-                        databaseCallbackProduct.onProductAdded();
+                        // get the last added product
+                        getLastProductId(databaseCallbackLists, databaseCallbackProduct, idList);
                     }
 
                     @Override
@@ -273,7 +284,8 @@ public class RequestsLists {
     }
 
     //===============================================================================================================
-    public void addProductForList(final DatabaseCallbackProduct databaseCallbackProduct, final ProductForList productForList) {
+    public void addProductForList(final DatabaseCallbackLists databaseCallbackLists,
+                                  final DatabaseCallbackProduct databaseCallbackProduct, final ProductForList productForList) {
         Completable.fromAction(() -> productForListDao.insert(productForList))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -284,7 +296,13 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackProduct.onProductForListAdded();
+                        if (databaseCallbackProduct != null){
+                            databaseCallbackProduct.onProductForListAdded();
+                            Log.d("Productsclass", "onProductForListAdded");
+                        }else {
+                            databaseCallbackLists.onProductImported();
+                            Log.d("Productsclass", "onProductForListAdded - import");
+                        }
                     }
 
                     @Override

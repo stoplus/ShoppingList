@@ -3,12 +3,16 @@ package ru.deliveon.lists.mainList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -27,15 +31,18 @@ import ru.deliveon.lists.RequestsLists;
 import ru.deliveon.lists.adapters.AdapterList;
 import ru.deliveon.lists.adapters.recyclerHelper.OnStartDragListener;
 import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
+import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.di.App;
 import ru.deliveon.lists.addEdit.AddEditListDialog;
 import ru.deliveon.lists.dialogs.DeleteListDialog;
 import ru.deliveon.lists.dialogs.ExitDialog;
 import ru.deliveon.lists.database.entity.Lists;
 import ru.deliveon.lists.database.entity.ProductForList;
+import ru.deliveon.lists.entity.ExportList;
 import ru.deliveon.lists.interfaces.AddEditListInterface;
 import ru.deliveon.lists.interfaces.DatabaseCallbackLists;
 import ru.deliveon.lists.interfaces.DeleteListInterface;
+import ru.deliveon.lists.utils.UtilIntentShare;
 
 public class MainActivity extends AppCompatActivity implements DeleteListInterface,
         AddEditListInterface, DatabaseCallbackLists, OnStartDragListener, ColorPickerDialogListener {
@@ -56,10 +63,12 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private ItemTouchHelper mItemTouchHelper;
     boolean isItemMove = false;
     boolean isItemRemove = false;
-    private ColorPickerDialog.Builder colorDialog;
     private final int DIALOG_ID_COLOR = 0;
     private Lists lists;
     private String selectedName;
+    private boolean isImport = false;
+    private ExportList importedModel;
+    private int countImportProd = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +84,29 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
         requestsLists.getLists(this);
     }//onCreate
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.import_list:
+                importedModel = UtilIntentShare.loadListModel(this, "22.data");
+                if (importedModel != null) {
+                    isImport = true;
+                    requestsLists.addLists(this, new Lists(importedModel.getName(), importedModel.getColor()));
+                } else {
+                    Snackbar.make(mainLayout, getResources().getString(R.string.import_error), Snackbar.LENGTH_LONG).show();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void openAddEditListDialog() {
         AddEditListDialog addEditListDialog = new AddEditListDialog();
@@ -97,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     public void openPicker(int colorForStartDialog, Lists lists, String name) {
         selectedName = name;
         this.lists = lists;
-        colorDialog = ColorPickerDialog.newBuilder();
+        ColorPickerDialog.Builder colorDialog = ColorPickerDialog.newBuilder();
         colorDialog.setDialogType(ColorPickerDialog.TYPE_PRESETS)
                 .setAllowPresets(false)
                 .setDialogId(DIALOG_ID_COLOR)
@@ -158,18 +190,35 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
                     checkSortNum(list, true);
                 }
             };
-            adapter = new AdapterList(MainActivity.this, listLists, onItemListener, this);
+            adapter = new AdapterList(listLists, onItemListener, this);
             recyclerView.setAdapter(adapter);
 
             ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
             mItemTouchHelper = new ItemTouchHelper(callback);
             mItemTouchHelper.attachToRecyclerView(recyclerView);
-        }
-        else {
+
+            if (isImport) {
+                setImportedProducts();
+            }
+        } else {
             adapter.deleteFromListAdapter(positionDelete);
             positionDelete = -1;
         }
     }//onListsLoaded
+
+    private void setImportedProducts() {
+        Lists importedList = listLists.get(listLists.size() - 1);
+        List<Product> importedProductList = importedModel.getListProduct();
+        Product importedProduct = importedProductList.get(countImportProd);
+        Product newProduct = new Product(
+                importedProduct.nameProduct,
+                "",
+                importedProduct.isBought(),
+                0
+        );
+        requestsLists.addProduct(this, null, newProduct, importedList.id);
+        countImportProd++;
+    }
 
     private void setListener(List<Lists> lists) {
         if (lists.size() == 0) {
@@ -207,15 +256,17 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         Intent intent = new Intent(MainActivity.this, Products.class);
         idList = list.get(position).getListId();
         String nameList = list.get(position).getListName();
+        int color = list.get(position).getColor();
         intent.putExtra("nameList", nameList);
         intent.putExtra("idList", idList);
+        intent.putExtra("color", color);
         startActivity(intent);
     }//itemClick
 
     private void itemLongClickOrRemove(final int position, View v, final List<Lists> list, boolean remove) {
         Lists lists = list.get(position);
         Bundle args = new Bundle();
-        args.putParcelable("lists", lists);
+        args.putSerializable("lists", lists);
         if (remove && v == null) {
             positionDelete = position;
             DeleteListDialog deleteDialog = new DeleteListDialog();
@@ -284,6 +335,16 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     }
 
     @Override
+    public void onProductImported() {
+        int sizeImportedList = importedModel.getListProduct().size();
+        if (countImportProd < sizeImportedList) {
+            setImportedProducts();
+        }else {
+            countImportProd = 0;
+        }
+    }
+
+    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
     }
@@ -292,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     public void onColorSelected(int dialogId, int selectedColor) {
         if (dialogId == DIALOG_ID_COLOR) {
             Bundle args = new Bundle();
-            args.putParcelable("lists", lists);
+            args.putSerializable("lists", lists);
             args.putInt("color", selectedColor);
             args.putString("name", selectedName);
             AddEditListDialog addEditListDialog = new AddEditListDialog();

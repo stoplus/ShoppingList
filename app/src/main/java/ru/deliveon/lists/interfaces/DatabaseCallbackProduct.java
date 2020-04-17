@@ -11,11 +11,7 @@ public interface DatabaseCallbackProduct {
 
     void onProductForListDeleted();
 
-    void onProductAdded();
-
     void onProductForListAdded();
-
-    void onLastProduct(int id);
 
     void onSameIdProductForList(List<ProductForList> list);
 }

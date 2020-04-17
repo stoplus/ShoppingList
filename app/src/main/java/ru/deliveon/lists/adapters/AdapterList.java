@@ -32,13 +32,11 @@ import ru.deliveon.lists.database.entity.Lists;
 import ru.deliveon.lists.mainList.OnItemListenerMain;
 
 public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> implements ItemTouchHelperAdapter {
-    private LayoutInflater inflater;
     private List<Lists> list;
     private OnItemListenerMain onItemListener;
     private final OnStartDragListener mDragStartListener;
 
-    public AdapterList(Context context, List<Lists> list, OnItemListenerMain onItemListener, OnStartDragListener mDragStartListener) {
-        this.inflater = LayoutInflater.from(context);
+    public AdapterList(List<Lists> list, OnItemListenerMain onItemListener, OnStartDragListener mDragStartListener) {
         this.list = new ArrayList<>(list);
         this.onItemListener = onItemListener;
         this.mDragStartListener = mDragStartListener;
@@ -61,7 +59,7 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false);
         return new ViewHolder(view);
     } // onCreateViewHolder
 
@@ -133,7 +131,11 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        holder.constraintLayout.setBackgroundColor(list.get(position).getColor());
+        int color = list.get(position).getColor();
+        if (color == 0){
+            color = ContextCompat.getColor(holder.constraintLayout.getContext(), R.color.colorList);
+        }
+        holder.constraintLayout.setBackgroundColor(color);
         holder.category_id.setText(list.get(position).getListName());
         // Start a drag whenever the handle view it touched
         holder.move.setOnTouchListener((v, event) -> {

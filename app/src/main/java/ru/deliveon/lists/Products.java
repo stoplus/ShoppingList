@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,9 +31,10 @@ import ru.deliveon.lists.adapters.AdapterProductList;
 import ru.deliveon.lists.adapters.AdapterProductListPurchased;
 import ru.deliveon.lists.adapters.recyclerHelper.SimpleItemTouchHelperCallback;
 import ru.deliveon.lists.addEdit.AddEditActivity;
-import ru.deliveon.lists.di.App;
 import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.database.entity.ProductForList;
+import ru.deliveon.lists.di.App;
+import ru.deliveon.lists.entity.ExportList;
 import ru.deliveon.lists.interfaces.DatabaseCallbackProduct;
 import ru.deliveon.lists.interfaces.OnItemListener;
 import ru.deliveon.lists.utils.UtilIntentShare;
@@ -63,6 +64,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     private AdapterProductList adapterProductList;
     private AdapterProductListPurchased adapterProductListPurchased;
     private int idList;
+    private int colorList;
     private int idProduct;
     private Product product;
     private boolean flagDel = true;
@@ -84,6 +86,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         requestsLists = App.app().getComponent().getRequestsLists();
 
         idList = getIntent().getIntExtra("idList", -1);
+        colorList = getIntent().getIntExtra("color", 0);
         String nameList = getIntent().getStringExtra("nameList");
         setTitle(getResources().getString(R.string.list) + ": " + nameList);
 
@@ -112,11 +115,11 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQEST_ADD:
-                    Product product = data.getParcelableExtra("product");
-                    requestsLists.addListProduct(this, product);
+                    Product product = (Product) data.getSerializableExtra("product");
+                    requestsLists.addProduct(null, this, product, idList);
                     break;
                 case REQEST_EDIT:
-                    Product productUpdate = data.getParcelableExtra("productUpdate");
+                    Product productUpdate = (Product) data.getSerializableExtra("productUpdate");
                     requestsLists.updateProduct(this, productUpdate, idList);
                     break;
             }//switch
@@ -317,23 +320,23 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     }
 
     // added the product to the product table
-    @Override
-    public void onProductAdded() {
-        Log.d("Productsclass", "onProductAdded");
-//        textViewReady.setText(getResources().getString(R.string.purchased));
-        // get the last added product
-        requestsLists.getlastProduct(Products.this);
-    }
+//    @Override
+//    public void onProductAdded() {
+//        Log.d("Productsclass", "onProductAdded");
+////        textViewReady.setText(getResources().getString(R.string.purchased));
+//        // get the last added product
+////        requestsLists.getlastProduct(Products.this);
+//    }
 
     // get the last entry from the product table
-    @Override
-    public void onLastProduct(int idProduct) {
-        Log.d("Productsclass", "onLastProduct");
-        requestsLists.dispListId.dispose();
-        // add to the table "goods in the list"
-        ProductForList productForList = new ProductForList(idList, idProduct);
-        requestsLists.addProductForList(Products.this, productForList);
-    }
+//    @Override
+//    public void onLastProduct(int idProduct) {
+//        Log.d("Productsclass", "onLastProduct");
+//        requestsLists.dispListId.dispose();
+//        // add to the table "goods in the list"
+//        ProductForList productForList = new ProductForList(idList, idProduct);
+//        requestsLists.addProductForList(Products.this, productForList);
+//    }
 
     // added an entry to the table "items in the list"
     @Override
@@ -387,14 +390,18 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 createAndInstallAdapter();
                 break;
             case R.id.share:
-                if (productList.isEmpty() || listPurchased.isEmpty()){
+                if (productList.isEmpty() || listPurchased.isEmpty()) {
                     share(!productList.isEmpty(), !listPurchased.isEmpty());
-                }else {
+                } else {
                     createShareDialog();
                 }
                 break;
             case R.id.add_position:
                 addPosition();
+                break;
+            case R.id.export_list:
+                exportList();
+                break;
         }//switch
         return super.onOptionsItemSelected(item);
     }//onOptionsItemSelected
@@ -406,6 +413,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         MenuItem allItemsNotPurchased = menu.findItem(R.id.allItemsNotPurchased);
         MenuItem sortByName = menu.findItem(R.id.sortByName);
         MenuItem addPosition = menu.findItem(R.id.add_position);
+        MenuItem exportList = menu.findItem(R.id.export_list);
 
         boolean show = productList.isEmpty() && listPurchased.isEmpty();
         boolean showSort = (productList.size() + listPurchased.size()) > 1;
@@ -415,7 +423,20 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         sortByName.setVisible(!show && showSort);
         share.setVisible(!show);
         addPosition.setVisible(show);
+        exportList.setVisible(!show);
         return true;
+    }
+
+    private void exportList() {
+        List<Product> list = new ArrayList<>();
+        list.addAll(productList);
+        list.addAll(listPurchased);
+        Collections.sort(list, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
+        if (UtilIntentShare.saveFileList(this, new ExportList(getTitle().toString(), colorList, list))){
+            Snackbar.make(layout, getResources().getString(R.string.export_ok), Snackbar.LENGTH_LONG).show();
+        }else {
+            Snackbar.make(layout, getResources().getString(R.string.export_error), Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void createAllItemsNotPurchased() {
@@ -449,9 +470,9 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
                 .setView(view)
                 .setNegativeButton(getResources().getString(R.string.cancel), null)
                 .setPositiveButton(getResources().getString(R.string.dialog_selected_btn_share), (dialog, which) -> {
-                    if (!awaiting.isChecked() && !folded.isChecked()){
+                    if (!awaiting.isChecked() && !folded.isChecked()) {
                         createShareDialog();
-                    }else {
+                    } else {
                         share(awaiting.isChecked(), folded.isChecked());
                     }
                 });
@@ -497,8 +518,8 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         outState.putInt("positionDeletePurchased", positionDeletePurchased);
         outState.putInt("idProduct", idProduct);
         outState.putBoolean("flagDel", flagDel);
-        outState.putParcelableArrayList("productList", (ArrayList<? extends Parcelable>) productList);
-        outState.putParcelableArrayList("listPurchased", (ArrayList<? extends Parcelable>) listPurchased);
+        outState.putSerializable("productList", (ArrayList<? extends Serializable>) productList);
+        outState.putSerializable("listPurchased", (ArrayList<? extends Serializable>) listPurchased);
     }
 
     @Override
@@ -509,7 +530,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         positionDeletePurchased = savedInstanceState.getInt("positionDeletePurchased");
         idProduct = savedInstanceState.getInt("idProduct");
         flagDel = savedInstanceState.getBoolean("flagDel");
-        productList = savedInstanceState.getParcelableArrayList("productList");
-        listPurchased = savedInstanceState.getParcelableArrayList("listPurchased");
+        productList = (List<Product>) savedInstanceState.getSerializable("productList");
+        listPurchased = (List<Product>) savedInstanceState.getSerializable("listPurchased");
     }
 }
