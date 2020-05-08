@@ -74,6 +74,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
     private ItemTouchHelper mItemTouchHelperPurchased;
     boolean isUpdate = false;
     boolean isUpdatePurchased = false;
+    private String nameList = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +88,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
 
         idList = getIntent().getIntExtra("idList", -1);
         colorList = getIntent().getIntExtra("color", 0);
-        String nameList = getIntent().getStringExtra("nameList");
+        nameList = getIntent().getStringExtra("nameList");
         setTitle(getResources().getString(R.string.list) + ": " + nameList);
 
         fabBtn.setOnClickListener(view -> addPosition());
@@ -319,25 +320,6 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         flagDel = false;
     }
 
-    // added the product to the product table
-//    @Override
-//    public void onProductAdded() {
-//        Log.d("Productsclass", "onProductAdded");
-////        textViewReady.setText(getResources().getString(R.string.purchased));
-//        // get the last added product
-////        requestsLists.getlastProduct(Products.this);
-//    }
-
-    // get the last entry from the product table
-//    @Override
-//    public void onLastProduct(int idProduct) {
-//        Log.d("Productsclass", "onLastProduct");
-//        requestsLists.dispListId.dispose();
-//        // add to the table "goods in the list"
-//        ProductForList productForList = new ProductForList(idList, idProduct);
-//        requestsLists.addProductForList(Products.this, productForList);
-//    }
-
     // added an entry to the table "items in the list"
     @Override
     public void onProductForListAdded() {
@@ -432,9 +414,9 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         list.addAll(productList);
         list.addAll(listPurchased);
         Collections.sort(list, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
-        if (UtilIntentShare.saveFileList(this, new ExportList(getTitle().toString(), colorList, list))){
-            Snackbar.make(layout, getResources().getString(R.string.export_ok), Snackbar.LENGTH_LONG).show();
-        }else {
+        if (UtilIntentShare.saveFileList(this, new ExportList(getTitle().toString(), colorList, list))) {
+            UtilIntentShare.shareFile(this, null, nameList);
+        } else {
             Snackbar.make(layout, getResources().getString(R.string.export_error), Snackbar.LENGTH_LONG).show();
         }
     }

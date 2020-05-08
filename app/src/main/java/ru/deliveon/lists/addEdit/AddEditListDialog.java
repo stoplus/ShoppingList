@@ -70,8 +70,12 @@ public class AddEditListDialog extends DialogFragment {
             // присваиваем выбранный цвет
             colorForStartDialog = selectedColor;
         } else if (lists != null) {
-            //берем из базы
-            colorForStartDialog = lists.getColor();
+            if (lists.getColor() == 0){
+                //если не присвоен цвет, берем по умолчанию
+                colorForStartDialog = ContextCompat.getColor(view.getContext(), R.color.colorList);
+            }else {
+                colorForStartDialog = lists.getColor();//берем из базы
+            }
         } else {
             //если не выбирали цвет, берем по умолчанию
             colorForStartDialog = ContextCompat.getColor(view.getContext(), R.color.colorList);//2

@@ -49,6 +49,7 @@ import ru.deliveon.lists.Products;
 import ru.deliveon.lists.R;
 import ru.deliveon.lists.database.entity.Product;
 import ru.deliveon.lists.interfaces.CameraOrGaleryInterface;
+import ru.deliveon.lists.utils.UtilIntentShare;
 
 @RuntimePermissions
 public class AddEditActivity extends AppCompatActivity implements CameraOrGaleryInterface {
@@ -223,7 +224,7 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
                     if (Build.VERSION.SDK_INT < 24) {
                         uri = data.getData();
                     } else {
-                        File photoFile = new File(getRealPathFromURI(data.getData()));
+                        File photoFile = new File(UtilIntentShare.getRealPathFromURI(this, data.getData()));
                         uri = FileProvider.getUriForFile(AddEditActivity.this,
                                 BuildConfig.APPLICATION_ID + ".provider",
                                 photoFile);
@@ -244,20 +245,6 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
         }
         super.onActivityResult(requestCode, resultCode, data);
     }//onActivityResult
-
-    private String getRealPathFromURI(Uri contentURI) {
-        String result;
-        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) { //checking
-            result = contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-            result = cursor.getString(idx);
-            cursor.close();
-        }
-        return result;
-    }
 
     @Override
     public void choiceForPhoto(boolean bool) {

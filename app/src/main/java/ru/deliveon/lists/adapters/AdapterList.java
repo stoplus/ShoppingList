@@ -98,32 +98,40 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
             int plusIndex = 30;
             int color = list.get(getAdapterPosition()).getColor();
 
-            int R = (color >> 16) & 0xff;
-            int G = (color >> 8) & 0xff;
-            int B = (color) & 0xff;
+            if (color == 0){
+                itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorListDrag));
+            }else {
+                int R = (color >> 16) & 0xff;
+                int G = (color >> 8) & 0xff;
+                int B = (color) & 0xff;
 
-            if (R <= minIndex) {
-                R += plusIndex;
-            } else {
-                R = 255;
+                if (R <= minIndex) {
+                    R += plusIndex;
+                } else {
+                    R = 255;
+                }
+                if (G <= minIndex) {
+                    G += plusIndex;
+                } else {
+                    G = 255;
+                }
+                if (B <= minIndex) {
+                    B += plusIndex;
+                } else {
+                    B = 255;
+                }
+                itemView.setBackgroundColor(Color.rgb(R, G, B));
             }
-            if (G <= minIndex) {
-                G += plusIndex;
-            } else {
-                G = 255;
-            }
-            if (B <= minIndex) {
-                B += plusIndex;
-            } else {
-                B = 255;
-            }
-            itemView.setBackgroundColor(Color.rgb(R, G, B));
         }
 
         @Override
         public void onItemClear() {
             if (getAdapterPosition() != -1) {
-                itemView.setBackgroundColor(list.get(getAdapterPosition()).getColor());
+                if (list.get(getAdapterPosition()).getColor() == 0){
+                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorList));
+                }else {
+                    itemView.setBackgroundColor(list.get(getAdapterPosition()).getColor());
+                }
             }
         }
     }//class ViewHolder
