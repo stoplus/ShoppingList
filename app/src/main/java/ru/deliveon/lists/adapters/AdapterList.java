@@ -143,6 +143,14 @@ public class AdapterList extends RecyclerView.Adapter<AdapterList.ViewHolder> im
         if (color == 0){
             color = ContextCompat.getColor(holder.constraintLayout.getContext(), R.color.colorList);
         }
+
+        int R = (color >> 16) & 0xff;
+        int G = (color >> 8) & 0xff;
+        int B = (color) & 0xff;
+        if ((R + G + B) < 120){
+            holder.category_id.setTextColor(Color.WHITE);
+        }
+
         holder.constraintLayout.setBackgroundColor(color);
         holder.category_id.setText(list.get(position).getListName());
         // Start a drag whenever the handle view it touched
