@@ -414,7 +414,7 @@ public class Products extends AppCompatActivity implements DatabaseCallbackProdu
         list.addAll(productList);
         list.addAll(listPurchased);
         Collections.sort(list, (obj1, obj2) -> obj1.getNameProduct().compareTo(obj2.getNameProduct()));
-        if (UtilIntentShare.saveFileList(this, new ExportList(getTitle().toString(), colorList, list))) {
+        if (UtilIntentShare.saveFileList(this, new ExportList(nameList, colorList, list))) {
             UtilIntentShare.shareFile(this, null, nameList);
         } else {
             Snackbar.make(layout, getResources().getString(R.string.export_error), Snackbar.LENGTH_LONG).show();

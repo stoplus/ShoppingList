@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -55,7 +56,7 @@ public class UtilIntentShare {
 
 
     public static void shareFile(Activity activity, String dialogTitle, String subject) {
-        String f = new File(activity.getFilesDir(), activity.getResources().getString(R.string.app_name)).toString() + "/list_for_import.top";
+        String f = new File(activity.getFilesDir(), activity.getResources().getString(R.string.app_name)).toString() + "/list_for_import.txt";
         File file = new File(f);
 
         Intent intentShareFile = new Intent(Intent.ACTION_SEND);
@@ -69,13 +70,8 @@ public class UtilIntentShare {
             dialogTitle = "Экспорт списка";
         }
         intentShareFile.setType("text/plain");
-
-        if (Build.VERSION.SDK_INT < 24) {
-            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-        } else {
-            intentShareFile.putExtra(Intent.EXTRA_STREAM,
+        intentShareFile.putExtra(Intent.EXTRA_STREAM,
                     FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file));
-        }
 
         activity.startActivity(Intent.createChooser(intentShareFile, dialogTitle));
     }
@@ -86,7 +82,7 @@ public class UtilIntentShare {
             if (!folder.exists()) {
                 folder.mkdirs();
             }
-            File outFile = new File(folder, "list_for_import.top");
+            File outFile = new File(folder, "list_for_import.txt");
 
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outFile));
             out.writeObject(lotteryModel);
@@ -96,11 +92,6 @@ public class UtilIntentShare {
             e.printStackTrace();
             return false;
         }
-    }
-
-    private static String nameTimeString() {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NAME, Locale.getDefault());
-        return sdf.format(new Date());
     }
 
     public static String getRealPathFromURI(Activity activity, Uri contentURI) {
@@ -151,6 +142,9 @@ public class UtilIntentShare {
             ObjectInputStream inn = new ObjectInputStream(new FileInputStream(fileCopy.getPath()));
             exportList = (ExportList) inn.readObject();
             inn.close();
+            if (outputDir.isDirectory()) {
+                FileUtils.cleanDirectory(outputDir);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
