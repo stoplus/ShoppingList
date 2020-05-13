@@ -9,7 +9,7 @@
     <string name="all_items_purchased">Отметить все как сложенные</string>
     <string name="all_items_not_purchased">Отметить все как ожидающие</string>
     <string name="sort_by_name">Отсортировать по алфавиту</string>
-    <string name="share_list">Пподелиться списком</string>
+    <string name="share_list">Поделиться списком</string>
     <string name="add_position">Добавить запись</string>
     <string name="export_list">"Экспорт списка"</string>
     <string name="checkbox_awaiting">Ожидающие</string>
