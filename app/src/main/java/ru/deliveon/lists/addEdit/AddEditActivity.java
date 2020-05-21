@@ -167,7 +167,7 @@ public class AddEditActivity extends AppCompatActivity implements CameraOrGalery
 
     public void add(View view) {
         Intent intent = new Intent();
-        String name = editText.getText().toString();
+        String name = editText.getText().toString().trim();
         if (!name.isEmpty()) {
             name = name.substring(0, 1).toUpperCase() + name.substring(1);
             String path = linkNewPicture;//without turning and during a normal coup

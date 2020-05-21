@@ -100,7 +100,7 @@ public class AddEditListDialog extends DialogFragment {
             });
 
             btnAdd.setOnClickListener(v -> {
-                String name = input.getText().toString();
+                String name = input.getText().toString().trim();
                 if (!name.isEmpty()) {
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
                     if (finalLists == null) {

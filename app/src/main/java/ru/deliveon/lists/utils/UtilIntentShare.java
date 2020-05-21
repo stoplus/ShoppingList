@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.v4.content.FileProvider;
@@ -19,10 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import ru.deliveon.lists.BuildConfig;
 import ru.deliveon.lists.R;
@@ -71,7 +66,7 @@ public class UtilIntentShare {
         }
         intentShareFile.setType("text/plain");
         intentShareFile.putExtra(Intent.EXTRA_STREAM,
-                    FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file));
+                FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file));
 
         activity.startActivity(Intent.createChooser(intentShareFile, dialogTitle));
     }
@@ -143,11 +138,19 @@ public class UtilIntentShare {
             exportList = (ExportList) inn.readObject();
             inn.close();
             if (outputDir.isDirectory()) {
-                FileUtils.cleanDirectory(outputDir);
+                deleteRecursive(outputDir);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return exportList;
+    }
+
+    private static void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteRecursive(child);
+            }
+        fileOrDirectory.delete();
     }
 }

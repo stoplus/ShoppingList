@@ -30,8 +30,8 @@
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:animateLayoutChanges="true">
+            android:animateLayoutChanges="true"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:id="@+id/idLinearLayout"
@@ -44,18 +44,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior" >
-                </android.support.v7.widget.RecyclerView>
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"></android.support.v7.widget.RecyclerView>
 
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:paddingStart="8dp"
                     android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
                     android:paddingEnd="8dp"
-                    android:paddingStart="8dp">
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:id="@+id/textViewNotReady"
@@ -65,7 +64,7 @@
                         android:gravity="start"
                         android:text="@string/not_collected"
                         android:textColor="@color/not_collected"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/textViewReady"
@@ -73,19 +72,17 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="end"
-                       android:text="@string/collected"
+                        android:text="@string/collected"
                         android:textColor="@color/collected" />
 
                 </LinearLayout>
-
 
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/idRecyclerProdPurchased"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                   />
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
             </LinearLayout>
 
         </android.support.v4.widget.NestedScrollView>
@@ -97,6 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:alpha="0.7"
         android:src="@drawable/ic_add" />
 
 </android.support.design.widget.CoordinatorLayout>
