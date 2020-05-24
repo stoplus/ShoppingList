@@ -9,7 +9,7 @@ public interface DatabaseCallbackLists {
 
     void onListsLoaded(List<Lists> lists);
 
-    void onListDeleted();
+    void onListDeleted(int id);
 
     void onSameIdList(List<ProductForList> list);
 

@@ -77,7 +77,7 @@ public class RequestsLists {
 
                     @Override
                     public void onComplete() {
-                        databaseCallbackLists.onListDeleted();
+                        databaseCallbackLists.onListDeleted(lists.id);
                     }
 
                     @Override

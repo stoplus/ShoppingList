@@ -9,6 +9,7 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     private AdapterList adapter;
     private int positionDelete = -1;
     private RequestsLists requestsLists;
-    private int idList;
     private List<ProductForList> sameIdList;
     private List<Lists> listLists;
     private ItemTouchHelper mItemTouchHelper;
@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     @Override
     public void cancelDeleteList() {
+        positionDelete = -1;
         adapter.notifyDataSetChanged();
     }
 
@@ -265,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
 
     private void itemClick(int position, List<Lists> list) {
         Intent intent = new Intent(MainActivity.this, Products.class);
-        idList = list.get(position).getListId();
+        int idList = list.get(position).getListId();
         String nameList = list.get(position).getListName();
         int color = list.get(position).getColor();
         intent.putExtra("nameList", nameList);
@@ -298,9 +299,9 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
     }//itemLongClick
 
     @Override
-    public void onListDeleted() {
+    public void onListDeleted(int id) {
         //search in the table "goods in the list" records with the same id LIST
-        requestsLists.getSameIdListForList(MainActivity.this, idList);
+        requestsLists.getSameIdListForList(MainActivity.this, id);
     }
 
     //found in the table "goods in the list" all records with the same id LIST
@@ -311,6 +312,8 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
         //delete from the table "goods in the list" records with the same id LIST
         if (list.size() > 0) {
             requestsLists.deleteListProductForList(MainActivity.this, list);
+        }else {
+            positionDelete = -1;
         }
     }
 
@@ -335,13 +338,18 @@ public class MainActivity extends AppCompatActivity implements DeleteListInterfa
             if (!list.contains(sameIdList.get(i)))
                 listForDeleting.add(sameIdList.get(i).getIdProduct());
         }
-        if (listForDeleting.size() > 0)
+        if (listForDeleting.size() > 0){
             requestsLists.deleteProductList(MainActivity.this, listForDeleting);
+        }else {
+            positionDelete = -1;
+        }
+
     }//onInOtherList
 
     @Override
     public void productRemoved() {
-
+        Log.d("MainActivityclass", "productRemoved");
+        positionDelete = -1;
     }
 
     @Override
