@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">सूचियाँ</string>
+    <string name="lists">सूचियाँ</string>
+    <string name="edit">संपादित करें</string>
+    <string name="change_photo">फोटो बदलें</string>
+    <string name="delete">हटाएं</string>
+    <string name="delete_photo">फोटो हटाएं</string>
+    <string name="import_list">आयात सूची</string>
+    <string name="all_items_purchased">सभी को गुना के रूप में चिह्नित करें</string>
+    <string name="all_items_not_purchased">सभी लंबित को चिह्नित करें</string>
+    <string name="sort_by_name">वर्णानुक्रम में क्रमबद्ध करें</string>
+    <string name="share_list">शेयर सूची</string>
+    <string name="add_position">टिप्पणी जोड़ें</string>
+    <string name="export_list">"निर्यात सूची"</string>
+    <string name="checkbox_awaiting">प्रतीक्षा कर रहा है</string>
+    <string name="checkbox_folded">मुड़ा हुआ</string>
+    <string name="dialog_selected_title">भेजने के लिए एक सूची का चयन करें</string>
+    <string name="dialog_selected_btn_share">इसे साझा करें</string>
+    <string name="select_list">चुनें कि आप क्या साझा करने जा रहे हैं</string>
+
+    <string name="exit">उत्पादन</string>
+    <string name="addPhoto">चित्र को अपलोड करें</string>
+    <string name="editPhoto">फोटो बदलें</string>
+    <string name="createPhoto">फोटो बनाने के लिए</string>
+    <string name="cancel">रद्द करना</string>
+    <string name="add">जोड़ना</string>
+    <string name="list">सूची</string>
+    <string name="device_no_camera">आपका डिवाइस शूटिंग का समर्थन नहीं करता है</string>
+    <string name="not_take_photo">आपने फोटो नहीं ली</string>
+    <string name="not_selected_photo">आपने कोई फ़ोटो नहीं चुना है</string>
+    <string name="enter_name_product">शीर्षक दर्ज करें</string>
+    <string name="import_error">सूची फ़ाइल आयात करने में त्रुटि</string>
+    <string name="export_error">सूची फ़ाइल निर्यात करने में त्रुटि</string>
+    <string name="attention">ध्यान!</string>
+    <string name="need_get_permissions">अनुमति लेनी होगी!</string>
+    <string name="need_obtain_permissions">आपके पास एप्लिकेशन का उपयोग करने की अनुमति होनी चाहिए।</string>
+    <string name="ok">ठीक</string>
+    <string name="nameNewList">शीर्षक</string>
+    <string name="create_new_list">एक नई सूची बनाएँ</string>
+    <string name="edit_name_list">सूची का नाम बदलें</string>
+    <string name="enter_name_list">एक सूची नाम दर्ज करें</string>
+    <string name="selected_colour_list">सूची का रंग:</string>
+    <string name="camera_or_galery">गैलरी से एक तस्वीर चुनें या इसे कैमरे पर ले जाएं?</string>
+    <string name="where_take_pictures">हमें फोटो कहां से मिलेगी?</string>
+    <string name="galery">गेलरी</string>
+    <string name="camera">कैमरा</string>
+    <string name="confirmation">पुष्टीकरण</string>
+    <string name="delete_select_list">चयनित सूची हटाएं?</string>
+    <string name="collected">तह किया हुआ:</string>
+    <string name="not_collected">प्रतीक्षा कर रहा है:</string>
+    <string name="add_post">रिकॉर्ड जोड़ें</string>
+    <string name="exit_from_app">एप्लिकेशन बंद करो?</string>
+    <string name="yes">हाँ</string>
+    <string name="picture">चित्र</string>
+    <string name="touch_for_add_photo">फ़ोटो जोड़ने के लिए स्पर्श करें</string>
+
+    <string name="select_color">कोई रंग चुनें</string>
+    <string name="select">चुनते हैं</string>
+    <string name="custom">विस्तृत</string>
+    <string name="presets">प्रीसेट</string>
+
+</resources>
