@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">Listen</string>
+    <string name="lists">Listen</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="change_photo">Foto ersetzen</string>
+    <string name="delete">Löschen</string>
+    <string name="delete_photo">Foto löschen</string>
+    <string name="import_list">Liste importieren</string>
+    <string name="all_items_purchased">Markiere alles als gefaltet</string>
+    <string name="all_items_not_purchased">Alle ausstehenden markieren</string>
+    <string name="sort_by_name">Alphabetisch sortieren</string>
+    <string name="share_list">Freigabeliste</string>
+    <string name="add_position">Notiz hinzufügen</string>
+    <string name="export_list">"Liste exportieren"</string>
+    <string name="checkbox_awaiting">Warten</string>
+    <string name="checkbox_folded">Gefaltet</string>
+    <string name="dialog_selected_title">Wählen Sie eine Liste zum Senden aus</string>
+    <string name="dialog_selected_btn_share">Teile das</string>
+    <string name="select_list">Wählen Sie aus, was Sie teilen möchten</string>
+
+    <string name="exit">Ausgabe</string>
+    <string name="addPhoto">Füge ein Foto hinzu</string>
+    <string name="editPhoto">Foto ändern</string>
+    <string name="createPhoto">Ein Foto machen</string>
+    <string name="cancel">Stornieren</string>
+    <string name="add">Hinzufügen</string>
+    <string name="list">Liste</string>
+    <string name="device_no_camera">Ihr Gerät unterstützt keine Aufnahmen</string>
+    <string name="not_take_photo">Sie haben kein Foto gemacht</string>
+    <string name="not_selected_photo">Sie haben kein Foto ausgewählt</string>
+    <string name="enter_name_product">Geben Sie den Titel ein</string>
+    <string name="import_error">Fehler beim Importieren der Listendatei</string>
+    <string name="export_error">Fehler beim Exportieren der Listendatei</string>
+    <string name="attention">Beachtung!</string>
+    <string name="need_get_permissions">Erlaubnis erforderlich!</string>
+    <string name="need_obtain_permissions">Sie müssen über die Berechtigung zur Verwendung der Anwendung verfügen.</string>
+    <string name="ok">Ок</string>
+    <string name="nameNewList">Titel</string>
+    <string name="create_new_list">Erstellen Sie eine neue Liste</string>
+    <string name="edit_name_list">Ändern Sie den Namen der Liste</string>
+    <string name="enter_name_list">Geben Sie einen Listennamen ein</string>
+    <string name="selected_colour_list">Listenfarbe:</string>
+    <string name="camera_or_galery">Wählen Sie ein Foto aus der Galerie oder nehmen Sie es vor der Kamera auf?</string>
+    <string name="where_take_pictures">Woher bekommen wir das Foto?</string>
+    <string name="galery">Galerie</string>
+    <string name="camera">Kamera</string>
+    <string name="confirmation">die Bestätigung</string>
+    <string name="delete_select_list">Ausgewählte Liste löschen?</string>
+    <string name="collected">Zusammengeklappt:</string>
+    <string name="not_collected">Erwartet:</string>
+    <string name="add_post">Notiz hinzufügen</string>
+    <string name="exit_from_app">Schließe die Anwendung?</string>
+    <string name="yes">Ja</string>
+    <string name="picture">Bild</string>
+    <string name="touch_for_add_photo">Berühren Sie, um ein Foto hinzuzufügen</string>
+
+    <string name="select_color">Wähle eine Farbe</string>
+    <string name="select">Wählen</string>
+    <string name="custom">Verlängert</string>
+    <string name="presets">Voreinstellung</string>
+
+</resources>

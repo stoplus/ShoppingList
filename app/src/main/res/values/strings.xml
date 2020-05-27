@@ -25,14 +25,12 @@
     <string name="cancel">Отмена</string>
     <string name="add">Добавить</string>
     <string name="list">Список</string>
-    <string name="createNewProduct">Создание нового товара</string>
     <string name="device_no_camera">Ваше устройство не поддерживает съемку</string>
     <string name="not_take_photo">Вы не сделали фото</string>
     <string name="not_selected_photo">Вы не выбрали фото</string>
     <string name="enter_name_product">Введите название</string>
     <string name="import_error">Ошибка при импортировании файла списка</string>
     <string name="export_error">Ошибка при экспорте файла списка</string>
-    <string name="export_ok">ok</string>
     <string name="attention">Внимание!</string>
     <string name="need_get_permissions">Необходимо получить разрешения!</string>
     <string name="need_obtain_permissions">Для использования приложения необходимо получить разрешения</string>
@@ -50,7 +48,7 @@
     <string name="delete_select_list">Удалить выбранный список?</string>
     <string name="collected">Сложено:</string>
     <string name="not_collected">Ожидает:</string>
-    <string name="add_post">Добавьте запись</string>
+    <string name="add_post">Добавьте заметку</string>
     <string name="exit_from_app">Выйти из приложения?</string>
     <string name="yes">Да</string>
     <string name="picture">Изображение</string>
